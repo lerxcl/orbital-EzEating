@@ -1,35 +1,39 @@
 import BlueButton from '../component/BlueButton';
-import {Image, StyleSheet, TextInput, Text, View, KeyboardAvoidingView} from "react-native";
+import {Alert, Image, StyleSheet, TextInput, Text, View, KeyboardAvoidingView} from "react-native";
 import React from "react";
-//import firebaseDb from '../firebaseDb';
+import firebaseDb from '../firebase/firebaseDb';
 
 class LogInContainer extends React.Component {
     state = {
-        username: '',
+        email: '',
         password: '',
     };
 
-    inputUsername = (username) => this.setState({username});
+    inputEmail = (email) => this.setState({email});
     inputPassword = (password) => this.setState({password});
 
-    /* adding database later.
-    handleCreateUser = () => firebaseDb.firestore()
-        .collection('users')
-        .add({
-            name: this.state.name,
-            email: this.state.email,
-            password: this.state.password
-        }).then(() => this.setState({
-            name: '',
-            email: '',
-            password: '',
-            signUpSuccessful: true
-        })).catch(err => console.error(err))
-
-     */
+    handleLoginUser = () => {
+        if (this.state.email === '' || this.state.password === '') {
+            Alert.alert('Enter details to sign in!')
+        } else {
+            firebaseDb
+                .auth()
+                .signInWithEmailAndPassword(this.state.email, this.state.password)
+                .then((res) => {
+                    console.log(res)
+                    console.log('User logged-in successfully!')
+                    this.setState({
+                        email: '',
+                        password: ''
+                    })
+                    this.props.navigation.navigate('Dashboard')
+                })
+                .catch(error => this.setState({errorMessage: error.message}))
+        }
+    }
 
     render() {
-        const { username, password, signInSuccessful } = this.state
+        const { email, password } = this.state
 
         return (
             <KeyboardAvoidingView behavior='padding' style={styles.container}>
@@ -42,10 +46,10 @@ class LogInContainer extends React.Component {
                 </View>
 
                 <TextInput
-                    placeholder="Username"
+                    placeholder="Email"
                     style={styles.input}
-                    value={username}
-                    onChangeText={this.inputUsername}
+                    value={email}
+                    onChangeText={this.inputEmail}
                 />
 
                 <TextInput
@@ -57,16 +61,18 @@ class LogInContainer extends React.Component {
 
                 <BlueButton
                     style={styles.button}
-                    //onPress={this.handleCreateUser}
-                    onPress={() => {
-                        if (this.state.username.length && this.state.password.length) {
-                            this.setState( {
-                                username: '',
-                                password: ''
-                            })
-                        }}}
+                    onPress={this.handleLoginUser}
                 >
                     Login
+                </BlueButton>
+
+                <BlueButton
+                    style={styles.button}
+                    onPress={() =>
+                        this.props.navigation.navigate('Sign-up')
+                    }
+                >
+                    New? Sign-Up here
                 </BlueButton>
             </KeyboardAvoidingView>
         )

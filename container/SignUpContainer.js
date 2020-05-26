@@ -1,7 +1,7 @@
 import BlueButton from '../component/BlueButton';
-import {Image, StyleSheet, TextInput, Text, View, KeyboardAvoidingView} from "react-native";
+import {Alert, Image, StyleSheet, TextInput, Text, View, KeyboardAvoidingView} from "react-native";
 import React from "react";
-import firebaseDb from '../firebaseDb';
+import firebaseDb from '../firebase/firebaseDb';
 
 class SignUpContainer extends React.Component {
     state = {
@@ -15,28 +15,25 @@ class SignUpContainer extends React.Component {
     updateEmail = (email) => this.setState({email});
     updatePassword = (password) => this.setState({password});
 
-    login = () => {
-        if (this.state.name.length && this.state.email.length && this.state.password.length) {
-            this.setState( {
-                    name: '',
-                    email: '',
-                    password: ''
-                })
+    handleCreateUser = () => {
+        if (this.state.name === '' || this.state.email === ''
+            || this.state.password === '') {
+            Alert.alert('Some fields are missing!')
+        } else {
+            firebaseDb.auth()
+                .createUserWithEmailAndPassword(this.state.email, this.state.password)
+                .then(() => {
+                        this.setState({
+                            name: '',
+                            email: '',
+                            password: '',
+                            signUpSuccessful: true
+                        })
+                    })
+                this.props.navigation.navigate('Login')
+                .catch(err => console.error(err))
         }
     }
-
-    handleCreateUser = () => firebaseDb.firestore()
-        .collection('users')
-        .add({
-            name: this.state.name,
-            email: this.state.email,
-            password: this.state.password
-        }).then(() => this.setState({
-            name: '',
-            email: '',
-            password: '',
-            signUpSuccessful: true
-        })).catch(err => console.error(err))
 
     render() {
         const { name, email, password, signUpSuccessful } = this.state
@@ -44,12 +41,7 @@ class SignUpContainer extends React.Component {
         return (
             <KeyboardAvoidingView behavior='padding' style={styles.container}>
                 <View style={styles.spaceLogo}>
-                    <Image
-                        style={styles.logo}
-                        source={{
-                            uri: 'http://www.nus.edu.sg/images/default-source/base/logo.png'
-                        }}
-                    />
+                    <Text>Logo here</Text>
                 </View>
 
                 <TextInput
@@ -75,15 +67,7 @@ class SignUpContainer extends React.Component {
 
                 <BlueButton
                     style={styles.button}
-                    //onPress={this.handleCreateUser}
-                    onPress={() => {
-                        if (this.state.name.length && this.state.email.length && this.state.password.length) {
-                            this.setState( {
-                                name: '',
-                                email: '',
-                                password: ''
-                            })
-                        }}}
+                    onPress={this.handleCreateUser}
                 >
                     Sign Up
                 </BlueButton>
@@ -122,7 +106,7 @@ const styles = StyleSheet.create({
     },
     text: {
         fontSize: 20,
-        color: 'blue',
+        color: 'green',
         marginTop: 200
     }
 });
