@@ -23,26 +23,28 @@ class SignUpContainer extends React.Component {
             firebaseDb.auth()
                 .createUserWithEmailAndPassword(this.state.email, this.state.password)
                 .then(() => {
-                        this.setState({
-                            name: '',
-                            email: '',
-                            password: '',
-                            signUpSuccessful: true
-                        })
+                    this.setState({
+                        name: '',
+                        email: '',
+                        password: '',
+                        signUpSuccessful: true
                     })
-                this.props.navigation.navigate('Login')
+                })
+            this.props.navigation.navigate('Login')
                 .catch(err => console.error(err))
         }
     }
 
     render() {
-        const { name, email, password, signUpSuccessful } = this.state
+        const {name, email, password, signUpSuccessful} = this.state
 
         return (
             <KeyboardAvoidingView behavior='padding' style={styles.container}>
-                <View style={styles.spaceLogo}>
-                    <Text>Logo here</Text>
-                </View>
+
+                <Image
+                    style={styles.logo}
+                    source={require('../images/logo.png')}
+                />
 
                 <TextInput
                     placeholder="Name"
@@ -81,13 +83,10 @@ class SignUpContainer extends React.Component {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
+        flex: 0.8,
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center'
-    },
-    spaceLogo: {
-        marginBottom: 40
     },
     input: {
         borderColor: 'black',
@@ -98,8 +97,8 @@ const styles = StyleSheet.create({
         marginBottom: 8
     },
     logo: {
-        width: 220,
-        height: 100,
+        flex: 1,
+        resizeMode: 'center'
     },
     button: {
         marginTop: 42

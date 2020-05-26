@@ -33,17 +33,14 @@ class LogInContainer extends React.Component {
     }
 
     render() {
-        const { email, password } = this.state
+        const {email, password} = this.state
 
         return (
             <KeyboardAvoidingView behavior='padding' style={styles.container}>
-                <View style={styles.spaceLogo}>
-                    <Image
-                        style={styles.logo}
-
-                    />
-                    <Text>Logo here</Text>
-                </View>
+                <Image
+                    style={styles.logo}
+                    source={require('../images/logo.png')}
+                />
 
                 <TextInput
                     placeholder="Email"
@@ -81,13 +78,10 @@ class LogInContainer extends React.Component {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
+        flex: 0.9,
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center'
-    },
-    spaceLogo: {
-        marginBottom: 40
     },
     input: {
         borderColor: 'black',
@@ -98,8 +92,8 @@ const styles = StyleSheet.create({
         marginBottom: 8
     },
     logo: {
-        width: 220,
-        height: 100,
+        flex: 0.8,
+        resizeMode: 'center'
     },
     button: {
         marginTop: 42
