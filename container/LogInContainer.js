@@ -54,7 +54,7 @@ class LogInContainer extends React.Component {
                     style={styles.input}
                     value={password}
                     onChangeText={this.inputPassword}
-                    secureTextEntry = {true}
+                    secureTextEntry = { true}
                 />
 
                 <BlueButton

@@ -65,6 +65,7 @@ class SignUpContainer extends React.Component {
                     style={styles.input}
                     value={password}
                     onChangeText={this.updatePassword}
+                    secureTextEntry= {true}
                 />
 
                 <BlueButton
