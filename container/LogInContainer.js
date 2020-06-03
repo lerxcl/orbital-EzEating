@@ -2,40 +2,30 @@ import BlueButton from '../component/BlueButton';
 import {Alert, Image, StyleSheet, TextInput, Text, View, KeyboardAvoidingView, TouchableOpacity} from "react-native";
 import React from "react";
 import firebaseDb from '../firebase/firebaseDb';
+import {AuthContext} from '../Context';
 
-class LogInContainer extends React.Component {
-    state = {
-        email: '',
-        password: '',
-    };
 
-    inputEmail = (email) => this.setState({email});
-    inputPassword = (password) => this.setState({password});
+export const LogInContainer = ({navigation}) => {
+    
+    const {signIn} = React.useContext(AuthContext);
+    const [email, setEmail] = React.useState('');
+    const [password, setPassword] = React.useState('');
 
-    handleLoginUser = () => {
-        if (this.state.email === '' || this.state.password === '') {
+    const handleLoginUser = () => {
+        if (email === '' || password === '') {
             Alert.alert('Enter details to sign in!')
         } else {
             firebaseDb
                 .auth()
-                .signInWithEmailAndPassword(this.state.email, this.state.password)
+                .signInWithEmailAndPassword(email, password)
                 .then((res) => {
                     console.log(res)
                     console.log('User logged-in successfully!')
-                    this.setState({
-                        email: '',
-                        password: ''
-                    })
-                    this.props.navigation.navigate('Dashboard')
+                    signIn()
                 })
-                .catch(error => this.setState({errorMessage: error.message}))
         }
     }
-
-    render() {
-        const {email, password} = this.state
-
-        return (
+    return (
             <KeyboardAvoidingView behavior='padding' style={styles.container}>
                 <Image
                     style={styles.logo}
@@ -46,20 +36,20 @@ class LogInContainer extends React.Component {
                     placeholder="Email"
                     style={styles.input}
                     value={email}
-                    onChangeText={this.inputEmail}
+                    onChangeText={setEmail}
                 />
 
                 <TextInput
                     placeholder="Password"
                     style={styles.input}
                     value={password}
-                    onChangeText={this.inputPassword}
-                    secureTextEntry = { true}
+                    onChangeText={setPassword}
+                    secureTextEntry = {true}
                 />
 
                 <BlueButton
                     style={styles.button}
-                    onPress={this.handleLoginUser}
+                    onPress={handleLoginUser}
                 >
                     Login
                 </BlueButton>
@@ -67,7 +57,7 @@ class LogInContainer extends React.Component {
                     <Text style = {styles.text}> New? Sign up</Text>
                     <TouchableOpacity 
                         onPress={() =>
-                            this.props.navigation.navigate('Sign-up')
+                            navigation.push('Sign-up')
                         }>
                         <Text style = {styles.signupButton}> HERE</Text>
                     </TouchableOpacity>
@@ -75,7 +65,6 @@ class LogInContainer extends React.Component {
             </KeyboardAvoidingView>
         )
     }
-}
 
 const styles = StyleSheet.create({
     container: {
@@ -120,5 +109,3 @@ const styles = StyleSheet.create({
     }
 
 });
-
-export default LogInContainer;
