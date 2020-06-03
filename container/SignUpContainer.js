@@ -29,8 +29,8 @@ class SignUpContainer extends React.Component {
                         password: '',
                         signUpSuccessful: true
                     })
-                })
             this.props.navigation.navigate('Login')
+                })
                 .catch(err => console.error(err))
         }
     }
@@ -92,16 +92,14 @@ const styles = StyleSheet.create({
         borderColor: 'black',
         borderWidth: 1,
         width: 200,
-        height: 30,
-        fontSize: 20,
-        marginBottom: 8
+        fontSize: 16,
     },
     logo: {
         flex: 1,
         resizeMode: 'center'
     },
     button: {
-        marginTop: 42
+        marginTop: 20
     },
     text: {
         fontSize: 20,
