@@ -91,15 +91,21 @@ const styles = StyleSheet.create({
     input: {
         borderColor: 'black',
         borderWidth: 1,
-        width: 200,
+        borderRadius: 25,
+        paddingHorizontal: 16,
+        width: 300,
         fontSize: 16,
+        marginVertical: 10,
+        paddingVertical: 10
     },
     logo: {
-        flex: 1,
+        flex: 2,
         resizeMode: 'center'
     },
     button: {
-        marginTop: 20
+        marginTop: 20,
+        borderRadius: 25,
+        width: 300,
     },
     text: {
         fontSize: 20,
