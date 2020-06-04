@@ -1,12 +1,12 @@
 import React from 'react';
 import { Text } from 'react-native';
 
-class Dashboard extends React.Component {
+class Profile extends React.Component {
     render() {
         return (
-            <Text>Main Screen!</Text>
+            <Text>Profile</Text>
             )
     }
 }
 
-export default Dashboard;
+export default Profile;

@@ -1,5 +1,5 @@
 import BlueButton from '../component/BlueButton';
-import {Alert, Image, StyleSheet, TextInput, Text, View, KeyboardAvoidingView} from "react-native";
+import {Alert, Image, StyleSheet, TextInput, Text, KeyboardAvoidingView} from "react-native";
 import React from "react";
 import firebaseDb from '../firebase/firebaseDb';
 
