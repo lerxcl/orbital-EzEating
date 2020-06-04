@@ -6,7 +6,6 @@ import {AuthContext} from '../Context';
 
 
 export const LogInContainer = ({navigation}) => {
-    
     const {signIn} = React.useContext(AuthContext);
     const [email, setEmail] = React.useState('');
     const [password, setPassword] = React.useState('');
@@ -23,6 +22,7 @@ export const LogInContainer = ({navigation}) => {
                     console.log('User logged-in successfully!')
                     signIn()
                 })
+                .catch(error => { alert(error.message) })
         }
     }
     return (
