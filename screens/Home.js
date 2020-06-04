@@ -1,26 +1,25 @@
 import React from 'react';
-import {Alert, Image, StyleSheet, TextInput, Text, View, KeyboardAvoidingView, TouchableOpacity} from "react-native";
+import {StyleSheet, Text, View, TouchableOpacity} from "react-native";
 
-class Dashboard extends React.Component {
-    render() {
-        return (
-            <View style={styles.container}>
-                <Text style={styles.text}>
-                    All shops
-                </Text>
-                <Text> Favourites </Text>
-                <Text style={styles.text}>
-                    Shop ABC
-                </Text>
-                <Text style={styles.text}>
-                    Shop 123
-                </Text>
-      </View>
-      )
-    }
+function Home({navigation}) {
+    return (
+        <View style={styles.container}>
+            <TouchableOpacity style={styles.textContainer}
+                              onPress={() => navigation.navigate('All Shops')}>
+                <Text style={styles.text}>All shops</Text>
+            </TouchableOpacity>
+            <Text> Favourites </Text>
+            <Text style={styles.textContainer}>
+                Shop ABC
+            </Text>
+            <Text style={styles.textContainer}>
+                Shop 123
+            </Text>
+        </View>
+    )
 }
 
-export default Dashboard;
+export default Home;
 
 const styles = StyleSheet.create({
     container: {
@@ -30,7 +29,7 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-start',
         alignItems: 'center'
     },
-    text: {
+    textContainer: {
         borderColor: 'black',
         borderWidth: 1,
         borderRadius: 25,
@@ -40,4 +39,9 @@ const styles = StyleSheet.create({
         marginVertical: 10,
         paddingVertical: 10
     },
+    text: {
+        fontWeight: 'bold',
+        fontSize: 20,
+        textAlign:'center',
+    }
 });

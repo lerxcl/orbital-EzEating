@@ -1,5 +1,4 @@
 import React from 'react';
-import { StyleSheet } from 'react-native';
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -13,7 +12,7 @@ import Explore from "./screens/Explore";
 import Home from "./screens/Home"
 import Profile from "./screens/Profile"
 import Splash from "./screens/Splash"
-
+import AllShops from "./screens/AllShops"
 
 const Stack = createStackNavigator();
 const Tabs = createMaterialBottomTabNavigator();
@@ -21,14 +20,20 @@ const HomeStack = createStackNavigator();
 const ProfileStack = createStackNavigator();
 const ExploreStack = createStackNavigator();
 
-const HomeStackScreen =  () => (
-  <HomeStack.Navigator>
-    <HomeStack.Screen
-      name = 'Home'
-      component = {Home}
-    />
-  </HomeStack.Navigator>
-)
+function HomeStackScreen() {
+    return (
+        <HomeStack.Navigator>
+            <HomeStack.Screen
+                name = 'Home'
+                component = {Home}
+            />
+            <HomeStack.Screen
+                name = 'All Shops'
+                component = {AllShops}
+            />
+        </HomeStack.Navigator>
+    )
+}
 
 const ProfileStackScreen =  () => (
   <ProfileStack.Navigator>
@@ -127,13 +132,3 @@ export default function App() {
       </AuthContext.Provider>
   );
 }
-
-
-
-
-const styles = StyleSheet.create({
-  container: {
-    flex:1,
-    backgroundColor: '#fff'
-  }
-});
