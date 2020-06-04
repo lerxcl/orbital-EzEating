@@ -3,7 +3,8 @@ import { StyleSheet } from 'react-native';
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {AuthContext} from './Context';
 
 import {LogInContainer} from "./container/LogInContainer";
@@ -15,7 +16,7 @@ import Splash from "./screens/Splash"
 
 
 const Stack = createStackNavigator();
-const Tabs = createBottomTabNavigator();
+const Tabs = createMaterialBottomTabNavigator();
 const HomeStack = createStackNavigator();
 const ProfileStack = createStackNavigator();
 const ExploreStack = createStackNavigator();
@@ -81,15 +82,33 @@ export default function App() {
       <Tabs.Navigator>
         <Tabs.Screen 
           name = "Home"
-          component = {HomeStackScreen} 
+          component = {HomeStackScreen}
+          options={{
+            tabBarLabel: 'Home',
+            tabBarIcon: ({ color }) => (
+              <MaterialCommunityIcons name="home" color={color} size={26} />
+            ),
+          }} 
         />
         <Tabs.Screen 
           name = "Profile"
           component = {ProfileStackScreen} 
+          options={{
+            tabBarLabel: 'Profile',
+            tabBarIcon: ({ color }) => (
+              <MaterialCommunityIcons name="account" color={color} size={26} />
+            ),
+          }}
         />
         <Tabs.Screen 
           name = "Explore"
-          component = {ExploreStackScreen } 
+          component = {ExploreStackScreen }
+          options={{
+            tabBarLabel: 'Explore',
+            tabBarIcon: ({ color }) => (
+              <MaterialCommunityIcons name="earth" color={color} size={26} />
+            ),
+          }} 
         />
       </Tabs.Navigator>) :
       (<Stack.Navigator>
