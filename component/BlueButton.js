@@ -9,10 +9,10 @@ const BlueButton = props => (
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: '#003D7C'
+        backgroundColor: '#455a64'
     },
     text: {
-        fontSize: 20,
+        fontSize: 16,
         paddingHorizontal: 10,
         paddingVertical: 8,
         borderRadius: 10,

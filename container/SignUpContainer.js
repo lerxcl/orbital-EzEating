@@ -29,8 +29,8 @@ class SignUpContainer extends React.Component {
                         password: '',
                         signUpSuccessful: true
                     })
-                })
             this.props.navigation.navigate('Login')
+                })
                 .catch(err => console.error(err))
         }
     }
@@ -65,6 +65,7 @@ class SignUpContainer extends React.Component {
                     style={styles.input}
                     value={password}
                     onChangeText={this.updatePassword}
+                    secureTextEntry= {true}
                 />
 
                 <BlueButton
@@ -91,17 +92,21 @@ const styles = StyleSheet.create({
     input: {
         borderColor: 'black',
         borderWidth: 1,
-        width: 200,
-        height: 30,
-        fontSize: 20,
-        marginBottom: 8
+        borderRadius: 25,
+        paddingHorizontal: 16,
+        width: 300,
+        fontSize: 16,
+        marginVertical: 10,
+        paddingVertical: 10
     },
     logo: {
-        flex: 1,
+        flex: 2,
         resizeMode: 'center'
     },
     button: {
-        marginTop: 42
+        marginTop: 20,
+        borderRadius: 25,
+        width: 300,
     },
     text: {
         fontSize: 20,
