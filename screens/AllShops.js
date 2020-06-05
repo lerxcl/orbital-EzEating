@@ -1,5 +1,5 @@
 import React from 'react';
-import {FlatList, ActivityIndicator, StyleSheet, Text, View, Image} from "react-native";
+import {SectionList, ActivityIndicator, StyleSheet, Text, View, Image} from "react-native";
 import firebaseDb from '../firebase/firebaseDb';
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
@@ -15,20 +15,39 @@ class AllShops extends React.Component {
     componentDidMount() {
         firebaseDb.firestore().collection('shops').get()
             .then(querySnapshot => {
-                const results = []
+                let results = [];
                 querySnapshot.docs.map(documentSnapshot => results.push(documentSnapshot.data()))
                 sortByName(results);
-                this.setState({isLoading: false, shops: results})
+                results = results.map(x =>
+                        ({...x, letter: x.shopName[0].toUpperCase()})
+                );
+                const resultsByLetter = [];
+                results.map(shop => {
+                    let duplicateLetter = false;
+                    for (let i = 0; i < resultsByLetter.length; i++) {
+                        if (resultsByLetter[i].title === shop.letter) {
+                            resultsByLetter[i].data.push(shop);
+                            duplicateLetter = true;
+                            break;
+                        }
+                    }
+                    if (!duplicateLetter) {
+                        resultsByLetter.push({
+                            title: shop.letter,
+                            data: [shop],
+                        });
+                    }
+                })
+                this.setState({isLoading: false, shops: resultsByLetter})
             }).catch(err => console.error(err))
     }
 
     state = {
         isLoading: true,
         shops: null,
-        searchLoading: false,
-        searchResults:[],
-        error: null,
     }
+
+    renderSectionHeader = obj => <Text style={styles.name}>{obj.section.title}</Text>
 
     render() {
         const {isLoading, shops} = this.state
@@ -38,8 +57,9 @@ class AllShops extends React.Component {
 
         return (
             <View style={styles.container}>
-                <FlatList
-                    data={shops}
+                <SectionList
+                    sections={shops}
+                    renderSectionHeader={this.renderSectionHeader}
                     renderItem={({item}) => (
                         <View style={styles.itemContainer}>
                             <View style={{alignItems:'flex-end', flex:1}}>
@@ -76,7 +96,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderRadius: 10,
         paddingHorizontal: 16,
-        width: 300,
+        width: 350,
         height: 100,
         marginTop: 20,
         marginVertical: 10,
