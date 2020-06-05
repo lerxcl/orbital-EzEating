@@ -1,5 +1,5 @@
 import React from 'react';
-import {SectionList, ActivityIndicator, StyleSheet, Text, View, Image} from "react-native";
+import {TouchableOpacity, SectionList, ActivityIndicator, StyleSheet, Text, View, Image} from "react-native";
 import firebaseDb from '../firebase/firebaseDb';
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
@@ -19,7 +19,7 @@ class AllShops extends React.Component {
                 querySnapshot.docs.map(documentSnapshot => results.push(documentSnapshot.data()))
                 sortByName(results);
                 results = results.map(x =>
-                        ({...x, letter: x.shopName[0].toUpperCase()})
+                    ({...x, letter: x.shopName[0].toUpperCase()})
                 );
                 const resultsByLetter = [];
                 results.map(shop => {
@@ -62,11 +62,16 @@ class AllShops extends React.Component {
                     renderSectionHeader={this.renderSectionHeader}
                     renderItem={({item}) => (
                         <View style={styles.itemContainer}>
-                            <View style={{alignItems:'flex-end', flex:1}}>
-                            <Image style={styles.logo}
-                                source={{uri: item.logo}}/>
+                            <View style={{alignItems: 'flex-end', flex: 1}}>
+                                <Image style={styles.logo}
+                                       source={{uri: item.logo}}/>
                             </View>
-                            <Text style={styles.name}>{item.shopName}</Text>
+                            <TouchableOpacity onPress={() => this.props.navigation
+                                .navigate('Shop Details', {
+                                    shop: item
+                                })}>
+                                <Text style={styles.name}>{item.shopName}</Text>
+                            </TouchableOpacity>
                             <MaterialCommunityIcons name="star" size={15}/>
                             <Text>{item.rating}</Text>
                         </View>
@@ -103,8 +108,8 @@ const styles = StyleSheet.create({
         paddingVertical: 10,
     },
     logo: {
-        resizeMode:'center',
-        width:70,
-        height:70,
+        resizeMode: 'center',
+        width: 70,
+        height: 70,
     }
 });

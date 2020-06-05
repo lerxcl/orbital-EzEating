@@ -13,6 +13,7 @@ import Home from "./screens/Home"
 import Profile from "./screens/Profile"
 import Splash from "./screens/Splash"
 import AllShops from "./screens/AllShops"
+import Shop from "./screens/Shop"
 import Header from "./component/Header"
 
 const Stack = createStackNavigator();
@@ -42,6 +43,10 @@ function HomeStackScreen() {
             <HomeStack.Screen
                 name = 'All Shops'
                 component = {AllShops}
+            />
+            <HomeStack.Screen
+                name = 'Shop Details'
+                component = {Shop}
             />
         </HomeStack.Navigator>
     )

@@ -20,7 +20,7 @@ class SignUpContainer extends React.Component {
             || this.state.password === '') {
             Alert.alert('Some fields are missing!')
         } else {
-            firebaseDb.auth()
+            (firebaseDb.auth()
                 .createUserWithEmailAndPassword(this.state.email, this.state.password)
                 .then(() => {
                     this.setState({
@@ -29,9 +29,21 @@ class SignUpContainer extends React.Component {
                         password: '',
                         signUpSuccessful: true
                     })
-            this.props.navigation.navigate('Login')
                 })
-                .catch(err => console.error(err))
+                .catch(err => console.error(err)));
+
+            // TODO
+            // if (this.state.signUpSuccessful) {
+            //     firebaseDb.firestore().collection('users')
+            //         .add({
+            //             name: this.state.name,
+            //             email: this.state.email,
+            //             cards: this.state.cards,
+            //             platforms: this.state.platforms
+            //         })
+            //     this.props.navigation.navigate('Login');
+            // }
+
         }
     }
 
