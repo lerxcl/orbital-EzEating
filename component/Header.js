@@ -1,8 +1,10 @@
 import React from 'react';
 import { StyleSheet, Text, View, Dimensions, Alert} from 'react-native';
 import {SimpleLineIcons} from 'react-native-vector-icons'
+import {AuthContext} from '../Context';
 
 export default function Header({title}) {
+  const {signOut} = React.useContext(AuthContext);
 
   return (
     <View style={styles.header}>
@@ -10,7 +12,14 @@ export default function Header({title}) {
         color = 'white'
         name = 'logout' 
         size = {28} 
-        onPress = {() => Alert.alert("You are attempting to log out")}
+        onPress = {() => Alert.alert(
+        'Logout',
+        'Are you sure you want to logout?',
+        [
+          {text: 'NO', onPress: () => {}},
+          {text: 'YES', onPress: () => signOut()},
+        ]
+        )}
         style = {styles.icon}/>
       <View>
         <Text style={styles.headerText}>{title}</Text>
