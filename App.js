@@ -13,6 +13,7 @@ import Home from "./screens/Home"
 import Profile from "./screens/Profile"
 import Splash from "./screens/Splash"
 import AllShops from "./screens/AllShops"
+import Header from "./component/Header"
 
 const Stack = createStackNavigator();
 const Tabs = createMaterialBottomTabNavigator();
@@ -22,7 +23,18 @@ const ExploreStack = createStackNavigator();
 
 function HomeStackScreen() {
     return (
-        <HomeStack.Navigator>
+        <HomeStack.Navigator
+        screenOptions={{
+          headerStyle: {
+            backgroundColor: "#455a64",
+          },
+          headerTintColor: '#fff',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+            color: 'white'
+          },
+          headerTitleAlign: 'center',
+        }}>
             <HomeStack.Screen
                 name = 'Home'
                 component = {Home}
@@ -36,16 +48,39 @@ function HomeStackScreen() {
 }
 
 const ProfileStackScreen =  () => (
-  <ProfileStack.Navigator>
+  <ProfileStack.Navigator
+    screenOptions={{
+      headerStyle: {
+        backgroundColor: "#454b64",
+      },
+      headerTintColor: '#fff',
+      headerTitleStyle: {
+        fontWeight: 'bold',
+      },
+      headerTitleAlign: 'center',
+    }}
+  >
     <ProfileStack.Screen
       name = 'Profile'
       component = {Profile}
+      options = {{headerTitle: () => <Header title = "Profile"/>}}
     />
   </ProfileStack.Navigator>
 )
 
 const ExploreStackScreen =  () => (
-  <ExploreStack.Navigator>
+  <ExploreStack.Navigator
+  screenOptions={{
+    headerStyle: {
+      backgroundColor: "#64455a",
+    },
+    headerTintColor: '#fff',
+    headerTitleStyle: {
+      fontWeight: 'bold',
+      color: 'white'
+    },
+    headerTitleAlign: 'center',
+  }}>
     <ExploreStack.Screen
       name = 'Explore'
       component = {Explore}
@@ -84,12 +119,15 @@ export default function App() {
     <AuthContext.Provider value = {authContext}>
     <NavigationContainer>
       {userToken? (
-      <Tabs.Navigator>
+      <Tabs.Navigator
+        shifting
+      >
         <Tabs.Screen 
           name = "Home"
           component = {HomeStackScreen}
           options={{
             tabBarLabel: 'Home',
+            tabBarColor: "#455a64",
             tabBarIcon: ({ color }) => (
               <MaterialCommunityIcons name="home" color={color} size={26} />
             ),
@@ -100,6 +138,7 @@ export default function App() {
           component = {ProfileStackScreen} 
           options={{
             tabBarLabel: 'Profile',
+            tabBarColor: "#454b64",
             tabBarIcon: ({ color }) => (
               <MaterialCommunityIcons name="account" color={color} size={26} />
             ),
@@ -110,6 +149,7 @@ export default function App() {
           component = {ExploreStackScreen }
           options={{
             tabBarLabel: 'Explore',
+            tabBarColor: "#64455a",
             tabBarIcon: ({ color }) => (
               <MaterialCommunityIcons name="earth" color={color} size={26} />
             ),
