@@ -1,5 +1,5 @@
 import BlueButton from '../component/BlueButton';
-import {View, Alert, Image, StyleSheet, TextInput, Text, KeyboardAvoidingView} from "react-native";
+import {Alert, Image, StyleSheet, TextInput, Text, KeyboardAvoidingView} from "react-native";
 import React from "react";
 import firebaseDb from '../firebase/firebaseDb';
 import MultiSelect from 'react-native-multiple-select';
@@ -114,7 +114,8 @@ class SignUpContainer extends React.Component {
     render() {
         const {name, email, password, signUpSuccessful, selectedMethods, selectedCards} = this.state
         return (
-            <KeyboardAvoidingView behavior='padding' style={styles.container}>
+            <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"}
+                                  style={styles.container}>
 
                 <Image
                     style={styles.logo}

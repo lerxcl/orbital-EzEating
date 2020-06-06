@@ -26,7 +26,8 @@ export const LogInContainer = ({navigation}) => {
         }
     }
     return (
-            <KeyboardAvoidingView behavior='padding' style={styles.container}>
+            <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"}
+                                  style={styles.container}>
                 <Image
                     style={styles.logo}
                     source={require('../images/logo.png')}
