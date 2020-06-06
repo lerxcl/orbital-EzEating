@@ -61,20 +61,19 @@ class AllShops extends React.Component {
                     sections={shops}
                     renderSectionHeader={this.renderSectionHeader}
                     renderItem={({item}) => (
-                        <View style={styles.itemContainer}>
-                            <View style={{alignItems: 'flex-end', flex: 1}}>
+                        <TouchableOpacity style={styles.itemContainer} onPress={() => this.props.navigation
+                            .navigate('Shop Details', {
+                                shop: item
+                            })}>
+                            <View style={{alignItems: 'flex-end', flex: 0.2}}>
                                 <Image style={styles.logo}
                                        source={{uri: item.logo}}/>
                             </View>
-                            <TouchableOpacity onPress={() => this.props.navigation
-                                .navigate('Shop Details', {
-                                    shop: item
-                                })}>
-                                <Text style={styles.name}>{item.shopName}</Text>
-                            </TouchableOpacity>
+                            <Text style={styles.name}>{item.shopName}</Text>
                             <MaterialCommunityIcons name="star" size={15}/>
                             <Text>{item.rating}</Text>
-                        </View>
+                        </TouchableOpacity>
+
                     )}
                     keyExtractor={item => item.shopName}
                 />
