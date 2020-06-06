@@ -38,6 +38,7 @@ export const LogInContainer = ({navigation}) => {
                     style={styles.input}
                     value={email}
                     onChangeText={setEmail}
+                    autoCapitalize='none'
                 />
 
                 <TextInput
@@ -46,6 +47,7 @@ export const LogInContainer = ({navigation}) => {
                     value={password}
                     onChangeText={setPassword}
                     secureTextEntry = {true}
+                    autoCapitalize='none'
                 />
 
                 <BlueButton

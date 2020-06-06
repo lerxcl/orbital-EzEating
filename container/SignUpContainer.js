@@ -17,28 +17,28 @@ class SignUpContainer extends React.Component {
     methods = [{
         id: '92iijs7yta',
         name: 'GrabPay',
-      }, {
+    }, {
         id: 'a0s0a8ssbsd',
         name: 'FavePay',
-      }, {
+    }, {
         id: '16hbajsabsd',
         name: 'AliPay',
-      }, {
+    }, {
         id: 'nahs75a5sg',
         name: 'DBS Paylah',
-      }, {
+    }, {
         id: '667atsas',
         name: 'UOB Mighty',
-      }, {
+    }, {
         id: 'hsyasajs',
         name: 'OCBC Pay Anyone',
-      }, {
+    }, {
         id: 'djsjudksjd',
         name: 'WeChat Pay',
-      }, {
+    }, {
         id: 'sdhyaysdj',
         name: 'SingTel Dash',
-      }, {
+    }, {
         id: 'suudydjsjd',
         name: 'PayNow',
     }];
@@ -46,38 +46,38 @@ class SignUpContainer extends React.Component {
     cards = [{
         id: '1',
         name: 'UOB One',
-      }, {
+    }, {
         id: '2',
         name: 'POSB Everyday',
-      }, {
+    }, {
         id: '3',
         name: 'Standard Chartered Unlimited Cashback',
-      }, {
+    }, {
         id: '4',
         name: 'DBS Live Fresh',
-      }, {
+    }, {
         id: '5',
         name: 'OCBC NTUC Plus! Visa',
-      }, {
+    }, {
         id: '6',
         name: 'OCBC 365',
-      }, {
+    }, {
         id: '7',
         name: 'CIMB Platinum Mastercard',
-      }, {
+    }, {
         id: '8',
         name: 'HSBC Revolution',
-      }, {
+    }, {
         id: '9',
         name: 'Citi Rewards',
     }];
-     
+
     onSelectedMethodsChange = selectedMethods => {
-        this.setState({ selectedMethods });
+        this.setState({selectedMethods});
     };
 
     onSelectedCardsChange = selectedCards => {
-        this.setState({ selectedCards });
+        this.setState({selectedCards});
     };
 
     updateName = (name) => this.setState({name});
@@ -114,13 +114,12 @@ class SignUpContainer extends React.Component {
     render() {
         const {name, email, password, signUpSuccessful, selectedMethods, selectedCards} = this.state
         return (
-            <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"}
-                                  style={styles.container}>
-
+            <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.container}>
                 <Image
                     style={styles.logo}
                     source={require('../images/logo.png')}
                 />
+
 
                 <TextInput
                     placeholder="Name"
@@ -134,6 +133,7 @@ class SignUpContainer extends React.Component {
                     style={styles.input}
                     value={email}
                     onChangeText={this.updateEmail}
+                    autoCapitalize='none'
                 />
 
                 <TextInput
@@ -141,20 +141,23 @@ class SignUpContainer extends React.Component {
                     style={styles.input}
                     value={password}
                     onChangeText={this.updatePassword}
-                    secureTextEntry= {true}
+                    secureTextEntry={true}
+                    autoCapitalize='none'
                 />
 
                 <MultiSelect
-                    styleMainWrapper = {styles.select}
-                    styleTextDropdown = {styles.text}
+                    styleMainWrapper={styles.select}
+                    styleTextDropdown={styles.text}
                     items={this.methods}
                     uniqueKey="id"
-                    ref={(component) => { this.multiSelect = component }}
+                    ref={(component) => {
+                        this.multiSelect = component
+                    }}
                     onSelectedItemsChange={this.onSelectedMethodsChange}
                     selectedItems={selectedMethods}
                     selectText="Choose Payment Methods"
                     searchInputPlaceholderText="Search Items..."
-                    onChangeInput={ (text)=> console.log(text)}
+                    onChangeInput={(text) => console.log(text)}
                     tagRemoveIconColor="#CCC"
                     tagBorderColor="#CCC"
                     tagTextColor="#CCC"
@@ -162,22 +165,24 @@ class SignUpContainer extends React.Component {
                     selectedItemIconColor="#CCC"
                     itemTextColor="#000"
                     displayKey="name"
-                    searchInputStyle={{ color: '#CCC' }}
+                    searchInputStyle={{color: '#CCC'}}
                     submitButtonColor="#CCC"
                     submitButtonText="Submit"
                 />
 
                 <MultiSelect
-                    styleMainWrapper = {styles.select}
-                    styleTextDropdown = {styles.text}
+                    styleMainWrapper={styles.select}
+                    styleTextDropdown={styles.text}
                     items={this.cards}
                     uniqueKey="id"
-                    ref={(component) => { this.multiSelect = component }}
+                    ref={(component) => {
+                        this.multiSelect = component
+                    }}
                     onSelectedItemsChange={this.onSelectedCardsChange}
                     selectedItems={selectedCards}
                     selectText="Choose Cards"
                     searchInputPlaceholderText="Search Items..."
-                    onChangeInput={ (text)=> console.log(text)}
+                    onChangeInput={(text) => console.log(text)}
                     tagRemoveIconColor="#CCC"
                     tagBorderColor="#CCC"
                     tagTextColor="#CCC"
@@ -185,7 +190,7 @@ class SignUpContainer extends React.Component {
                     selectedItemIconColor="#CCC"
                     itemTextColor="#000"
                     displayKey="name"
-                    searchInputStyle={{ color: '#CCC' }}
+                    searchInputStyle={{color: '#CCC'}}
                     submitButtonColor="#CCC"
                     submitButtonText="Submit"
                 />
