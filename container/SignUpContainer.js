@@ -94,8 +94,10 @@ class SignUpContainer extends React.Component {
                 .then(cred => {
                     return firebaseDb.firestore().collection('users').doc(cred.user.uid).set({
                         name: this.state.name,
+                        email: this.state.email,
                         cards: this.state.selectedCards,
-                        methods: this.state.selectedMethods
+                        methods: this.state.selectedMethods,
+                        fav: [], // creating empty array of user's favourite shops
                     })
                 })
                 .then(() => {

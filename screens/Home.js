@@ -2,6 +2,8 @@ import React from 'react';
 import {StyleSheet, Text, View, TouchableOpacity} from "react-native";
 
 function Home({navigation}) {
+    const user = global.userInfo;
+
     return (
         <View style={styles.container}>
             <TouchableOpacity style={styles.textContainer}
@@ -9,12 +11,19 @@ function Home({navigation}) {
                 <Text style={styles.text}>All shops</Text>
             </TouchableOpacity>
             <Text> Favourites </Text>
-            <Text style={styles.textContainer}>
-                Shop ABC
-            </Text>
-            <Text style={styles.textContainer}>
-                Shop 123
-            </Text>
+            { user.fav.length === 0 &&
+                <Text> Start adding your favourite stores! </Text>
+            }
+            {
+
+            }
+
+            {/*<Text style={styles.textContainer}>*/}
+            {/*    Shop ABC*/}
+            {/*</Text>*/}
+            {/*<Text style={styles.textContainer}>*/}
+            {/*    Shop 123*/}
+            {/*</Text>*/}
         </View>
     )
 }
@@ -42,6 +51,6 @@ const styles = StyleSheet.create({
     text: {
         fontWeight: 'bold',
         fontSize: 20,
-        textAlign:'center',
+        textAlign: 'center',
     }
 });

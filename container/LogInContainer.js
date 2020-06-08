@@ -4,7 +4,6 @@ import React from "react";
 import firebaseDb from '../firebase/firebaseDb';
 import {AuthContext} from '../Context';
 
-
 export const LogInContainer = ({navigation}) => {
     const {signIn} = React.useContext(AuthContext);
     const [email, setEmail] = React.useState('');
@@ -18,56 +17,70 @@ export const LogInContainer = ({navigation}) => {
                 .auth()
                 .signInWithEmailAndPassword(email, password)
                 .then((res) => {
-                    console.log(res)
+                    //console.log(res)
                     console.log('User logged-in successfully!')
-                    signIn()
+
+                    firebaseDb.firestore().collection('users').get()
+                        .then(querySnapshot => {
+                            const users = [];
+                            querySnapshot.docs.map(documentSnapshot => users.push(documentSnapshot.data()))
+                            global.userInfo = (users.filter(user => user.email === email))[0];
+                            signIn();
+                        })
+                        .catch(error => {
+                            alert(error.message)
+                        })
                 })
-                .catch(error => { alert(error.message) })
+                .catch(error => {
+                    alert(error.message)
+                })
         }
     }
+
     return (
-            <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"}
-                                  style={styles.container}>
-                <Image
-                    style={styles.logo}
-                    source={require('../images/logo.png')}
-                />
+        <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"}
+                              style={styles.container}>
+            <Image
+                style={styles.logo}
+                source={require('../images/logo.png')}
+            />
 
-                <TextInput
-                    placeholder="Email"
-                    style={styles.input}
-                    value={email}
-                    onChangeText={setEmail}
-                    autoCapitalize='none'
-                />
+            <TextInput
+                placeholder="Email"
+                style={styles.input}
+                value={email}
+                onChangeText={setEmail}
+                autoCapitalize='none'
+            />
 
-                <TextInput
-                    placeholder="Password"
-                    style={styles.input}
-                    value={password}
-                    onChangeText={setPassword}
-                    secureTextEntry = {true}
-                    autoCapitalize='none'
-                />
+            <TextInput
+                placeholder="Password"
+                style={styles.input}
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry={true}
+                autoCapitalize='none'
+            />
 
-                <BlueButton
-                    style={styles.button}
-                    onPress={handleLoginUser}
-                >
-                    Login
-                </BlueButton>
-                <View style = {styles.signup}>
-                    <Text style = {styles.text}> New? Sign up</Text>
-                    <TouchableOpacity 
-                        onPress={() =>
-                            navigation.push('Sign-up')
-                        }>
-                        <Text style = {styles.signupButton}> HERE</Text>
-                    </TouchableOpacity>
-                </View>
-            </KeyboardAvoidingView>
-        )
-    }
+            <BlueButton
+                style={styles.button}
+                onPress={handleLoginUser}
+            >
+                Login
+            </BlueButton>
+
+            <View style={styles.signup}>
+                <Text style={styles.text}> New? Sign up</Text>
+                <TouchableOpacity
+                    onPress={() =>
+                        navigation.push('Sign-up')
+                    }>
+                    <Text style={styles.signupButton}> HERE</Text>
+                </TouchableOpacity>
+            </View>
+        </KeyboardAvoidingView>
+    )
+}
 
 const styles = StyleSheet.create({
     container: {

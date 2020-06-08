@@ -1,10 +1,18 @@
 import React from 'react';
 import {StyleSheet, Text, View, Image} from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import BlueButton from "../component/BlueButton";
+import firebaseDb from '../firebase/firebaseDb';
 
 function Shop({route}) {
     const {shop} = route.params;
     const deals = shop.deals;
+
+    const updateDB = () => {
+        const newFav = global.userInfo.fav;
+        newFav.push(shop.shopName);
+        console.log(newFav);
+    }
 
     return (
         <View style={styles.container}>
@@ -24,8 +32,13 @@ function Shop({route}) {
 
             <Text style={styles.header}>On-going Deals</Text>
             <View style={styles.itemContainer}>
-                {deals.map(deal => <Text style={styles.info}>{deal} </Text>)}
+                {deals.map(deal => <Text style={styles.info} key={deal}>{deal} </Text>
+                )}
             </View>
+
+            <BlueButton onPress={() => updateDB()}>
+                Add to Favourites!
+            </BlueButton>
         </View>
     )
 }
