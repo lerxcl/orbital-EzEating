@@ -1,5 +1,5 @@
 import React from 'react';
-import {StyleSheet, Text, View, Image} from "react-native";
+import {StyleSheet, Text, View, Image, Alert} from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import BlueButton from "../component/BlueButton";
 import firebaseDb from '../firebase/firebaseDb';
@@ -7,11 +7,13 @@ import firebaseDb from '../firebase/firebaseDb';
 function Shop({route}) {
     const {shop} = route.params;
     const deals = shop.deals;
+    const user = global.userInfo;
 
     const updateDB = () => {
-        const newFav = global.userInfo.fav;
-        newFav.push(shop.shopName);
-        console.log(newFav);
+        const newFav = user.fav;
+        newFav.push(shop);
+        firebaseDb.firestore().collection('users').doc(user.email)
+            .update({fav: newFav}).catch(err => Alert.alert(err));
     }
 
     return (

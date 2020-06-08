@@ -1,7 +1,7 @@
 import React from 'react';
 import {TouchableOpacity, SectionList, ActivityIndicator, StyleSheet, Text, View, Image} from "react-native";
-import firebaseDb from '../firebase/firebaseDb';
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import firebaseDb from '../firebase/firebaseDb';
 
 function sortByName(array) {
     return array.sort(function (a, b) {

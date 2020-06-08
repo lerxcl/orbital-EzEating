@@ -89,18 +89,17 @@ class SignUpContainer extends React.Component {
             || this.state.password === '') {
             Alert.alert('Some fields are missing!')
         } else {
-            (firebaseDb.auth()
+            firebaseDb.auth()
                 .createUserWithEmailAndPassword(this.state.email, this.state.password)
-                .then(cred => {
-                    return firebaseDb.firestore().collection('users').doc(cred.user.uid).set({
+                .then(() => {
+                    firebaseDb.firestore().collection('users').doc(this.state.email).set({
                         name: this.state.name,
                         email: this.state.email,
                         cards: this.state.selectedCards,
                         methods: this.state.selectedMethods,
                         fav: [], // creating empty array of user's favourite shops
                     })
-                })
-                .then(() => {
+
                     this.setState({
                         name: '',
                         email: '',
@@ -108,8 +107,7 @@ class SignUpContainer extends React.Component {
                         signUpSuccessful: true
                     })
                     this.props.navigation.navigate('Login')
-                })
-                .catch(err => console.error(err)));
+                }).catch(err => console.error(err));
         }
     }
 
