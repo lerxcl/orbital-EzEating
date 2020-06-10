@@ -34,11 +34,4 @@ export async function getCards(cardsRetrieved) {
     console.log(cards)
 }
 
-export function addtoFavs(shop) {
-    const userId = firebaseDb.auth().currentUser.uid
-    const userDoc = firebaseDb.firestore().collection('users').doc(userId)
-    userDoc.update({
-        fav: firebaseDb.firestore.FieldValue.arrayUnion(shop)
-    })
-}
 

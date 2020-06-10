@@ -16,19 +16,23 @@ console.warn = message => {
 
 function Home({navigation}) {
     const [fav, setFav] = useState([]);
-    const [mounted, setMounted] = useState(true)
     const userId = firebaseDb.auth().currentUser.uid
     const [isLoading, setisLoading] = useState(false)
+    const [mounted, setMounted] = useState(true)
 
-    getData = () => {
-        setisLoading(true);
+    const getData = () => {
         firebaseDb.firestore().collection('users').doc(userId).get()
                               .then(snapshot => setFav(snapshot.data().fav))
-                              .finally(() => setisLoading(false))
     }
 
     useEffect (() => {
-        getData()
+        if (mounted) {
+        if (!isLoading) {
+            getData()
+            setisLoading(true)
+        }
+        setMounted(false)
+    }
     })
 
     return (

@@ -3,11 +3,12 @@ import {StyleSheet, Text, View, Image, Alert} from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import BlueButton from "../component/BlueButton";
 import firebaseDb from '../firebase/firebaseDb';
-import { addtoFavs } from '../component/API';
 
 function Shop({route}) {
     const {shop} = route.params;
     const deals = shop.deals;
+    const userId = firebaseDb.auth().currentUser.uid
+    const userDoc = firebaseDb.firestore().collection('users').doc(userId)
 
     return (
         <View style={styles.container}>
@@ -31,7 +32,8 @@ function Shop({route}) {
                 )}
             </View>
 
-            <BlueButton onPress={addtoFavs(shop)}>
+            <BlueButton onPress={() => userDoc.update({
+        fav: firebaseDb.firestore.FieldValue.arrayUnion(shop)})}>
                 Add to Favourites!
             </BlueButton>
             
