@@ -19,8 +19,9 @@ export const LogInContainer = ({navigation}) => {
                 .then((res) => {
                     //console.log(res)
                     console.log('User logged-in successfully!')
+                    signIn()
 
-                    firebaseDb.firestore().collection('users').get()
+                  /*  firebaseDb.firestore().collection('users').get()
                         .then(querySnapshot => {
                             const users = [];
                             querySnapshot.docs.map(documentSnapshot => users.push(documentSnapshot.data()))
@@ -29,7 +30,7 @@ export const LogInContainer = ({navigation}) => {
                         })
                         .catch(error => {
                             alert(error.message)
-                        })
+                        })*/
                 })
                 .catch(error => {
                     alert(error.message)
