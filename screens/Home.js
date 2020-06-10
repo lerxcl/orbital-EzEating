@@ -1,16 +1,35 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {StyleSheet, Text, View, TouchableOpacity, FlatList, Image} from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import BlueButton from "../component/BlueButton";
+import firebaseDb from '../firebase/firebaseDb';
 
-function useForceUpdate(){
-    const [value, setValue] = useState(0); // integer state
-    return () => setValue(value => ++value); // update the state to force render
-}
+import { YellowBox } from 'react-native';
+import _ from 'lodash';
+
+YellowBox.ignoreWarnings(['Setting a timer']);
+const _console = _.clone(console);
+console.warn = message => {
+  if (message.indexOf('Setting a timer') <= -1) {
+    _console.warn(message);
+  }
+};
 
 function Home({navigation}) {
-    const user = global.userInfo;
-    const refresh = useForceUpdate();
+    const [fav, setFav] = useState([]);
+    const [mounted, setMounted] = useState(true)
+    const userId = firebaseDb.auth().currentUser.uid
+    const [isLoading, setisLoading] = useState(false)
+
+    getData = () => {
+        setisLoading(true);
+        firebaseDb.firestore().collection('users').doc(userId).get()
+                              .then(snapshot => setFav(snapshot.data().fav))
+                              .finally(() => setisLoading(false))
+    }
+
+    useEffect (() => {
+        getData()
+    })
 
     return (
         <View style={styles.container}>
@@ -20,32 +39,31 @@ function Home({navigation}) {
             </TouchableOpacity>
             <Text style={styles.favourites}> Favourites </Text>
 
-            <BlueButton onPress={refresh}>
-                Refresh
-            </BlueButton>
-            {user.fav.length === 0 &&
-            <Text> Start adding your favourite stores! </Text>
+            {fav.length === 0 &&
+                <Text> Start adding your favourite stores! </Text>
             }
 
-            {user.fav.length > 0 &&
-            <FlatList
-                data={user.fav}
-                renderItem={({item}) => (
+            {fav.length > 0 &&
+                <FlatList
+                    data={fav}
+                    renderItem={({item}) => (
                     <TouchableOpacity style={styles.itemContainer} onPress={() => navigation
                         .navigate('Shop Details', {
                             shop: item
-                        })}>
-                        <View style={{alignItems:'flex-end', flex:0.2}}>
-                            <Image style={styles.logo}
-                                   source={{uri: item.logo}}/>
-                        </View>
-                        <Text style={styles.name}>{item.shopName}</Text>
-                        <MaterialCommunityIcons name="star" size={15}/>
-                        <Text>{item.rating}</Text>
+                    })}>
+                    <View style={{alignItems:'flex-end', flex:0.2}}>
+                    <Image style={styles.logo}
+                           source={{uri: item.logo}}/>
+                    </View>
+                    <Text style={styles.name}>{item.shopName}</Text>
+                    <MaterialCommunityIcons name="star" size={15}/>
+                    <Text>{item.rating}</Text>
                     </TouchableOpacity>
                 )}
                 keyExtractor={item => item.shopName}
-            />
+                refreshing = {isLoading}
+                onRefresh = {getData()}
+                />
             }
         </View>
     )
