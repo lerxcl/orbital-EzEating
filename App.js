@@ -39,6 +39,7 @@ function HomeStackScreen() {
             <HomeStack.Screen
                 name='Home'
                 component={Home}
+                options={{headerTitle: () => <Header title="Home"/>}}
             />
             <HomeStack.Screen
                 name='All Shops'
@@ -68,7 +69,6 @@ const ProfileStackScreen = () => (
         <ProfileStack.Screen
             name='Profile'
             component={Profile}
-            options={{headerTitle: () => <Header title="Profile"/>}}
         />
     </ProfileStack.Navigator>
 )

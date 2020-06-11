@@ -17,14 +17,15 @@ console.warn = message => {
 };
 
 function Home({navigation}) {
-    const [fav, setFav] = useState([]);
     const [shops, setShops] = useState([]);
     const userId = firebaseDb.auth().currentUser.uid
     const [isLoading, setisLoading] = useState(false)
 
     const getData = () => {
         firebaseDb.firestore().collection('users').doc(userId).get()
-            .then(snapshot => setFav(snapshot.data().fav))
+            .then(snapshot => {
+                global.fav = snapshot.data().fav
+            })
             .then(() => {
                 global.allShops = []
                 let result = [];
@@ -32,10 +33,11 @@ function Home({navigation}) {
                     .then(snapshot => {
                         snapshot.docs.map(doc => {
                             global.allShops.push(doc.data())
-                            if (fav.includes(doc.id)) {
+                            if (global.fav.includes(doc.id)) {
                                 result.push(doc.data())
                             }
                         })
+                    }).then( () => {
                         setShops(result)
                         Toast.show("Done refreshing :)")
                     })
