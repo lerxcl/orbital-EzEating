@@ -29,13 +29,13 @@ function Home({navigation}) {
                 global.allShops = []
                 let result = [];
                 firebaseDb.firestore().collection('shops').get()
-                    .then(snapshot => snapshot.docs.map(doc => {
-                        global.allShops.push(doc.data())
-                        if (fav.includes(doc.id)) {
-                            result.push(doc.data())
-                        }
-                    }))
-                    .then(() => {
+                    .then(snapshot => {
+                        snapshot.docs.map(doc => {
+                            global.allShops.push(doc.data())
+                            if (fav.includes(doc.id)) {
+                                result.push(doc.data())
+                            }
+                        })
                         setShops(result)
                         Toast.show("Done refreshing :)")
                     })

@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useCallback} from 'react';
 import {StyleSheet, Text, View, Image, ActivityIndicator} from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import BlueButton from "../component/BlueButton";
@@ -30,6 +30,7 @@ function isEquivalent(a, b) {
     return true;
 }
 
+
 function Shop({route}) {
     const {shop} = route.params;
     const deals = shop.deals;
@@ -38,9 +39,10 @@ function Shop({route}) {
     const userId = firebaseDb.auth().currentUser.uid
     const userDoc = firebaseDb.firestore().collection('users').doc(userId)
     const [isLoading, setisLoading] = useState(false)
+    const [update, setUpdate] = useState(false);
 
     useEffect (() => {
-        if (!isLoading) {
+        if (!isLoading || update) {
             firebaseDb.firestore().collection('shops').get().then(snapshot =>
                 snapshot.forEach(doc => {
                     if (isEquivalent(shop,doc.data())) setshopId(doc.id)}))
@@ -50,6 +52,7 @@ function Shop({route}) {
 
         return () => {
             setisLoading(true)
+            setUpdate(false)
         }
     })
 
@@ -85,6 +88,7 @@ function Shop({route}) {
                 userDoc.update({
                     fav: firebaseDb.firestore.FieldValue.arrayUnion(shopId)})
                 Toast.show("Added");
+                setUpdate(true);
             }
                 }>
                 Add to Favourites!
@@ -94,6 +98,7 @@ function Shop({route}) {
                 userDoc.update({
                     fav: firebaseDb.firestore.FieldValue.arrayRemove(shopId)})
                 Toast.show("Removed");
+                setUpdate(true);
             }}>
                 Remove from Favourites
             </BlueButton>}
