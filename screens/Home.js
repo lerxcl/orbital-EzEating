@@ -16,25 +16,32 @@ console.warn = message => {
 
 function Home({navigation}) {
     const [fav, setFav] = useState([]);
+    const favs = [];
     const userId = firebaseDb.auth().currentUser.uid
     const [isLoading, setisLoading] = useState(false)
-    const [mounted, setMounted] = useState(true)
 
     const getData = () => {
         firebaseDb.firestore().collection('users').doc(userId).get()
                               .then(snapshot => setFav(snapshot.data().fav))
     }
 
+    const getShops = () =>  {
+        firebaseDb.firestore().collection('shops').get()
+            .then(snapshot => snapshot.forEach(doc => {
+                if (fav.includes(doc.id)) {
+                    favs.push(doc.data())
+                }
+            }))
+    }
+
     useEffect (() => {
-        if (mounted) {
         if (!isLoading) {
             getData()
+            getShops()
             setisLoading(true)
         }
-        setMounted(false)
-    }
     })
-
+    
     return (
         <View style={styles.container}>
             <TouchableOpacity style={styles.textContainer}
@@ -49,7 +56,7 @@ function Home({navigation}) {
 
             {fav.length > 0 &&
                 <FlatList
-                    data={fav}
+                    data={favs}
                     renderItem={({item}) => (
                     <TouchableOpacity style={styles.itemContainer} onPress={() => navigation
                         .navigate('Shop Details', {
