@@ -24,20 +24,21 @@ function Home({navigation}) {
     const getData = () => {
         firebaseDb.firestore().collection('users').doc(userId).get()
             .then(snapshot => {
-                global.fav = snapshot.data().fav
+                fav = snapshot.data().fav
+                return fav
             })
-            .then(() => {
+            .then(fav => {
                 global.allShops = []
                 let result = [];
                 firebaseDb.firestore().collection('shops').get()
                     .then(snapshot => {
                         snapshot.docs.map(doc => {
                             global.allShops.push(doc.data())
-                            if (global.fav.includes(doc.id)) {
+                            if (fav.includes(doc.id)) {
                                 result.push(doc.data())
                             }
                         })
-                    }).then( () => {
+                    }).then(() => {
                         setShops(result)
                         Toast.show("Done refreshing :)")
                     })
