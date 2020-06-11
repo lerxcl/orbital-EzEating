@@ -1,20 +1,66 @@
-import React from 'react';
-import {StyleSheet, Text, View, Image, Alert} from "react-native";
+import React, {useEffect, useState, useCallback} from 'react';
+import {StyleSheet, Text, View, Image, ActivityIndicator} from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import BlueButton from "../component/BlueButton";
 import firebaseDb from '../firebase/firebaseDb';
+import Toast from 'react-native-simple-toast';
+
+function isEquivalent(a, b) {
+    var aProps = Object.getOwnPropertyNames(a);
+    var bProps = Object.getOwnPropertyNames(b);
+   if (aProps.includes("letter")) {
+        bProps.push("letter")
+        b["letter"] = a["letter"]
+    }
+    if (aProps.length != bProps.length) {
+        return false;
+        }
+
+    for (var i = 0; i < aProps.length; i++) {
+        var propName = aProps[i];
+        if (propName === "deals") {
+            if (!isEquivalent(a[propName], b[propName])) {
+                return false
+            }
+        }
+        else if (a[propName] !== b[propName]) {
+            return false;
+        }
+    }
+    return true;
+}
+
 
 function Shop({route}) {
     const {shop} = route.params;
     const deals = shop.deals;
-    const user = global.userInfo;
+    const [fav, setFav] = useState([])
+    const [shopId, setshopId] = useState(0)
+    const userId = firebaseDb.auth().currentUser.uid
+    const userDoc = firebaseDb.firestore().collection('users').doc(userId)
+    const [isLoading, setisLoading] = useState(false)
+    const [update, setUpdate] = useState(false);
 
-    const updateDB = () => {
-        const newFav = user.fav;
-        newFav.push(shop);
-        firebaseDb.firestore().collection('users').doc(user.email)
-            .update({fav: newFav}).catch(err => Alert.alert(err));
-    }
+    useEffect (() => {
+        if (!isLoading || update) {
+            firebaseDb.firestore().collection('shops').get().then(snapshot =>
+                snapshot.forEach(doc => {
+                    if (isEquivalent(shop,doc.data())) setshopId(doc.id)}))
+
+            userDoc.get().then(snapshot => setFav(snapshot.data().fav))
+        }
+
+        return () => {
+            setisLoading(true)
+            setUpdate(false)
+        }
+    })
+
+    if (!isLoading)
+        return (
+        <View style={styles.container}>
+            <ActivityIndicator size='large'/>
+        </View>)
 
     return (
         <View style={styles.container}>
@@ -38,9 +84,25 @@ function Shop({route}) {
                 )}
             </View>
 
-            <BlueButton onPress={() => updateDB()}>
+            {!fav.includes(shopId) && <BlueButton onPress={() => {
+                userDoc.update({
+                    fav: firebaseDb.firestore.FieldValue.arrayUnion(shopId)})
+                Toast.show("Added");
+                setUpdate(true);
+            }
+                }>
                 Add to Favourites!
-            </BlueButton>
+            </BlueButton>}
+
+            {fav.includes(shopId) && <BlueButton onPress={() => {
+                userDoc.update({
+                    fav: firebaseDb.firestore.FieldValue.arrayRemove(shopId)})
+                Toast.show("Removed");
+                setUpdate(true);
+            }}>
+                Remove from Favourites
+            </BlueButton>}
+            
         </View>
     )
 }

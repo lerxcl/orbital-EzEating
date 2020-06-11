@@ -39,6 +39,7 @@ function HomeStackScreen() {
             <HomeStack.Screen
                 name='Home'
                 component={Home}
+                options={{headerTitle: () => <Header title="Home"/>}}
             />
             <HomeStack.Screen
                 name='All Shops'
@@ -68,7 +69,6 @@ const ProfileStackScreen = () => (
         <ProfileStack.Screen
             name='Profile'
             component={Profile}
-            options={{headerTitle: () => <Header title="Profile"/>}}
         />
     </ProfileStack.Navigator>
 )
@@ -96,6 +96,7 @@ const ExploreStackScreen = () => (
 export default function App() {
     const [userToken, setUserToken] = React.useState(null)
     const [isLoading, setIsLoading] = React.useState(true)
+    const [mounted, setMounted] = React.useState(true)
 
     const authContext = React.useMemo(() => {
         return {
@@ -111,9 +112,12 @@ export default function App() {
     }, [])
 
     React.useEffect(() => {
+        if (mounted) {
         setTimeout(() => {
             setIsLoading(false);
         }, 1000)
+        setMounted(false)
+    }
     }, []);
 
     if (isLoading) {

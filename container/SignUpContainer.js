@@ -3,6 +3,8 @@ import {Alert, Image, StyleSheet, TextInput, Text, KeyboardAvoidingView} from "r
 import React from "react";
 import firebaseDb from '../firebase/firebaseDb';
 import MultiSelect from 'react-native-multiple-select';
+import {getMethods, getCards} from '../component/API'
+
 
 class SignUpContainer extends React.Component {
     state = {
@@ -11,74 +13,27 @@ class SignUpContainer extends React.Component {
         password: '',
         signUpSuccessful: false,
         selectedMethods: [],
-        selectedCards: []
+        selectedCards: [],
+        methods: [],
+        cards: []
     };
 
-    methods = [{
-        id: '92iijs7yta',
-        name: 'GrabPay',
-    }, {
-        id: 'a0s0a8ssbsd',
-        name: 'FavePay',
-    }, {
-        id: '16hbajsabsd',
-        name: 'AliPay',
-    }, {
-        id: 'nahs75a5sg',
-        name: 'DBS Paylah',
-    }, {
-        id: '667atsas',
-        name: 'UOB Mighty',
-    }, {
-        id: 'hsyasajs',
-        name: 'OCBC Pay Anyone',
-    }, {
-        id: 'djsjudksjd',
-        name: 'WeChat Pay',
-    }, {
-        id: 'sdhyaysdj',
-        name: 'SingTel Dash',
-    }, {
-        id: 'suudydjsjd',
-        name: 'PayNow',
-    }];
-
-    cards = [{
-        id: '1',
-        name: 'UOB One',
-    }, {
-        id: '2',
-        name: 'POSB Everyday',
-    }, {
-        id: '3',
-        name: 'Standard Chartered Unlimited Cashback',
-    }, {
-        id: '4',
-        name: 'DBS Live Fresh',
-    }, {
-        id: '5',
-        name: 'OCBC NTUC Plus! Visa',
-    }, {
-        id: '6',
-        name: 'OCBC 365',
-    }, {
-        id: '7',
-        name: 'CIMB Platinum Mastercard',
-    }, {
-        id: '8',
-        name: 'HSBC Revolution',
-    }, {
-        id: '9',
-        name: 'Citi Rewards',
-    }];
+    onMethodsReceived = (methods) => {
+        this.setState(prevState => ({
+            methods: prevState.methods = methods
+        }))}
+    onCardsReceived = (cards) => {
+        this.setState(prevState => ({
+            cards: prevState.cards = cards
+        }))}
+    componentDidMount() {
+        getMethods(this.onMethodsReceived)
+        getCards(this.onCardsReceived)}
 
     onSelectedMethodsChange = selectedMethods => {
-        this.setState({selectedMethods});
-    };
-
+        this.setState({selectedMethods});}
     onSelectedCardsChange = selectedCards => {
-        this.setState({selectedCards});
-    };
+        this.setState({selectedCards});}
 
     updateName = (name) => this.setState({name});
     updateEmail = (email) => this.setState({email});
@@ -91,10 +46,8 @@ class SignUpContainer extends React.Component {
         } else {
             firebaseDb.auth()
                 .createUserWithEmailAndPassword(this.state.email, this.state.password)
-                .then(() => {
-                    firebaseDb.firestore().collection('users').doc(this.state.email).set({
-                        name: this.state.name,
-                        email: this.state.email,
+                .then((cred) => {
+                    firebaseDb.firestore().collection('users').doc(cred.user.uid).set({
                         cards: this.state.selectedCards,
                         methods: this.state.selectedMethods,
                         fav: [], // creating empty array of user's favourite shops
@@ -106,13 +59,15 @@ class SignUpContainer extends React.Component {
                         password: '',
                         signUpSuccessful: true
                     })
+                    Alert.alert('Sign Up Successful!')
                     this.props.navigation.navigate('Login')
                 }).catch(err => console.error(err));
         }
     }
 
     render() {
-        const {name, email, password, signUpSuccessful, selectedMethods, selectedCards} = this.state
+        const {name, email, password, selectedMethods, selectedCards, methods, cards} = this.state
+
         return (
             <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.container}>
                 <Image
@@ -148,51 +103,33 @@ class SignUpContainer extends React.Component {
                 <MultiSelect
                     styleMainWrapper={styles.select}
                     styleTextDropdown={styles.text}
-                    items={this.methods}
+                    items={methods}
                     uniqueKey="id"
-                    ref={(component) => {
-                        this.multiSelect = component
-                    }}
                     onSelectedItemsChange={this.onSelectedMethodsChange}
                     selectedItems={selectedMethods}
                     selectText="Choose Payment Methods"
                     searchInputPlaceholderText="Search Items..."
-                    onChangeInput={(text) => console.log(text)}
                     tagRemoveIconColor="#CCC"
                     tagBorderColor="#CCC"
                     tagTextColor="#CCC"
                     selectedItemTextColor="#CCC"
                     selectedItemIconColor="#CCC"
-                    itemTextColor="#000"
-                    displayKey="name"
-                    searchInputStyle={{color: '#CCC'}}
-                    submitButtonColor="#CCC"
-                    submitButtonText="Submit"
                 />
 
                 <MultiSelect
                     styleMainWrapper={styles.select}
                     styleTextDropdown={styles.text}
-                    items={this.cards}
+                    items={cards}
                     uniqueKey="id"
-                    ref={(component) => {
-                        this.multiSelect = component
-                    }}
                     onSelectedItemsChange={this.onSelectedCardsChange}
                     selectedItems={selectedCards}
                     selectText="Choose Cards"
                     searchInputPlaceholderText="Search Items..."
-                    onChangeInput={(text) => console.log(text)}
                     tagRemoveIconColor="#CCC"
                     tagBorderColor="#CCC"
                     tagTextColor="#CCC"
                     selectedItemTextColor="#CCC"
                     selectedItemIconColor="#CCC"
-                    itemTextColor="#000"
-                    displayKey="name"
-                    searchInputStyle={{color: '#CCC'}}
-                    submitButtonColor="#CCC"
-                    submitButtonText="Submit"
                 />
 
                 <BlueButton
@@ -201,9 +138,6 @@ class SignUpContainer extends React.Component {
                 >
                     Sign Up
                 </BlueButton>
-                { // to use Javascript
-                    signUpSuccessful && (<Text style={styles.text}>Sign Up Successful!</Text>)
-                }
             </KeyboardAvoidingView>
         )
     }

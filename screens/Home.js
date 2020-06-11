@@ -1,16 +1,67 @@
-import React, {useState} from 'react';
-import {StyleSheet, Text, View, TouchableOpacity, FlatList, Image} from "react-native";
+import React, {useState, useEffect} from 'react';
+import {ActivityIndicator, StyleSheet, Text, View, TouchableOpacity, FlatList, Image} from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import firebaseDb from '../firebase/firebaseDb';
 import BlueButton from "../component/BlueButton";
+import Toast from 'react-native-simple-toast';
 
-function useForceUpdate(){
-    const [value, setValue] = useState(0); // integer state
-    return () => setValue(value => ++value); // update the state to force render
-}
+import {YellowBox} from 'react-native';
+import _ from 'lodash';
+
+YellowBox.ignoreWarnings(['Setting a timer']);
+const _console = _.clone(console);
+console.warn = message => {
+    if (message.indexOf('Setting a timer') <= -1) {
+        _console.warn(message);
+    }
+};
 
 function Home({navigation}) {
-    const user = global.userInfo;
-    const refresh = useForceUpdate();
+    const [shops, setShops] = useState([]);
+    const userId = firebaseDb.auth().currentUser.uid
+    const [isLoading, setisLoading] = useState(false)
+
+    const getData = () => {
+        firebaseDb.firestore().collection('users').doc(userId).get()
+            .then(snapshot => {
+                fav = snapshot.data().fav
+                return fav
+            })
+            .then(fav => {
+                global.allShops = []
+                let result = [];
+                firebaseDb.firestore().collection('shops').get()
+                    .then(snapshot => {
+                        snapshot.docs.map(doc => {
+                            global.allShops.push(doc.data())
+                            if (fav.includes(doc.id)) {
+                                result.push(doc.data())
+                            }
+                        })
+                    }).then(() => {
+                        setShops(result)
+                        Toast.show("Done refreshing :)")
+                    })
+            })
+    }
+
+    useEffect(() => {
+        if (!isLoading) {
+            getData()
+        }
+
+        return () => {
+            setisLoading(true)
+        }
+    })
+
+    if (!isLoading) {
+        console.log("Loading");
+        return (
+            <View style={styles.container}>
+                <ActivityIndicator size='large'/>
+            </View>)
+    }
 
     return (
         <View style={styles.container}>
@@ -20,22 +71,27 @@ function Home({navigation}) {
             </TouchableOpacity>
             <Text style={styles.favourites}> Favourites </Text>
 
-            <BlueButton onPress={refresh}>
+            <BlueButton onPress={() => {
+                getData();
+                Toast.show("Refreshing...")
+            }}
+            >
                 Refresh
             </BlueButton>
-            {user.fav.length === 0 &&
+
+            {fav.length === 0 &&
             <Text> Start adding your favourite stores! </Text>
             }
 
-            {user.fav.length > 0 &&
+            {fav.length > 0 &&
             <FlatList
-                data={user.fav}
+                data={shops}
                 renderItem={({item}) => (
                     <TouchableOpacity style={styles.itemContainer} onPress={() => navigation
                         .navigate('Shop Details', {
                             shop: item
                         })}>
-                        <View style={{alignItems:'flex-end', flex:0.2}}>
+                        <View style={{alignItems: 'flex-end', flex: 0.2}}>
                             <Image style={styles.logo}
                                    source={{uri: item.logo}}/>
                         </View>
@@ -45,6 +101,8 @@ function Home({navigation}) {
                     </TouchableOpacity>
                 )}
                 keyExtractor={item => item.shopName}
+                // refreshing = {isLoading}
+                // onRefresh = {getData()}
             />
             }
         </View>
