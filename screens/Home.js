@@ -24,7 +24,7 @@ function Home({navigation}) {
     const getData = () => {
         firebaseDb.firestore().collection('users').doc(userId).get()
             .then(snapshot => {
-                fav = snapshot.data().fav
+                let fav = snapshot.data().fav
                 return fav
             })
             .then(fav => {

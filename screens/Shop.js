@@ -8,13 +8,13 @@ import Toast from 'react-native-simple-toast';
 function isEquivalent(a, b) {
     var aProps = Object.getOwnPropertyNames(a);
     var bProps = Object.getOwnPropertyNames(b);
-   if (aProps.includes("letter")) {
+    if (aProps.includes("letter")) {
         bProps.push("letter")
         b["letter"] = a["letter"]
     }
-    if (aProps.length != bProps.length) {
+    if (aProps.length !== bProps.length) {
         return false;
-        }
+    }
 
     for (var i = 0; i < aProps.length; i++) {
         var propName = aProps[i];
@@ -22,8 +22,7 @@ function isEquivalent(a, b) {
             if (!isEquivalent(a[propName], b[propName])) {
                 return false
             }
-        }
-        else if (a[propName] !== b[propName]) {
+        } else if (a[propName] !== b[propName]) {
             return false;
         }
     }
@@ -41,11 +40,12 @@ function Shop({route}) {
     const [isLoading, setisLoading] = useState(false)
     const [update, setUpdate] = useState(false);
 
-    useEffect (() => {
+    useEffect(() => {
         if (!isLoading || update) {
             firebaseDb.firestore().collection('shops').get().then(snapshot =>
                 snapshot.forEach(doc => {
-                    if (isEquivalent(shop,doc.data())) setshopId(doc.id)}))
+                    if (isEquivalent(shop, doc.data())) setshopId(doc.id)
+                }))
 
             userDoc.get().then(snapshot => setFav(snapshot.data().fav))
         }
@@ -58,9 +58,9 @@ function Shop({route}) {
 
     if (!isLoading)
         return (
-        <View style={styles.container}>
-            <ActivityIndicator size='large'/>
-        </View>)
+            <View style={styles.container}>
+                <ActivityIndicator size='large'/>
+            </View>)
 
     return (
         <View style={styles.container}>
@@ -86,23 +86,25 @@ function Shop({route}) {
 
             {!fav.includes(shopId) && <BlueButton onPress={() => {
                 userDoc.update({
-                    fav: firebaseDb.firestore.FieldValue.arrayUnion(shopId)})
+                    fav: firebaseDb.firestore.FieldValue.arrayUnion(shopId)
+                })
                 Toast.show("Added");
                 setUpdate(true);
             }
-                }>
+            }>
                 Add to Favourites!
             </BlueButton>}
 
             {fav.includes(shopId) && <BlueButton onPress={() => {
                 userDoc.update({
-                    fav: firebaseDb.firestore.FieldValue.arrayRemove(shopId)})
+                    fav: firebaseDb.firestore.FieldValue.arrayRemove(shopId)
+                })
                 Toast.show("Removed");
                 setUpdate(true);
             }}>
                 Remove from Favourites
             </BlueButton>}
-            
+
         </View>
     )
 }
