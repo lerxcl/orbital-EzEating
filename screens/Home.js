@@ -1,47 +1,65 @@
 import React, {useState, useEffect} from 'react';
-import {StyleSheet, Text, View, TouchableOpacity, FlatList, Image} from "react-native";
+import {ActivityIndicator, StyleSheet, Text, View, TouchableOpacity, FlatList, Image} from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import firebaseDb from '../firebase/firebaseDb';
+import BlueButton from "../component/BlueButton";
+import Toast from 'react-native-simple-toast';
 
-import { YellowBox } from 'react-native';
+import {YellowBox} from 'react-native';
 import _ from 'lodash';
 
 YellowBox.ignoreWarnings(['Setting a timer']);
 const _console = _.clone(console);
 console.warn = message => {
-  if (message.indexOf('Setting a timer') <= -1) {
-    _console.warn(message);
-  }
+    if (message.indexOf('Setting a timer') <= -1) {
+        _console.warn(message);
+    }
 };
 
 function Home({navigation}) {
     const [fav, setFav] = useState([]);
-    const favs = [];
+    const [shops, setShops] = useState([]);
     const userId = firebaseDb.auth().currentUser.uid
     const [isLoading, setisLoading] = useState(false)
 
     const getData = () => {
         firebaseDb.firestore().collection('users').doc(userId).get()
-                              .then(snapshot => setFav(snapshot.data().fav))
+            .then(snapshot => setFav(snapshot.data().fav))
+            .then(() => {
+                global.allShops = []
+                let result = [];
+                firebaseDb.firestore().collection('shops').get()
+                    .then(snapshot => snapshot.docs.map(doc => {
+                        global.allShops.push(doc.data())
+                        if (fav.includes(doc.id)) {
+                            result.push(doc.data())
+                        }
+                    }))
+                    .then(() => {
+                        setShops(result)
+                        Toast.show("Done refreshing :)")
+                    })
+            })
     }
 
-    const getShops = () =>  {
-        firebaseDb.firestore().collection('shops').get()
-            .then(snapshot => snapshot.forEach(doc => {
-                if (fav.includes(doc.id)) {
-                    favs.push(doc.data())
-                }
-            }))
-    }
-
-    useEffect (() => {
+    useEffect(() => {
         if (!isLoading) {
             getData()
-            getShops()
+        }
+
+        return () => {
             setisLoading(true)
         }
     })
-    
+
+    if (!isLoading) {
+        console.log("Loading");
+        return (
+            <View style={styles.container}>
+                <ActivityIndicator size='large'/>
+            </View>)
+    }
+
     return (
         <View style={styles.container}>
             <TouchableOpacity style={styles.textContainer}
@@ -50,31 +68,39 @@ function Home({navigation}) {
             </TouchableOpacity>
             <Text style={styles.favourites}> Favourites </Text>
 
+            <BlueButton onPress={() => {
+                getData();
+                Toast.show("Refreshing...")
+            }}
+            >
+                Refresh
+            </BlueButton>
+
             {fav.length === 0 &&
-                <Text> Start adding your favourite stores! </Text>
+            <Text> Start adding your favourite stores! </Text>
             }
 
             {fav.length > 0 &&
-                <FlatList
-                    data={favs}
-                    renderItem={({item}) => (
+            <FlatList
+                data={shops}
+                renderItem={({item}) => (
                     <TouchableOpacity style={styles.itemContainer} onPress={() => navigation
                         .navigate('Shop Details', {
                             shop: item
-                    })}>
-                    <View style={{alignItems:'flex-end', flex:0.2}}>
-                    <Image style={styles.logo}
-                           source={{uri: item.logo}}/>
-                    </View>
-                    <Text style={styles.name}>{item.shopName}</Text>
-                    <MaterialCommunityIcons name="star" size={15}/>
-                    <Text>{item.rating}</Text>
+                        })}>
+                        <View style={{alignItems: 'flex-end', flex: 0.2}}>
+                            <Image style={styles.logo}
+                                   source={{uri: item.logo}}/>
+                        </View>
+                        <Text style={styles.name}>{item.shopName}</Text>
+                        <MaterialCommunityIcons name="star" size={15}/>
+                        <Text>{item.rating}</Text>
                     </TouchableOpacity>
                 )}
                 keyExtractor={item => item.shopName}
-                refreshing = {isLoading}
-                onRefresh = {getData()}
-                />
+                // refreshing = {isLoading}
+                // onRefresh = {getData()}
+            />
             }
         </View>
     )

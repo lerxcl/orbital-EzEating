@@ -13,10 +13,15 @@ function sortByName(array) {
 
 class AllShops extends React.Component {
     componentDidMount() {
-        firebaseDb.firestore().collection('shops').get()
-            .then(querySnapshot => {
-                let results = [];
-                querySnapshot.docs.map(documentSnapshot => results.push(documentSnapshot.data()))
+        // firebaseDb.firestore().collection('shops').get()
+        //     .then(querySnapshot => {
+        //         let results = [];
+        //         querySnapshot.docs.map(documentSnapshot => results.push(documentSnapshot.data()))
+        //         sortByName(results);
+        //         results = results.map(x =>
+        //             ({...x, letter: x.shopName[0].toUpperCase()})
+        //         );
+                let results = [...global.allShops];
                 sortByName(results);
                 results = results.map(x =>
                     ({...x, letter: x.shopName[0].toUpperCase()})
@@ -39,8 +44,7 @@ class AllShops extends React.Component {
                     }
                 })
                 this.setState({isLoading: false, shops: resultsByLetter})
-            }).catch(err => console.error(err))
-    }
+            }
 
     state = {
         isLoading: true,
@@ -53,7 +57,10 @@ class AllShops extends React.Component {
         const {isLoading, shops} = this.state
 
         if (isLoading)
-            return <ActivityIndicator/>
+            return (
+                <View style={styles.container}>
+                    <ActivityIndicator size='large'/>
+                </View>)
 
         return (
             <View style={styles.container}>
