@@ -91,8 +91,8 @@ function Shop({route}) {
                     userDoc.update({
                         fav: firebaseDb.firestore.FieldValue.arrayUnion(shopId)
                     })
-                    Toast.show("Added");
                     setUpdate(true);
+                    Toast.show("Added");
                 }
                 }>
                     Add to Favourites!
@@ -102,8 +102,8 @@ function Shop({route}) {
                     userDoc.update({
                         fav: firebaseDb.firestore.FieldValue.arrayRemove(shopId)
                     })
-                    Toast.show("Removed");
                     setUpdate(true);
+                    Toast.show("Removed");
                 }}>
                     Remove from Favourites
                 </BlueButton>}
