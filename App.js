@@ -10,12 +10,17 @@ import {LogInContainer} from "./container/LogInContainer";
 import SignUpContainer from "./container/SignUpContainer";
 import Explore from "./screens/Explore";
 import Home from "./screens/Home"
-import Profile from "./screens/Profile"
 import Splash from "./screens/Splash"
 import AllShops from "./screens/AllShops"
 import Shop from "./screens/Shop"
 import Header from "./component/Header"
 import DealDetails from "./screens/DealDetails"
+import Profile from "./ProfileStack/Profile"
+import Cards from "./ProfileStack/Cards"
+import Details from "./ProfileStack/Details"
+import Methods from "./ProfileStack/Methods"
+import UserHistory from "./ProfileStack/UserHistory"
+
 
 const Stack = createStackNavigator();
 const Tabs = createMaterialBottomTabNavigator();
@@ -70,6 +75,22 @@ const ProfileStackScreen = () => (
         <ProfileStack.Screen
             name='Profile'
             component={Profile}
+        />
+        <ProfileStack.Screen
+            name='My Cards'
+            component={Cards}
+        />
+        <ProfileStack.Screen
+            name='My Apps'
+            component={Methods}
+        />
+        <ProfileStack.Screen
+            name='Profile Details'
+            component={Details}
+        />
+        <ProfileStack.Screen
+            name='History'
+            component={UserHistory}
         />
     </ProfileStack.Navigator>
 )
