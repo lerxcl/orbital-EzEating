@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, View, SafeAreaView, StyleSheet, Alert, TouchableOpacity, FlatList} from 'react-native';
+import { Text, View, SafeAreaView, StyleSheet, Alert, ActivityIndicator, TouchableOpacity, FlatList} from 'react-native';
 import firebaseDb from '../firebase/firebaseDb';
 import {getMethods} from '../component/API';
 
@@ -7,6 +7,7 @@ import {getMethods} from '../component/API';
 class Methods extends React.Component {
     state = {
         allMethods: [],
+        loading: true
     }
     userId = firebaseDb.auth().currentUser.uid
     userDoc = firebaseDb.firestore().collection('users').doc(this.userId)
@@ -38,7 +39,8 @@ class Methods extends React.Component {
                         this.selectItem(this.state.allMethods[i])
                     }
                 }
-            })
+                this.setState({loading:false})
+            }).catch(err => console.log(err))
     }
 
     selectItem = item => {
@@ -80,7 +82,15 @@ class Methods extends React.Component {
     </TouchableOpacity>
     
     render() {
-        const {allMethods} = this.state
+        const {allMethods, loading} = this.state
+
+        if (loading) {
+            console.log("Loading");
+            return (
+                <View style={styles.container}>
+                    <ActivityIndicator size='large'/>
+                </View>)
+        }
 
         return (
             <SafeAreaView style = {styles.container}>

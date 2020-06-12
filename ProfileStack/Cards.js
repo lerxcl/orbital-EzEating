@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, View, SafeAreaView, StyleSheet, Alert, TouchableOpacity, FlatList} from 'react-native';
+import { Text, View, SafeAreaView, ActivityIndicator, StyleSheet, Alert, TouchableOpacity, FlatList} from 'react-native';
 import firebaseDb from '../firebase/firebaseDb';
 import {getCards} from '../component/API';
 
@@ -7,6 +7,7 @@ import {getCards} from '../component/API';
 class Cards extends React.Component {
     state = {
         allCards: [],
+        loading: true
     }
     userId = firebaseDb.auth().currentUser.uid
     userDoc = firebaseDb.firestore().collection('users').doc(this.userId)
@@ -15,7 +16,7 @@ class Cards extends React.Component {
         getCards(this.onCardsReceived).then(() => {
             this.getData()})
     }
-
+    
     onCardsReceived = (allCards) => {
         allCards.map(item => {
             item.isSelect = false
@@ -38,7 +39,8 @@ class Cards extends React.Component {
                         this.selectItem(this.state.allCards[i])
                     }
                 }
-            })
+                this.setState({loading:false})
+            }).catch(err => console.log(err))
     }
 
     selectItem = item => {
@@ -80,11 +82,17 @@ class Cards extends React.Component {
     </TouchableOpacity>
     
     render() {
-        const {allCards} = this.state
-
+        const {allCards, loading} = this.state
+        if (loading) {
+            console.log("Loading");
+            return (
+                <View style={styles.container}>
+                    <ActivityIndicator size='large'/>
+                </View>)
+        }
         return (
             <SafeAreaView style = {styles.container}>
-                <View style = {{flexDirection: 'row'}}>
+            <View style = {{flexDirection: 'row'}}>
             <Text style = {styles.description} >Linked cards are </Text>
             <Text style = {styles.highlight}>highlighted</Text> 
             </View>
