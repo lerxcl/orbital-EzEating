@@ -37,10 +37,11 @@ const styles = StyleSheet.create({
     dealHeader: {
         fontSize: 20,
         fontWeight: 'bold',
-        paddingHorizontal: 20,
+        paddingHorizontal: 40,
+        textAlign: 'center',
     },
     info: {
         fontSize: 15,
-        paddingHorizontal: 20,
+        paddingHorizontal: 40,
     },
 })

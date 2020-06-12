@@ -30,7 +30,7 @@ class Explore extends React.Component {
             <TouchableOpacity style={{
                 backgroundColor: '#bc9eb2',
                 borderRadius: 20,
-                height: 400,
+                height: 450,
                 padding: 50,
                 marginLeft: 10,
                 marginRight: 10,
@@ -55,17 +55,20 @@ class Explore extends React.Component {
                 </View>)
         }
         return (
-            <View style={{flex: 1, flexDirection: 'row', justifyContent: 'center', paddingTop: 50}}>
-                <Carousel
-                    layout={"default"}
-                    ref={ref => this.carousel = ref}
-                    data={this.state.all}
-                    sliderWidth={300}
-                    itemWidth={350}
-                    renderItem={this._renderItem}
-                    onSnapToItem={index => this.setState({activeIndex: index})}
-                    loop={true}
-                />
+            <View style={styles.container}>
+                <View style={{flex: 0.9, flexDirection: 'row', justifyContent: 'center', paddingTop: 50}}>
+                    <Carousel
+                        layout={"default"}
+                        ref={ref => this.carousel = ref}
+                        data={this.state.all}
+                        sliderWidth={300}
+                        itemWidth={350}
+                        renderItem={this._renderItem}
+                        onSnapToItem={index => this.setState({activeIndex: index})}
+                        loop={true}
+                    />
+                </View>
+                <Text>Click on any deal to find out more!</Text>
 
             </View>
         )
@@ -76,7 +79,7 @@ export default Explore;
 
 const styles = StyleSheet.create({
     container: {
-        marginTop: 20,
+        marginTop: 30,
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
@@ -89,6 +92,6 @@ const styles = StyleSheet.create({
     dealHeader: {
         fontSize: 20,
         fontWeight: 'bold',
-        paddingVertical: 5,
+        padding: 5,
     },
 })
