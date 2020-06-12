@@ -13,8 +13,6 @@ export async function getMethods(methodsRetrieved) {
     }); 
 
     methodsRetrieved(methods);
-
-    console.log(methods)
 }
 
 export async function getCards(cardsRetrieved) {
@@ -30,8 +28,7 @@ export async function getCards(cardsRetrieved) {
     }); 
 
     cardsRetrieved(cards);
-
-    console.log(cards)
 }
+
 
 

@@ -46,7 +46,12 @@ class SignUpContainer extends React.Component {
         } else {
             firebaseDb.auth()
                 .createUserWithEmailAndPassword(this.state.email, this.state.password)
-                .then((cred) => {
+                .then((cred)=>{
+                    if(cred.user){
+                      cred.user.updateProfile({
+                        displayName: this.state.name
+                      })
+                    }
                     firebaseDb.firestore().collection('users').doc(cred.user.uid).set({
                         cards: this.state.selectedCards,
                         methods: this.state.selectedMethods,
