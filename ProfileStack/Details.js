@@ -1,12 +1,12 @@
 import React from 'react';
 import { Text } from 'react-native';
 
-class Profile extends React.Component {
+class Details extends React.Component {
     render() {
         return (
-            <Text>Profile</Text>
+            <Text>Details</Text>
             )
     }
 }
 
-export default Profile;
+export default Details;
