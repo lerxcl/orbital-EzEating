@@ -1,6 +1,6 @@
 import React from 'react';
 import {ActivityIndicator, StyleSheet, Text, View, Image, TouchableOpacity} from 'react-native';
-import Carousel from 'react-native-snap-carousel';
+import Carousel, {Pagination} from 'react-native-snap-carousel';
 
 class Explore extends React.Component {
     state = {
@@ -23,6 +23,28 @@ class Explore extends React.Component {
             all: shopsWithDeals,
             loading: false,
         });
+    }
+
+    get pagination () {
+        return (
+            <Pagination
+                dotsLength={this.state.all.length}
+                activeDotIndex={this.state.activeIndex}
+                containerStyle={{}}
+                dotStyle={{
+                    width: 10,
+                    height: 10,
+                    borderRadius: 8,
+                    marginHorizontal: 8,
+                    backgroundColor: '#bc9eb2'
+                }}
+                inactiveDotStyle={{
+                    // Define styles for inactive dots here
+                }}
+                inactiveDotOpacity={0.4}
+                inactiveDotScale={0.6}
+            />
+        );
     }
 
     _renderItem = ({item, index}) => {
@@ -56,7 +78,7 @@ class Explore extends React.Component {
         }
         return (
             <View style={styles.container}>
-                <View style={{flex: 0.9, flexDirection: 'row', justifyContent: 'center', paddingTop: 50}}>
+                <View style={{flex: 0.9, flexDirection: 'row', justifyContent: 'center', paddingTop: 20}}>
                     <Carousel
                         layout={"default"}
                         ref={ref => this.carousel = ref}
@@ -68,8 +90,8 @@ class Explore extends React.Component {
                         loop={true}
                     />
                 </View>
-                <Text>Click on any deal to find out more!</Text>
-
+                {this.pagination}
+                <Text style={styles.text}>Click on any deal to find out more!</Text>
             </View>
         )
     }
@@ -85,7 +107,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     dealBanner: {
-        width: 320,
+        width: 300,
         height: 300,
         resizeMode: 'contain',
     },
@@ -93,5 +115,8 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: 'bold',
         padding: 5,
+    },
+    text: {
+        fontSize: 15,
     },
 })
