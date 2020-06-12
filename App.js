@@ -15,6 +15,7 @@ import Splash from "./screens/Splash"
 import AllShops from "./screens/AllShops"
 import Shop from "./screens/Shop"
 import Header from "./component/Header"
+import DealDetails from "./screens/DealDetails"
 
 const Stack = createStackNavigator();
 const Tabs = createMaterialBottomTabNavigator();
@@ -89,6 +90,10 @@ const ExploreStackScreen = () => (
         <ExploreStack.Screen
             name='Explore'
             component={Explore}
+        />
+        <ExploreStack.Screen
+            name='Deal Details'
+            component={DealDetails}
         />
     </ExploreStack.Navigator>
 )
