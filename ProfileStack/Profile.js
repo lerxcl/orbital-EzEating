@@ -1,27 +1,81 @@
 import React from 'react';
-import { Text, SafeAreaView, StyleSheet, View, Image, TouchableOpacity} from 'react-native';
+import { Alert, Text, SafeAreaView, StyleSheet, View, Image, TouchableOpacity} from 'react-native';
 import firebaseDb from '../firebase/firebaseDb';
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import * as ImagePicker from 'expo-image-picker';
+import Constants from 'expo-constants';
+import * as Permissions from 'expo-permissions';
+import BlueButton from "../component/BlueButton";
+
 
 
 class Profile extends React.Component {
 
+    state = {
+        name: firebaseDb.auth().currentUser.displayName,
+        image: firebaseDb.auth().currentUser.photoURL,
+        currentUser: firebaseDb.auth().currentUser
+      };
+
+    componentDidMount() {
+        this.getPermissionAsync()
+      }
+    
+      getPermissionAsync = async () => {
+        if (Constants.platform.ios) {
+          const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+          if (status !== 'granted') {
+            alert('Sorry, we need camera roll permissions to make this work!');
+          }
+        }
+      }
+    
+      pickImage = async () => {
+        let result = await ImagePicker.launchImageLibraryAsync({
+          mediaTypes: ImagePicker.MediaTypeOptions.Images,
+          allowsEditing: true,
+          aspect: [3, 3],
+          quality: 1
+        });
+        
+        if (!result.cancelled) {
+          this.setState({ image: result.uri })
+          this.state.currentUser.updateProfile({
+            photoURL: result.uri})
+          }
+    }
+
     render() {
-        const currentUser = firebaseDb.auth().currentUser
+        const {currentUser, image, name} = this.state
 
         return (
             <SafeAreaView style = {styles.container}>
                 <View style = {{alignSelf: "center"}}>
                     <View style = {styles.profileImage}>
-                        <Image source = {require('../images/Portrait_Placeholder.png')}
+                        {image && <Image source = {{ uri: image }}
                            style = {styles.image}
-                           resizeMode = "center"/>
+                           resizeMode = "center"/>}
+                        {!image && <Image source = {require('../images/Portrait_Placeholder.png')}
+                           style = {styles.image}
+                           resizeMode = "center"/>}
                     </View>
-                    <TouchableOpacity style = {styles.edit} onPress = {() => console.log("edit pic")}>
+                    <TouchableOpacity style = {styles.edit} onPress = {() => {
+                    Alert.alert(
+                        'Change/Remove Profile Pic',
+                        'Do you want to change or remove your profile pic?',
+                        [
+                        {text: 'Cancel', onPress: () => {}},
+                        {text: 'Remove', onPress: () => {
+                            this.setState({ image: null})
+                            currentUser.updateProfile({
+                                photoURL: null})}},
+                        {text: 'Change', onPress: this.pickImage}
+                        ]
+                    )}}>
                         <MaterialCommunityIcons name = "pencil-outline" size = {18} color = "#DFD8C8"/>
                     </TouchableOpacity>
                 </View>
-                <Text style = {styles.title}> {currentUser.displayName} </Text>
+                <Text style = {styles.title}> {name} </Text>
                 <View style={styles.textContainer}>
                     <Text>My Cards</Text>
                     <TouchableOpacity style = {styles.arrow} 
@@ -50,7 +104,9 @@ class Profile extends React.Component {
                         <MaterialCommunityIcons name = "chevron-right" size = {25}/>
                     </TouchableOpacity>
                 </View>
-
+                <BlueButton onPress={() => {this.setState({name: firebaseDb.auth().currentUser.displayName})}}>
+                    Refresh
+                </BlueButton>
             </SafeAreaView>
         )
     }
