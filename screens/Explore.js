@@ -1,14 +1,34 @@
 import React from 'react';
 import {ActivityIndicator, StyleSheet, Text, View, Image, TouchableOpacity} from 'react-native';
 import Carousel, {Pagination} from 'react-native-snap-carousel';
+import BlueButton from "../component/BlueButton";
+import Toast from "react-native-simple-toast";
+//import firebaseDb from '../firebase/firebaseDb';
+
+function randSelect(shopsWithDeals) {
+    let randomDeals = [];
+    let alrPicked = [];
+    for (let i = 0; i < 10; i++) {
+        let rand = Math.floor(Math.random() * shopsWithDeals.length);
+        while (alrPicked.includes(rand)) {
+            rand = Math.floor(Math.random() * shopsWithDeals.length);
+        }
+        alrPicked.push(rand);
+        randomDeals.push(shopsWithDeals[rand]);
+    }
+    return randomDeals;
+}
 
 class Explore extends React.Component {
     state = {
         all: null,
+        picked: null,
         loading: true,
         activeIndex: 0,
         carouselRef: null,
     }
+    // userId = firebaseDb.auth().currentUser.uid
+    // userDoc = firebaseDb.firestore().collection('users').doc(this.userId)
 
     componentDidMount() {
         let shopsWithDeals = [...global.allShops];
@@ -20,8 +40,12 @@ class Explore extends React.Component {
                 })
                 return shop.deals
             }).flatMap(deals => deals)
+
+        const randomDeals = randSelect(shopsWithDeals);
+
         this.setState({
             all: shopsWithDeals,
+            picked: randomDeals,
             loading: false,
         });
     }
@@ -29,18 +53,14 @@ class Explore extends React.Component {
     get pagination () {
         return (
             <Pagination
-                dotsLength={this.state.all.length}
+                dotsLength={this.state.picked.length}
                 activeDotIndex={this.state.activeIndex}
-                containerStyle={{}}
                 dotStyle={{
                     width: 10,
                     height: 10,
                     borderRadius: 8,
                     marginHorizontal: 3,
                     backgroundColor: '#bc9eb2'
-                }}
-                inactiveDotStyle={{
-                    // Define styles for inactive dots here
                 }}
                 inactiveDotOpacity={0.4}
                 inactiveDotScale={0.6}
@@ -81,11 +101,20 @@ class Explore extends React.Component {
         }
         return (
             <View style={styles.container}>
-                <View style={{flex: 0.9, flexDirection: 'row', justifyContent: 'center', paddingTop: 20}}>
+                <BlueButton onPress={() => {
+                    Toast.show("Refreshing...")
+                    const randomDeals = randSelect(this.state.all);
+                    this.setState({picked: randomDeals})
+                    Toast.show("Done")
+                }}
+                >
+                    Show me more deals!
+                </BlueButton>
+                <View style={{flex: 0.92, flexDirection: 'row', justifyContent: 'center', paddingTop: 20}}>
                     <Carousel
                         layout={"default"}
                         ref={ref => {if (this.state.carouselRef === null) this.setState({carouselRef: ref})}}
-                        data={this.state.all}
+                        data={this.state.picked}
                         sliderWidth={300}
                         itemWidth={350}
                         renderItem={this._renderItem}
@@ -104,7 +133,6 @@ export default Explore;
 
 const styles = StyleSheet.create({
     container: {
-        marginTop: 30,
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',

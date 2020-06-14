@@ -40,7 +40,7 @@ function Home({navigation}) {
                         })
                     }).then(() => {
                         setShops(result)
-                        Toast.show("Done refreshing :)")
+                        Toast.show("Done refreshing")
                     })
             })
     }
