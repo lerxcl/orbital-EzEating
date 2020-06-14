@@ -1,17 +1,19 @@
 import React from 'react';
-import {StyleSheet, Text, View, Image} from "react-native";
+import {StyleSheet, Text, View, Image, ScrollView} from "react-native";
 
 function DealDetails({route}) {
     const {deal} = route.params;
 
     return (
-        <View style={styles.container}>
-            <Image style={styles.logo} source={{uri: deal.logo}}/>
-            <Text style={styles.dealHeader}>{deal.name}</Text>
-            <Text style={styles.dealHeader}>{deal.title}</Text>
-            <Image style={styles.dealBanner} source={{uri: deal.image}}/>
-            <Text style={styles.info}>{deal.description}</Text>
-        </View>
+        <ScrollView>
+            <View style={styles.container}>
+                <Image style={styles.logo} source={{uri: deal.logo}}/>
+                <Text style={styles.dealHeader}>{deal.name}</Text>
+                <Text style={styles.dealHeader}>{deal.title}</Text>
+                <Image style={styles.dealBanner} source={{uri: deal.image}}/>
+                <Text style={styles.info}>{deal.description}</Text>
+            </View>
+        </ScrollView>
     )
 }
 

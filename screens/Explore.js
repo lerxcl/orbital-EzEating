@@ -7,6 +7,7 @@ class Explore extends React.Component {
         all: null,
         loading: true,
         activeIndex: 0,
+        carouselRef: null,
     }
 
     componentDidMount() {
@@ -35,7 +36,7 @@ class Explore extends React.Component {
                     width: 10,
                     height: 10,
                     borderRadius: 8,
-                    marginHorizontal: 8,
+                    marginHorizontal: 3,
                     backgroundColor: '#bc9eb2'
                 }}
                 inactiveDotStyle={{
@@ -43,6 +44,8 @@ class Explore extends React.Component {
                 }}
                 inactiveDotOpacity={0.4}
                 inactiveDotScale={0.6}
+                carouselRef={this.state.carouselRef}
+                tappableDots={true}
             />
         );
     }
@@ -81,7 +84,7 @@ class Explore extends React.Component {
                 <View style={{flex: 0.9, flexDirection: 'row', justifyContent: 'center', paddingTop: 20}}>
                     <Carousel
                         layout={"default"}
-                        ref={ref => this.carousel = ref}
+                        ref={ref => {if (this.state.carouselRef === null) this.setState({carouselRef: ref})}}
                         data={this.state.all}
                         sliderWidth={300}
                         itemWidth={350}
