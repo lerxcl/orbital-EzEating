@@ -1,5 +1,5 @@
 import BlueButton from '../component/BlueButton';
-import {Alert, Image, StyleSheet, TextInput, Text, KeyboardAvoidingView} from "react-native";
+import {ScrollView, Alert, Image, StyleSheet, TextInput, Text, KeyboardAvoidingView} from "react-native";
 import React from "react";
 import firebaseDb from '../firebase/firebaseDb';
 import MultiSelect from 'react-native-multiple-select';
@@ -74,7 +74,9 @@ class SignUpContainer extends React.Component {
         const {name, email, password, selectedMethods, selectedCards, methods, cards} = this.state
 
         return (
-            <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.container}>
+            <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"}
+                              style={styles.container}>
+            
                 <Image
                     style={styles.logo}
                     source={require('../images/logo.png')}
@@ -104,6 +106,8 @@ class SignUpContainer extends React.Component {
                     secureTextEntry={true}
                     autoCapitalize='none'
                 />
+
+                <Text style = {{marginTop: 10, marginBottom: 10}}>You would like to see deals concerning...</Text>
 
                 <MultiSelect
                     styleMainWrapper={styles.select}
@@ -166,8 +170,8 @@ const styles = StyleSheet.create({
         paddingVertical: 10
     },
     logo: {
-        flex: 1,
-        resizeMode: 'center'
+        flex: 0.7,
+        resizeMode: 'center',
     },
     button: {
         marginTop: 20,

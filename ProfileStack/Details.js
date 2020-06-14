@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, View, SafeAreaView, ActivityIndicator, StyleSheet, TouchableOpacity, Alert} from 'react-native';
+import { Text, View, SafeAreaView, StyleSheet, TouchableOpacity, Alert} from 'react-native';
 import firebaseDb from '../firebase/firebaseDb';
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import BlueButton from '../component/BlueButton';
