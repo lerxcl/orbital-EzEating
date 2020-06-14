@@ -10,6 +10,7 @@ class Details extends React.Component {
     newName = ''
     newEmail = ''
     newPassword = null
+    newPassword2 = null
     state = {
         name: this.currentUser.displayName,
         email: this.currentUser.email,
@@ -28,6 +29,9 @@ class Details extends React.Component {
 
     setPassword = (newPassword) => {
         this.newPassword = newPassword
+    }
+    setPassword2 = (newPassword2) => {
+        this.newPassword2 = newPassword2
     }
 
     render() {
@@ -55,7 +59,7 @@ class Details extends React.Component {
                     <Dialog.Description>
                         Enter your new name
                     </Dialog.Description>
-                    <Dialog.Input onChangeText = {this.setName}/>
+                    <Dialog.Input placeholder = "Name" onChangeText = {this.setName}/>
                     <Dialog.Button label = "Cancel" onPress = {() => this.setState({nameDialogVisible: false})}/>
                     <Dialog.Button label = "Submit" onPress = {() => {
                         this.setState({nameDialogVisible: false, name: this.newName})
@@ -68,7 +72,7 @@ class Details extends React.Component {
                     <Dialog.Description>
                         Enter your new email
                     </Dialog.Description>
-                    <Dialog.Input onChangeText = {this.setEmail}/>
+                    <Dialog.Input placeholder = "Email" onChangeText = {this.setEmail}/>
                     <Dialog.Button label = "Cancel" onPress = {() => this.setState({emailDialogVisible: false})}/>
                     <Dialog.Button label = "Submit" onPress = {() => {
                         this.setState({emailDialogVisible: false, email: this.newEmail})
@@ -81,12 +85,14 @@ class Details extends React.Component {
                     <Dialog.Description>
                         Enter your new password
                     </Dialog.Description>
-                    <Dialog.Input secureTextEntry = {true} onChangeText = {this.setPassword}/>
+                    <Dialog.Input placeholder = "New password" secureTextEntry = {true} onChangeText = {this.setPassword}/>
+                    <Dialog.Input placeholder = "Re-enter new password" secureTextEntry = {true} onChangeText = {this.setPassword2}/>
                     <Dialog.Button label = "Cancel" onPress = {() => this.setState({pwDialogVisible: false})}/>
                     <Dialog.Button label = "Submit" onPress = {() => {
+                        if (this.newPassword === this.newPassword2) {
                         this.setState({pwDialogVisible: false})
                         this.currentUser.updatePassword(this.newPassword).catch(err => Alert.alert(err))
-                    }}/> 
+                    } else {Alert.alert('Password does not match')}}}/> 
                 </Dialog.Container>
 
                 <View style = {{flex: 1,justifyContent: 'flex-end', marginBottom: 20}}>
