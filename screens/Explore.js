@@ -5,11 +5,9 @@ import BlueButton from "../component/BlueButton";
 import Toast from "react-native-simple-toast";
 import firebaseDb from '../firebase/firebaseDb';
 
-function randSelect(shopsWithDeals) {
+function randSelect(userCards, shopsWithDeals) {
     let randomDeals = [];
     let alrPicked = [];
-    //console.log(shopsWithDeals);
-    //console.log(shopsWithDeals.filter(deal => {if (deal.cards !== null) deal.cards.includes(global.cards)}))
 
     for (let i = 0; i < 10; i++) {
         let rand = Math.floor(Math.random() * shopsWithDeals.length);
@@ -29,6 +27,7 @@ class Explore extends React.Component {
         loading: true,
         activeIndex: 0,
         carouselRef: null,
+        userCards: null,
     }
     userId = firebaseDb.auth().currentUser.uid
     userDoc = firebaseDb.firestore().collection('users').doc(this.userId)
@@ -38,27 +37,26 @@ class Explore extends React.Component {
             .then(snapshot => {
                 let result = null;
                 result = snapshot.data().cards;
-                return result;
-            }).then(result => global.cards = result)
+                this.setState({userCards: result});
 
-        let shopsWithDeals = [...global.allShops];
-        shopsWithDeals = shopsWithDeals.filter(shop => shop.deals.length !== 0)
-            .map(shop => {
-                shop.deals.map(deal => {
-                    deal.name = shop.shopName
-                    deal.logo = shop.logo
-                })
-                return shop.deals
-            }).flatMap(deals => deals)
-        console.log(global.cards);
+                let shopsWithDeals = [...global.allShops];
+                shopsWithDeals = shopsWithDeals.filter(shop => shop.deals.length !== 0)
+                    .map(shop => {
+                        shop.deals.map(deal => {
+                            deal.name = shop.shopName
+                            deal.logo = shop.logo
+                        })
+                        return shop.deals
+                    }).flatMap(deals => deals)
 
-        const randomDeals = randSelect(shopsWithDeals);
+                const randomDeals = randSelect(result, shopsWithDeals);
 
-        this.setState({
-            all: shopsWithDeals,
-            picked: randomDeals,
-            loading: false,
-        });
+                this.setState({
+                    all: shopsWithDeals,
+                    picked: randomDeals,
+                    loading: false,
+                });
+            })
     }
 
     get pagination () {
@@ -114,7 +112,7 @@ class Explore extends React.Component {
             <View style={styles.container}>
                 <BlueButton onPress={() => {
                     Toast.show("Refreshing...")
-                    const randomDeals = randSelect(this.state.all);
+                    const randomDeals = randSelect(this.state.userCards, this.state.all);
                     this.setState({picked: randomDeals})
                     Toast.show("Done")
                 }}
