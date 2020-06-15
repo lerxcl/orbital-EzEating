@@ -8,8 +8,6 @@ import firebaseDb from '../firebase/firebaseDb';
 function randSelect(shopsWithDeals) {
     let randomDeals = [];
     let alrPicked = [];
-    //console.log(shopsWithDeals);
-    //console.log(shopsWithDeals.filter(deal => {if (deal.cards !== null) deal.cards.includes(global.cards)}))
 
     for (let i = 0; i < 10; i++) {
         let rand = Math.floor(Math.random() * shopsWithDeals.length);
@@ -29,6 +27,7 @@ class Explore extends React.Component {
         loading: true,
         activeIndex: 0,
         carouselRef: null,
+        userCards: null,
     }
     userId = firebaseDb.auth().currentUser.uid
     userDoc = firebaseDb.firestore().collection('users').doc(this.userId)
