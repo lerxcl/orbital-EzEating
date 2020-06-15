@@ -27,7 +27,6 @@ class Explore extends React.Component {
         loading: true,
         activeIndex: 0,
         carouselRef: null,
-        userCards: null,
     }
     userId = firebaseDb.auth().currentUser.uid
     userDoc = firebaseDb.firestore().collection('users').doc(this.userId)
