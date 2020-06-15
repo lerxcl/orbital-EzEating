@@ -33,32 +33,51 @@ class Explore extends React.Component {
     userId = firebaseDb.auth().currentUser.uid
     userDoc = firebaseDb.firestore().collection('users').doc(this.userId)
 
-    componentDidMount() {
+    getDeals = () => {
         this.userDoc.get()
             .then(snapshot => {
-                let result = null;
-                result = snapshot.data().cards;
-                return result;
-            }).then(result => global.cards = result)
+                let userCards = []
+                userCards.push(snapshot.data().cards)
+                userCards.push(snapshot.data().methods)
+                return userCards
+            }).then(userCards => {
+                let shopsWithDeals = [...global.allShops];
+                shopsWithDeals = shopsWithDeals.filter(shop => shop.deals.length !== 0)
+                    .flatMap(shop => {
+                        shop.deals.map(deal => {
+                            deal.name = shop.shopName
+                            deal.logo = shop.logo
+                        })
+                        return shop.deals
+                    }).filter(deal => {
+                        if (deal.cards.length === 0 && deal.methods.length === 0) {
+                            return true
+                        } else {
+                            for (var i = 0; i < deal.cards.length; i++) {
+                                if (userCards[0].includes(deal.cards[i])) {
+                                    return true
+                                }
+                            }
+                            for (var j = 0; j < deal.methods.length; j++) {
+                                if (userCards[1].includes(deal.methods[j])) {
+                                    return true
+                                }
+                            }                            
+                            return false
+                        }
+                    })
+                const randomDeals = randSelect(shopsWithDeals);
 
-        let shopsWithDeals = [...global.allShops];
-        shopsWithDeals = shopsWithDeals.filter(shop => shop.deals.length !== 0)
-            .map(shop => {
-                shop.deals.map(deal => {
-                    deal.name = shop.shopName
-                    deal.logo = shop.logo
-                })
-                return shop.deals
-            }).flatMap(deals => deals)
-        console.log(global.cards);
+                this.setState({
+                    all: shopsWithDeals,
+                    picked: randomDeals,
+                    loading: false,
+                });
+            })
+        }
 
-        const randomDeals = randSelect(shopsWithDeals);
-
-        this.setState({
-            all: shopsWithDeals,
-            picked: randomDeals,
-            loading: false,
-        });
+    componentDidMount() {
+        this.getDeals()
     }
 
     get pagination () {
@@ -112,10 +131,11 @@ class Explore extends React.Component {
         }
         return (
             <View style={styles.container}>
+                <Text style = {{fontSize: 20}}>Discover personalised deals</Text>
+                <Text style = {{marginBottom: 20}}>(based on your cards and payment methods)</Text>
                 <BlueButton onPress={() => {
+                    this.getDeals()
                     Toast.show("Refreshing...")
-                    const randomDeals = randSelect(this.state.all);
-                    this.setState({picked: randomDeals})
                     Toast.show("Done")
                 }}
                 >
