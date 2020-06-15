@@ -1,8 +1,17 @@
 import React from 'react';
-import { Text, View, SafeAreaView, ActivityIndicator, StyleSheet, Alert, TouchableOpacity, FlatList} from 'react-native';
+import {
+    Text,
+    View,
+    SafeAreaView,
+    ActivityIndicator,
+    StyleSheet,
+    Alert,
+    FlatList,
+    Image
+} from 'react-native';
 import firebaseDb from '../firebase/firebaseDb';
 import {getCards} from '../component/API';
-
+import {CheckBox} from 'react-native-elements';
 
 class Cards extends React.Component {
     state = {
@@ -14,19 +23,20 @@ class Cards extends React.Component {
 
     componentDidMount() {
         getCards(this.onCardsReceived).then(() => {
-            this.getData()})
+            this.getData()
+        })
     }
-    
+
     onCardsReceived = (allCards) => {
         allCards.map(item => {
             item.isSelect = false
-            item.selectedClass = styles.itemContainer
             return item
         })
         this.setState(prevState => ({
             allCards: prevState.allCards = allCards
-        }))}
-    
+        }))
+    }
+
     getData = () => {
         this.userDoc.get()
             .then(snapshot => {
@@ -34,53 +44,59 @@ class Cards extends React.Component {
                 return cards
             })
             .then(cards => {
-                for (var i = 0; i < this.state.allCards.length; i++) {
+                for (let i = 0; i < this.state.allCards.length; i++) {
                     if (cards.includes(this.state.allCards[i].id)) {
                         this.selectItem(this.state.allCards[i])
                     }
                 }
-                this.setState({loading:false})
+                this.setState({loading: false})
             }).catch(err => console.log(err))
     }
 
     selectItem = item => {
         if (item.isSelect) {
             this.userDoc.update({
-                cards: firebaseDb.firestore.FieldValue.arrayRemove(item.id)})
+                cards: firebaseDb.firestore.FieldValue.arrayRemove(item.id)
+            })
         } else {
             this.userDoc.update({
-                cards: firebaseDb.firestore.FieldValue.arrayUnion(item.id)})
+                cards: firebaseDb.firestore.FieldValue.arrayUnion(item.id)
+            })
         }
         item.isSelect = !item.isSelect
-        item.selectedClass = item.isSelect ? styles.selected : styles.itemContainer;
-            
+
         const index = this.state.allCards.findIndex(
             doc => item.id === doc.id
         );
-        
+
         this.state.allCards[index] = item
 
         this.setState({
-          allCards: this.state.allCards,
+            allCards: this.state.allCards,
         });
-      }
+    }
 
 
     renderItem = item =>
-      <TouchableOpacity
-        style={[styles.itemContainer, item.selectedClass]}      
-        onPress={() => Alert.alert(
-            'Add/Remove Card',
-            'Are you sure you want to add/remove card?',
-            [
-              {text: 'NO', onPress: () => {}},
-              {text: 'YES', onPress: () => this.selectItem(item)},
-            ]
-        )}
-      >
-      <Text style={styles.name}>  {item.name}  </Text>
-    </TouchableOpacity>
-    
+        <View>
+            <CheckBox
+                checked={item.isSelect}
+                title={item.name}
+                onPress={() => Alert.alert(
+                    'Add/Remove Card',
+                    'Are you sure you want to add/remove card?',
+                    [
+                        {
+                            text: 'NO', onPress: () => {
+                            }
+                        },
+                        {text: 'YES', onPress: () => this.selectItem(item)},
+                    ]
+                )}
+            />
+            <Image style={styles.cardImage} source={{uri: item.image}}/>
+        </View>
+
     render() {
         const {allCards, loading} = this.state
         if (loading) {
@@ -91,18 +107,17 @@ class Cards extends React.Component {
                 </View>)
         }
         return (
-            <SafeAreaView style = {styles.container}>
-            <View style = {{flexDirection: 'row'}}>
-            <Text style = {styles.description} >Linked cards are </Text>
-            <Text style = {styles.highlight}>highlighted</Text> 
-            </View>
-            <Text>(Click to add/remove cards)</Text>
-            <FlatList
-                data={allCards}
-                renderItem={({item}) => this.renderItem(item)}
-                keyExtractor={item => item.id}/>
+            <SafeAreaView style={styles.container}>
+                <View style={{flexDirection: 'row'}}>
+                    <Text style={styles.description}>Linked cards are checked</Text>
+                </View>
+                <Text>(Tap checkbox to add/remove cards)</Text>
+                <FlatList
+                    data={allCards}
+                    renderItem={({item}) => this.renderItem(item)}
+                    keyExtractor={item => item.id}/>
             </SafeAreaView>
-            )
+        )
     }
 }
 
@@ -124,22 +139,9 @@ const styles = StyleSheet.create({
     description: {
         fontSize: 18,
     },
-    highlight: {
-        fontSize: 18,
-        backgroundColor: "#b8d5cd"
-    },
-    itemContainer: {
-        borderColor: 'black',
-        borderWidth: 1,
-        borderRadius: 10,
-        paddingHorizontal: 16,
+    cardImage: {
         width: 300,
-        marginTop: 20,
-        marginVertical: 10,
-        paddingVertical: 10,
-        alignContent: 'center'
-    },
-    selected: {
-        backgroundColor: "#b8d5cd"
+        height: 150,
+        resizeMode: 'contain',
     },
 })

@@ -22,7 +22,8 @@ export async function getCards(cardsRetrieved) {
     snapshot.forEach((doc) => {
         var obj = {
             id: doc.id,
-            name: doc.data().name
+            name: doc.data().name,
+            image: doc.data().image,
         }
         cards.push(obj)
     }); 
