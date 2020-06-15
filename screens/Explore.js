@@ -3,11 +3,14 @@ import {ActivityIndicator, StyleSheet, Text, View, Image, TouchableOpacity} from
 import Carousel, {Pagination} from 'react-native-snap-carousel';
 import BlueButton from "../component/BlueButton";
 import Toast from "react-native-simple-toast";
-//import firebaseDb from '../firebase/firebaseDb';
+import firebaseDb from '../firebase/firebaseDb';
 
 function randSelect(shopsWithDeals) {
     let randomDeals = [];
     let alrPicked = [];
+    //console.log(shopsWithDeals);
+    //console.log(shopsWithDeals.filter(deal => {if (deal.cards !== null) deal.cards.includes(global.cards)}))
+
     for (let i = 0; i < 10; i++) {
         let rand = Math.floor(Math.random() * shopsWithDeals.length);
         while (alrPicked.includes(rand)) {
@@ -27,10 +30,17 @@ class Explore extends React.Component {
         activeIndex: 0,
         carouselRef: null,
     }
-    // userId = firebaseDb.auth().currentUser.uid
-    // userDoc = firebaseDb.firestore().collection('users').doc(this.userId)
+    userId = firebaseDb.auth().currentUser.uid
+    userDoc = firebaseDb.firestore().collection('users').doc(this.userId)
 
     componentDidMount() {
+        this.userDoc.get()
+            .then(snapshot => {
+                let result = null;
+                result = snapshot.data().cards;
+                return result;
+            }).then(result => global.cards = result)
+
         let shopsWithDeals = [...global.allShops];
         shopsWithDeals = shopsWithDeals.filter(shop => shop.deals.length !== 0)
             .map(shop => {
@@ -40,6 +50,7 @@ class Explore extends React.Component {
                 })
                 return shop.deals
             }).flatMap(deals => deals)
+        console.log(global.cards);
 
         const randomDeals = randSelect(shopsWithDeals);
 
