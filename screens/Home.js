@@ -19,11 +19,14 @@ console.warn = message => {
 function Home({navigation}) {
     const [shops, setShops] = useState([]);
     const userId = firebaseDb.auth().currentUser.uid
-    const [isLoading, setisLoading] = useState(false)
+    const [isLoading, setisLoading] = useState(true)
+    const [fav, setFav] = useState([])
 
     const getData = () => {
         firebaseDb.firestore().collection('users').doc(userId).get()
             .then(snapshot => {
+                setFav(snapshot.data().fav)
+                return snapshot.data().fav
                 if (snapshot.exists) {
                     fav = snapshot.data().fav
                     return fav
@@ -48,8 +51,6 @@ function Home({navigation}) {
                         setShops(result)
                         Toast.show("Done refreshing")
                     })
-                }
-
             })
     }
 
