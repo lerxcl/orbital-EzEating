@@ -143,8 +143,8 @@ const styles = StyleSheet.create({
         fontSize: 18,
     },
     image: {
-        width: 100,
-        height: 100,
+        width: 70,
+        height: 70,
         resizeMode: 'contain',
     },
 })
