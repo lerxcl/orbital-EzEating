@@ -25,11 +25,9 @@ function Home({navigation}) {
     const getData = () => {
         firebaseDb.firestore().collection('users').doc(userId).get()
             .then(snapshot => {
-                setFav(snapshot.data().fav)
-                return snapshot.data().fav
                 if (snapshot.exists) {
-                    fav = snapshot.data().fav
-                    return fav
+                    setFav(snapshot.data().fav)
+                    return snapshot.data().fav
                 } else {
                     return null;
                 }
@@ -51,6 +49,7 @@ function Home({navigation}) {
                         setShops(result)
                         Toast.show("Done refreshing")
                     })
+                }
             })
     }
 
