@@ -24,24 +24,32 @@ function Home({navigation}) {
     const getData = () => {
         firebaseDb.firestore().collection('users').doc(userId).get()
             .then(snapshot => {
-                fav = snapshot.data().fav
-                return fav
+                if (snapshot.exists) {
+                    fav = snapshot.data().fav
+                    return fav
+                } else {
+                    return null;
+                }
             })
             .then(fav => {
-                global.allShops = []
-                let result = [];
-                firebaseDb.firestore().collection('shops').get()
-                    .then(snapshot => {
-                        snapshot.docs.map(doc => {
-                            global.allShops.push(doc.data())
-                            if (fav.includes(doc.id)) {
-                                result.push(doc.data())
-                            }
-                        })
-                    }).then(() => {
+                if (fav === null) {}
+                else {
+                    global.allShops = []
+                    let result = [];
+                    firebaseDb.firestore().collection('shops').get()
+                        .then(snapshot => {
+                            snapshot.docs.map(doc => {
+                                global.allShops.push(doc.data())
+                                if (fav.includes(doc.id)) {
+                                    result.push(doc.data())
+                                }
+                            })
+                        }).then(() => {
                         setShops(result)
                         Toast.show("Done refreshing")
                     })
+                }
+
             })
     }
 
