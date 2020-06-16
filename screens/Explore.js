@@ -51,12 +51,12 @@ class Explore extends React.Component {
                         if (deal.cards.length === 0 && deal.methods.length === 0) {
                             return true
                         } else {
-                            for (var i = 0; i < deal.cards.length; i++) {
+                            for (let i = 0; i < deal.cards.length; i++) {
                                 if (userCards[0].includes(deal.cards[i])) {
                                     return true
                                 }
                             }
-                            for (var j = 0; j < deal.methods.length; j++) {
+                            for (let j = 0; j < deal.methods.length; j++) {
                                 if (userCards[1].includes(deal.methods[j])) {
                                     return true
                                 }
@@ -103,7 +103,7 @@ class Explore extends React.Component {
             <TouchableOpacity style={{
                 backgroundColor: '#bc9eb2',
                 borderRadius: 20,
-                height: 450,
+                height: 420,
                 padding: 50,
                 marginLeft: 10,
                 marginRight: 10,
@@ -139,7 +139,7 @@ class Explore extends React.Component {
                 >
                     Show me more deals!
                 </BlueButton>
-                <View style={{flex: 0.92, flexDirection: 'row', justifyContent: 'center', paddingTop: 20}}>
+                <View style={{flex: 1, flexDirection: 'row', justifyContent: 'center', paddingTop:20}}>
                     <Carousel
                         layout={"default"}
                         ref={ref => {if (this.state.carouselRef === null) this.setState({carouselRef: ref})}}
@@ -174,7 +174,6 @@ const styles = StyleSheet.create({
     dealHeader: {
         fontSize: 20,
         fontWeight: 'bold',
-        padding: 5,
     },
     text: {
         fontSize: 15,

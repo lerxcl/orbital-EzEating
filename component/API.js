@@ -7,7 +7,8 @@ export async function getMethods(methodsRetrieved) {
     snapshot.forEach((doc) => {
         var obj = {
             id: doc.id,
-            name: doc.data().name
+            name: doc.data().name,
+            image: doc.data().image,
         }
         methods.push(obj)
     }); 

@@ -1,8 +1,17 @@
 import React from 'react';
-import { Text, View, SafeAreaView, StyleSheet, Alert, ActivityIndicator, TouchableOpacity, FlatList} from 'react-native';
+import {
+    Text,
+    View,
+    SafeAreaView,
+    StyleSheet,
+    Alert,
+    ActivityIndicator,
+    FlatList,
+    Image
+} from 'react-native';
 import firebaseDb from '../firebase/firebaseDb';
 import {getMethods} from '../component/API';
-
+import {CheckBox} from 'react-native-elements';
 
 class Methods extends React.Component {
     state = {
@@ -14,19 +23,20 @@ class Methods extends React.Component {
 
     componentDidMount() {
         getMethods(this.onMethodsReceived).then(() => {
-            this.getData()})
+            this.getData()
+        })
     }
 
     onMethodsReceived = (allMethods) => {
         allMethods.map(item => {
             item.isSelect = false
-            item.selectedClass = styles.itemContainer
             return item
         })
         this.setState(prevState => ({
             allMethods: prevState.allMethods = allMethods
-        }))}
-    
+        }))
+    }
+
     getData = () => {
         this.userDoc.get()
             .then(snapshot => {
@@ -39,48 +49,55 @@ class Methods extends React.Component {
                         this.selectItem(this.state.allMethods[i])
                     }
                 }
-                this.setState({loading:false})
+                this.setState({loading: false})
             }).catch(err => console.log(err))
     }
 
     selectItem = item => {
         if (item.isSelect) {
             this.userDoc.update({
-                methods: firebaseDb.firestore.FieldValue.arrayRemove(item.id)})
+                methods: firebaseDb.firestore.FieldValue.arrayRemove(item.id)
+            })
         } else {
             this.userDoc.update({
-                methods: firebaseDb.firestore.FieldValue.arrayUnion(item.id)})
+                methods: firebaseDb.firestore.FieldValue.arrayUnion(item.id)
+            })
         }
         item.isSelect = !item.isSelect
-        item.selectedClass = item.isSelect ? styles.selected : styles.itemContainer;
-            
+
         const index = this.state.allMethods.findIndex(
             doc => item.id === doc.id
         );
-        
+
         this.state.allMethods[index] = item
 
         this.setState({
-          allMethods: this.state.allMethods,
+            allMethods: this.state.allMethods,
         });
-      }
+    }
 
 
     renderItem = item =>
-      <TouchableOpacity
-        style={[styles.itemContainer, item.selectedClass]}      
-        onPress={() => Alert.alert(
-            'Add/Remove Payment App',
-            'Are you sure you want to add/remove app?',
-            [
-              {text: 'NO', onPress: () => {}},
-              {text: 'YES', onPress: () => this.selectItem(item)},
-            ]
-        )}
-      >
-      <Text style={styles.name}>  {item.name}  </Text>
-    </TouchableOpacity>
-    
+        <View style={{flexDirection: 'row'}}>
+            <CheckBox
+                checked={item.isSelect}
+                title={item.name}
+                onPress={() => Alert.alert(
+                    'Add/Remove Payment App',
+                    'Are you sure you want to add/remove app?',
+                    [
+                        {
+                            text: 'NO', onPress: () => {
+                            }
+                        },
+                        {text: 'YES', onPress: () => this.selectItem(item)},
+                    ]
+                )}
+            >
+            </CheckBox>
+            <Image style={styles.image} source={{uri: item.image}}/>
+        </View>
+
     render() {
         const {allMethods, loading} = this.state
 
@@ -93,18 +110,17 @@ class Methods extends React.Component {
         }
 
         return (
-            <SafeAreaView style = {styles.container}>
-                <View style = {{flexDirection: 'row'}}>
-            <Text style = {styles.description} >Linked apps are </Text>
-            <Text style = {styles.highlight}>highlighted</Text> 
-            </View>
-            <Text>(Click to add/remove apps)</Text>
-            <FlatList
-                data={allMethods}
-                renderItem={({item}) => this.renderItem(item)}
-                keyExtractor={item => item.id}/>
+            <SafeAreaView style={styles.container}>
+                <View style={{flexDirection: 'row'}}>
+                    <Text style={styles.description}>Linked apps are checked</Text>
+                </View>
+                <Text>(Tap checkbox to add/remove apps)</Text>
+                <FlatList
+                    data={allMethods}
+                    renderItem={({item}) => this.renderItem(item)}
+                    keyExtractor={item => item.id}/>
             </SafeAreaView>
-            )
+        )
     }
 }
 
@@ -114,7 +130,6 @@ const styles = StyleSheet.create({
     container: {
         marginTop: 20,
         flex: 1,
-        flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center'
     },
@@ -126,22 +141,9 @@ const styles = StyleSheet.create({
     description: {
         fontSize: 18,
     },
-    highlight: {
-        fontSize: 18,
-        backgroundColor: "#b8d5cd"
-    },
-    itemContainer: {
-        borderColor: 'black',
-        borderWidth: 1,
-        borderRadius: 10,
-        paddingHorizontal: 16,
-        width: 300,
-        marginTop: 20,
-        marginVertical: 10,
-        paddingVertical: 10,
-        alignContent: 'center'
-    },
-    selected: {
-        backgroundColor: "#b8d5cd"
+    image: {
+        width: 150,
+        height: 100,
+        resizeMode: 'contain',
     },
 })
