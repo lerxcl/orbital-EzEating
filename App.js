@@ -3,30 +3,36 @@ import React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import {createMaterialBottomTabNavigator} from '@react-navigation/material-bottom-tabs';
+
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {AuthContext} from './Context';
 
 import {LogInContainer} from "./container/LogInContainer";
 import SignUpContainer from "./container/SignUpContainer";
+import {Intermediate} from "./container/Intermediate"
+import MerchantContainer from "./container/MerchantContainer"
+import Header from "./component/Header"
+
 import Explore from "./screens/Explore";
 import Home from "./screens/Home"
 import Splash from "./screens/Splash"
 import AllShops from "./screens/AllShops"
 import Shop from "./screens/Shop"
-import Header from "./component/Header"
 import DealDetails from "./screens/DealDetails"
 import Profile from "./ProfileStack/Profile"
 import Cards from "./ProfileStack/Cards"
 import Details from "./ProfileStack/Details"
 import Methods from "./ProfileStack/Methods"
 import UserHistory from "./ProfileStack/UserHistory"
-
+import MerchantDeals from "./MerchantStack/MerchantDeals"
+import MerchantProfile from "./MerchantStack/MerchantProfile"
 
 const Stack = createStackNavigator();
 const Tabs = createMaterialBottomTabNavigator();
 const HomeStack = createStackNavigator();
 const ProfileStack = createStackNavigator();
 const ExploreStack = createStackNavigator();
+const MerchantStack = createStackNavigator();
 
 function HomeStackScreen() {
     return (
@@ -122,13 +128,15 @@ const ExploreStackScreen = () => (
 export default function App() {
     const [userToken, setUserToken] = React.useState(null)
     const [isLoading, setIsLoading] = React.useState(true)
+    const [isMerchant, setIsMerchant] = React.useState(false)
     const [mounted, setMounted] = React.useState(true)
 
     const authContext = React.useMemo(() => {
         return {
-            signIn: () => {
+            signIn: (merchant) => {
                 setIsLoading(false);
                 setUserToken("abcd");
+                setIsMerchant(merchant)
             },
             signOut: () => {
                 setIsLoading(false);
@@ -153,7 +161,18 @@ export default function App() {
     return (
         <AuthContext.Provider value={authContext}>
             <NavigationContainer>
-                {userToken ? (
+                {userToken ? ( isMerchant ? (
+                    <MerchantStack.Navigator>
+                        <MerchantStack.Screen
+                            name='Deals'
+                            component={MerchantDeals}
+                        />
+                        <MerchantStack.Screen
+                            name='My Store'
+                            component={MerchantProfile}
+                        />
+                    </MerchantStack.Navigator>
+                ) : (
                         <Tabs.Navigator
                             shifting
                         >
@@ -190,12 +209,20 @@ export default function App() {
                                     ),
                                 }}
                             />
-                        </Tabs.Navigator>) :
+                        </Tabs.Navigator>)) :
                     (<Stack.Navigator>
                         <Stack.Screen
                             name='Login'
                             component={LogInContainer}
                             options={{title: 'Login'}}
+                        />
+                        <Stack.Screen
+                            name='Who are you?'
+                            component={Intermediate}
+                        />
+                        <Stack.Screen
+                            name='Merchant sign-up'
+                            component={MerchantContainer}
                         />
                         <Stack.Screen
                             name='Sign-up'
