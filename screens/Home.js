@@ -19,13 +19,14 @@ console.warn = message => {
 function Home({navigation}) {
     const [shops, setShops] = useState([]);
     const userId = firebaseDb.auth().currentUser.uid
-    const [isLoading, setisLoading] = useState(false)
+    const [isLoading, setisLoading] = useState(true)
+    const [fav, setFav] = useState([])
 
     const getData = () => {
         firebaseDb.firestore().collection('users').doc(userId).get()
             .then(snapshot => {
-                fav = snapshot.data().fav
-                return fav
+                setFav(snapshot.data().fav)
+                return snapshot.data().fav
             })
             .then(fav => {
                 global.allShops = []
@@ -46,16 +47,16 @@ function Home({navigation}) {
     }
 
     useEffect(() => {
-        if (!isLoading) {
+        if (isLoading) {
             getData()
         }
 
         return () => {
-            setisLoading(true)
+            setisLoading(false)
         }
     })
 
-    if (!isLoading) {
+    if (isLoading) {
         console.log("Loading");
         return (
             <View style={styles.container}>
