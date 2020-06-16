@@ -19,15 +19,14 @@ console.warn = message => {
 function Home({navigation}) {
     const [shops, setShops] = useState([]);
     const userId = firebaseDb.auth().currentUser.uid
-    const [isLoading, setisLoading] = useState(true)
-    const [fav, setFav] = useState([])
+    const [isLoading, setisLoading] = useState(false)
 
     const getData = () => {
         firebaseDb.firestore().collection('users').doc(userId).get()
             .then(snapshot => {
                 if (snapshot.exists) {
-                    setFav(snapshot.data().fav)
-                    return snapshot.data().fav
+                    fav = snapshot.data().fav
+                    return fav
                 } else {
                     return null;
                 }
