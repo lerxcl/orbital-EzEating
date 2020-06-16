@@ -78,8 +78,9 @@ class Methods extends React.Component {
 
 
     renderItem = item =>
-        <View style={{flexDirection: 'row'}}>
+        <View style={{flexDirection: 'row', backgroundColor:'white'}}>
             <CheckBox
+                containerStyle={{width:250}}
                 checked={item.isSelect}
                 title={item.name}
                 onPress={() => Alert.alert(
@@ -142,7 +143,7 @@ const styles = StyleSheet.create({
         fontSize: 18,
     },
     image: {
-        width: 150,
+        width: 100,
         height: 100,
         resizeMode: 'contain',
     },
