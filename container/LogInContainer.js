@@ -17,9 +17,12 @@ export const LogInContainer = ({navigation}) => {
                 .auth()
                 .signInWithEmailAndPassword(email, password)
                 .then((res) => {
-                    //console.log(res)
-                    console.log('User logged-in successfully!')
-                    signIn()
+                    if (firebaseDb.auth().currentUser.displayName === "merchant") {
+                        signIn(true)
+                    } else {
+                        signIn(false)
+                    }
+                    
 
                   /*  firebaseDb.firestore().collection('users').get()
                         .then(querySnapshot => {
@@ -74,7 +77,7 @@ export const LogInContainer = ({navigation}) => {
                 <Text style={styles.text}> New? Sign up</Text>
                 <TouchableOpacity
                     onPress={() =>
-                        navigation.push('Sign-up')
+                        navigation.push('Who are you?')
                     }>
                     <Text style={styles.signupButton}> HERE</Text>
                 </TouchableOpacity>

@@ -3,30 +3,45 @@ import React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import {createMaterialBottomTabNavigator} from '@react-navigation/material-bottom-tabs';
+import {createDrawerNavigator} from '@react-navigation/drawer';
+
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {AuthContext} from './Context';
+import firebaseDb from "./firebase/firebaseDb"
 
 import {LogInContainer} from "./container/LogInContainer";
 import SignUpContainer from "./container/SignUpContainer";
-import Explore from "./screens/Explore";
-import Home from "./screens/Home"
-import Splash from "./screens/Splash"
-import AllShops from "./screens/AllShops"
-import Shop from "./screens/Shop"
-import Header from "./component/Header"
-import DealDetails from "./screens/DealDetails"
-import Profile from "./ProfileStack/Profile"
-import Cards from "./ProfileStack/Cards"
-import Details from "./ProfileStack/Details"
-import Methods from "./ProfileStack/Methods"
-import UserHistory from "./ProfileStack/UserHistory"
+import {Intermediate} from "./container/Intermediate";
+import MerchantContainer from "./container/MerchantContainer"
+import Header from "./component/Header";
+import DrawerHeader from "./MerchantStack/DrawerHeader";
+import DrawerContent from "./MerchantStack/DrawerContent";
 
+import Explore from "./screens/Explore";
+import Home from "./screens/Home";
+import Splash from "./screens/Splash";
+import AllShops from "./screens/AllShops";
+import Shop from "./screens/Shop";
+import DealDetails from "./screens/DealDetails";
+import Profile from "./ProfileStack/Profile";
+import Cards from "./ProfileStack/Cards";
+import Details from "./ProfileStack/Details";
+import Methods from "./ProfileStack/Methods";
+import UserHistory from "./ProfileStack/UserHistory";
+import MerchantDeals from "./MerchantStack/MerchantDeals";
+import MerchantProfile from "./MerchantStack/MerchantProfile";
+import MerchantDealDetails from "./MerchantStack/MerchantDealDetails";
+import Settings from "./MerchantStack/Settings";
+import StoreDetails from "./MerchantStack/StoreDetails";
 
 const Stack = createStackNavigator();
 const Tabs = createMaterialBottomTabNavigator();
 const HomeStack = createStackNavigator();
 const ProfileStack = createStackNavigator();
 const ExploreStack = createStackNavigator();
+const Drawers = createDrawerNavigator();
+const MerchantDealStack = createStackNavigator();
+const MerchantProfileStack = createStackNavigator();
 
 function HomeStackScreen() {
     return (
@@ -119,16 +134,76 @@ const ExploreStackScreen = () => (
     </ExploreStack.Navigator>
 )
 
+const MerchantDealStackScreen = () => (
+    <MerchantDealStack.Navigator
+        screenOptions={{
+            headerStyle: {
+                backgroundColor: "#454b64",
+            },
+            headerTintColor: '#fff',
+            headerTitleStyle: {
+                fontWeight: 'bold',
+            },
+            headerTitleAlign: 'center',
+        }}
+    >
+        <MerchantDealStack.Screen
+            name='Deals'
+            component={MerchantDeals}
+            options = {({navigation}) => {
+                return {
+                    headerTitle: () => <DrawerHeader isLogout = {true} navigation = {navigation} title = 'My Deals'/>
+                }
+            }}
+        />
+        <MerchantDealStack.Screen
+            name='Deal Details'
+            component={MerchantDealDetails}
+        />
+    </MerchantDealStack.Navigator>
+)
+
+const MerchantProfileStackScreen = () => (
+    <MerchantProfileStack.Navigator
+        screenOptions={{
+            headerStyle: {
+                backgroundColor: "#454b64",
+            },
+            headerTintColor: '#fff',
+            headerTitleStyle: {
+                fontWeight: 'bold',
+            },
+            headerTitleAlign: 'center',
+        }}
+    >
+        <MerchantProfileStack.Screen
+            name='Profile'
+            component={MerchantProfile}
+            options = {({navigation}) => {
+                return {
+                    headerTitle: () => <DrawerHeader isLogout = {false} navigation = {navigation} title = 'My Store'/>
+                }
+            }}
+        />
+        <MerchantProfileStack.Screen
+            name='Store Details'
+            component={StoreDetails}
+        />
+    </MerchantProfileStack.Navigator>
+)
+
 export default function App() {
     const [userToken, setUserToken] = React.useState(null)
     const [isLoading, setIsLoading] = React.useState(true)
+    const [isMerchant, setIsMerchant] = React.useState(false)
     const [mounted, setMounted] = React.useState(true)
 
     const authContext = React.useMemo(() => {
         return {
-            signIn: () => {
+            signIn: (merchant) => {
                 setIsLoading(false);
                 setUserToken("abcd");
+                setIsMerchant(merchant)
             },
             signOut: () => {
                 setIsLoading(false);
@@ -153,7 +228,30 @@ export default function App() {
     return (
         <AuthContext.Provider value={authContext}>
             <NavigationContainer>
-                {userToken ? (
+                {userToken ? ( isMerchant ? (
+                    <Drawers.Navigator drawerContent={props => <DrawerContent {...props} />}>
+                        <Drawers.Screen
+                            name='My Deals'
+                            component={MerchantDealStackScreen}
+                        />
+                        <Drawers.Screen
+                            name='My Store'
+                            component={MerchantProfileStackScreen}
+                        />
+                        <Drawers.Screen
+                            name='Accepted Cards'
+                            component={Cards}
+                        />
+                        <Drawers.Screen
+                            name='Accepted Apps'
+                            component={Methods}
+                        />
+                        <Drawers.Screen
+                            name='Settings'
+                            component={Settings}
+                        />
+                    </Drawers.Navigator>
+                ) : (
                         <Tabs.Navigator
                             shifting
                         >
@@ -190,12 +288,20 @@ export default function App() {
                                     ),
                                 }}
                             />
-                        </Tabs.Navigator>) :
+                        </Tabs.Navigator>)) :
                     (<Stack.Navigator>
                         <Stack.Screen
                             name='Login'
                             component={LogInContainer}
                             options={{title: 'Login'}}
+                        />
+                        <Stack.Screen
+                            name='Who are you?'
+                            component={Intermediate}
+                        />
+                        <Stack.Screen
+                            name='Merchant sign-up'
+                            component={MerchantContainer}
                         />
                         <Stack.Screen
                             name='Sign-up'
