@@ -1,5 +1,5 @@
 import React from 'react';
-import { Alert, Text, SafeAreaView, StyleSheet, View, Image, TouchableOpacity} from 'react-native';
+import { ScrollView, Alert, Text, SafeAreaView, StyleSheet, View, Image, TouchableOpacity} from 'react-native';
 import firebaseDb from '../firebase/firebaseDb';
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import * as ImagePicker from 'expo-image-picker';
@@ -49,7 +49,7 @@ class MerchantProfile extends React.Component {
         const {image, name} = this.state
 
         return (
-            <SafeAreaView style = {styles.container}>
+            <ScrollView contentContainerstyle = {styles.container}>
                 <View style = {{alignSelf: "center"}}>
                     <View style = {styles.profileImage}>
                         {image && <Image source = {{ uri: image }}
@@ -75,38 +75,30 @@ class MerchantProfile extends React.Component {
                         <MaterialCommunityIcons name = "pencil-outline" size = {18} color = "#DFD8C8"/>
                     </TouchableOpacity>
                 </View>
-                <Text style = {styles.title}> {name} </Text>
                 <View style={styles.textContainer}>
-                    <Text>Accepted Cards</Text>
-                    <TouchableOpacity style = {styles.arrow} 
-                        onPress={() => console.log("pressed")}>
-                        <MaterialCommunityIcons name = "chevron-right" size = {25}/>
-                    </TouchableOpacity>
+                    <Text>Shop Name: {name}</Text>
                 </View>
                 <View style={styles.textContainer}>
-                    <Text>Accepted Apps</Text>
-                    <TouchableOpacity style = {styles.arrow} 
-                        onPress={() => console.log("pressed")}>
-                        <MaterialCommunityIcons name = "chevron-right" size = {25}/>
-                    </TouchableOpacity>
+                    <Text>Opening Hours: </Text>
                 </View>
                 <View style={styles.textContainer}>
-                    <Text>Store Details</Text>
-                    <TouchableOpacity style = {styles.arrow} 
-                        onPress={() => console.log("pressed")}>
-                        <MaterialCommunityIcons name = "chevron-right" size = {25}/>
-                    </TouchableOpacity>
+                    <Text>Contact: </Text>
+                </View>
+                <View style={styles.textContainer}>
+                    <Text>Description: </Text>
+                </View>
+                <View style={styles.textContainer}>
+                    <Text>Type: </Text>
                 </View>
                 <View style={styles.textContainer}>
                     <Text>Users Favourited: 0</Text>
                     <Text>Rating: 0</Text>
-
                 </View>
-                <Text style = {{marginBottom: 20, marginTop: 20}}> Complete your profile to publish your store!</Text>
-                <BlueButton onPress={() => console.log("pressed")}>
+                <Text style = {{alignSelf: 'center', marginBottom: 20, marginTop: 10}}> Complete your profile to publish your store!</Text>
+                <BlueButton style = {{width: 300, alignSelf: 'center'}} onPress={() => console.log("published")}>
                     Publish
                 </BlueButton>
-            </SafeAreaView>
+            </ScrollView>
         )
     }
 }
@@ -118,8 +110,8 @@ const styles = StyleSheet.create({
         marginTop: 20,
         flex: 1,
         flexDirection: 'column',
-        justifyContent: 'flex-start',
-        alignItems: 'center'
+        alignItems: 'center',
+        justifyContent: 'center'
     },
     image: {
         flex: 1,
@@ -129,7 +121,6 @@ const styles = StyleSheet.create({
     profileImage: {
         width: 200,
         height: 200,
-        borderRadius: 100,
         overflow: "hidden",
         marginTop: 10,
     },
@@ -142,6 +133,7 @@ const styles = StyleSheet.create({
         fontSize: 20,
         marginVertical: 10,
         paddingVertical: 15,
+        alignSelf: 'center'
     },
     title: {
         marginTop: 10,

@@ -7,22 +7,14 @@ import Dialog from "react-native-dialog";
 
 class Settings extends React.Component {
     currentUser = firebaseDb.auth().currentUser
-    newName = ''
     newEmail = ''
     newPassword = null
     newPassword2 = null
     state = {
-        name: this.currentUser.displayName,
         email: this.currentUser.email,
-        nameDialogVisible: false,
         emailDialogVisible: false,
         pwDialogVisible: false
     }
-
-    setName = (newName) => {
-        this.newName = newName
-    }
-
     setEmail = (newEmail) => {
         this.newEmail = newEmail
     }
@@ -35,17 +27,10 @@ class Settings extends React.Component {
     }
 
     render() {
-        const {name, email} = this.state
+        const {email} = this.state
 
         return (
             <SafeAreaView style = {styles.container}>
-                <View style={styles.textContainer}>
-                    <Text style = {{fontSize: 20}}>Name: {name}</Text>
-                    <TouchableOpacity style = {styles.edit} 
-                        onPress={() => this.setState({nameDialogVisible: true})}>
-                        <MaterialCommunityIcons name = "pencil-outline" size = {25}/>
-                    </TouchableOpacity>
-                </View>
                 <View style={styles.textContainer}>
                     <Text style = {{fontSize: 20}}>Email: {email}</Text>
                     <TouchableOpacity style = {styles.edit} 
@@ -53,19 +38,6 @@ class Settings extends React.Component {
                         <MaterialCommunityIcons name = "pencil-outline" size = {25}/>
                     </TouchableOpacity>
                 </View>
-
-                <Dialog.Container visible={this.state.nameDialogVisible}>
-                    <Dialog.Title>Change name</Dialog.Title>
-                    <Dialog.Description>
-                        Enter your new name
-                    </Dialog.Description>
-                    <Dialog.Input placeholder = "Name" onChangeText = {this.setName}/>
-                    <Dialog.Button label = "Cancel" onPress = {() => this.setState({nameDialogVisible: false})}/>
-                    <Dialog.Button label = "Submit" onPress = {() => {
-                        this.setState({nameDialogVisible: false, name: this.newName})
-                        this.currentUser.updateProfile({displayName: this.newName})
-                    }}/> 
-                </Dialog.Container>
 
                 <Dialog.Container visible={this.state.emailDialogVisible}>
                     <Dialog.Title>Change email</Dialog.Title>
@@ -129,5 +101,6 @@ const styles = StyleSheet.create({
         width: 400,
         marginVertical: 10,
         paddingVertical: 15,
+        marginTop: 50
     },
 })
