@@ -152,7 +152,7 @@ const MerchantDealStackScreen = () => (
             component={MerchantDeals}
             options = {({navigation}) => {
                 return {
-                    headerTitle: () => <DrawerHeader navigation = {navigation} title = 'My Deals'/>
+                    headerTitle: () => <DrawerHeader isLogout = {true} navigation = {navigation} title = 'My Deals'/>
                 }
             }}
         />
@@ -181,7 +181,7 @@ const MerchantProfileStackScreen = () => (
             component={MerchantProfile}
             options = {({navigation}) => {
                 return {
-                    headerTitle: () => <DrawerHeader navigation = {navigation} title = 'My Store'/>
+                    headerTitle: () => <DrawerHeader isLogout = {false} navigation = {navigation} title = 'My Store'/>
                 }
             }}
         />

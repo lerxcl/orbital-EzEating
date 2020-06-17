@@ -1,15 +1,11 @@
 import React from 'react';
-import { Alert, SafeAreaView, StyleSheet } from 'react-native';
+import { SafeAreaView, StyleSheet } from 'react-native';
 import {Drawer} from 'react-native-paper';
 import {DrawerItem} from '@react-navigation/drawer';
 
 import {SimpleLineIcons} from 'react-native-vector-icons'
 
-import{ AuthContext } from '../Context';
-
 export default function DrawerContent(props) {
-
-    const { signOut } = React.useContext(AuthContext);
 
     return(
         <SafeAreaView style={styles.drawerContent}>
@@ -68,24 +64,6 @@ export default function DrawerContent(props) {
                     )}
                     label="Settings"
                     onPress={() => {props.navigation.navigate('Settings')}}
-                />
-                <DrawerItem 
-                    icon={({color, size}) => (
-                        <SimpleLineIcons 
-                        name="logout" 
-                        color={color}
-                        size={size}
-                        />
-                    )}
-                    label="Logout"
-                    onPress={() => Alert.alert(
-                        'Logout',
-                        'Are you sure you want to logout?',
-                        [
-                          {text: 'NO', onPress: () => {}},
-                          {text: 'YES', onPress: () => signOut()},
-                        ]
-                    )}
                 />
             </Drawer.Section>
         </SafeAreaView>
