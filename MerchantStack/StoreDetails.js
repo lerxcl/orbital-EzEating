@@ -5,7 +5,7 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import firebaseDb from '../firebase/firebaseDb';
 
 
-class MerchantDeals extends React.Component {
+class StoreDetails extends React.Component {
     state = {
         deals: []
     }
@@ -19,6 +19,9 @@ class MerchantDeals extends React.Component {
         const {deals} = this.state
         return (
             <View style={styles.container}>
+                
+                <Text style={{fontSize: 20}}> Deals </Text>
+
 
             {deals.length === 0 &&
                 <Text> Start adding deals to feature for your store! </Text>
@@ -46,12 +49,18 @@ class MerchantDeals extends React.Component {
                 <TouchableOpacity style = {styles.add} onPress = {() => console.log("add")}>
                         <MaterialCommunityIcons name = "plus" size = {30} color = "white"/>
                 </TouchableOpacity>
+
+                <BlueButton
+                    onPress={() => this.props.navigation.navigate('My Store')}
+                >
+                    Profile
+                </BlueButton>
             </View>
             )
     }
 }
 
-export default MerchantDeals;
+export default StoreDetails;
 
 const styles = StyleSheet.create({
     container: {
