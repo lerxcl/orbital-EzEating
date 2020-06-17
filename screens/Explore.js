@@ -35,35 +35,49 @@ class Explore extends React.Component {
         this.userDoc.get()
             .then(snapshot => {
                 let userCards = []
-                userCards.push(snapshot.data().cards)
-                userCards.push(snapshot.data().methods)
-                return userCards
-            }).then(userCards => {
+                if (snapshot.data().cards.exists && snapshot.data().methods.exists) {
+                    userCards.push(snapshot.data().cards)
+                    userCards.push(snapshot.data().methods)
+                }
+
                 let shopsWithDeals = [...global.allShops];
-                shopsWithDeals = shopsWithDeals.filter(shop => shop.deals.length !== 0)
-                    .flatMap(shop => {
-                        shop.deals.map(deal => {
-                            deal.name = shop.shopName
-                            deal.logo = shop.logo
+
+                if (userCards.length === 0) {
+                    shopsWithDeals = shopsWithDeals.filter(shop => shop.deals.length !== 0)
+                        .flatMap(shop => {
+                            shop.deals.map(deal => {
+                                deal.name = shop.shopName
+                                deal.logo = shop.logo
+                            })
+                            return shop.deals
                         })
-                        return shop.deals
-                    }).filter(deal => {
-                        if (deal.cards.length === 0 && deal.methods.length === 0) {
-                            return true
-                        } else {
-                            for (let i = 0; i < deal.cards.length; i++) {
-                                if (userCards[0].includes(deal.cards[i])) {
-                                    return true
+                } else {
+                    shopsWithDeals = shopsWithDeals.filter(shop => shop.deals.length !== 0)
+                        .flatMap(shop => {
+                            shop.deals.map(deal => {
+                                deal.name = shop.shopName
+                                deal.logo = shop.logo
+                            })
+                            return shop.deals
+                        }).filter(deal => {
+                            if (deal.cards.length === 0 && deal.methods.length === 0) {
+                                return true
+                            } else {
+                                for (let i = 0; i < deal.cards.length; i++) {
+                                    if (userCards[0].includes(deal.cards[i])) {
+                                        return true
+                                    }
                                 }
+                                for (let j = 0; j < deal.methods.length; j++) {
+                                    if (userCards[1].includes(deal.methods[j])) {
+                                        return true
+                                    }
+                                }
+                                return false
                             }
-                            for (let j = 0; j < deal.methods.length; j++) {
-                                if (userCards[1].includes(deal.methods[j])) {
-                                    return true
-                                }
-                            }                            
-                            return false
-                        }
-                    })
+                        })
+                }
+
                 const randomDeals = randSelect(shopsWithDeals);
 
                 this.setState({
