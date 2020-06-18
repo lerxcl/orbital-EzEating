@@ -36,7 +36,7 @@ function Home({navigation}) {
                 else {
                     global.allShops = []
                     let result = [];
-                    firebaseDb.firestore().collection('shops').get()
+                    firebaseDb.firestore().collection('shops').orderBy('shopName').get()
                         .then(snapshot => {
                             snapshot.docs.map(doc => {
                                 global.allShops.push(doc.data())

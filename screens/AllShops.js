@@ -1,50 +1,33 @@
 import React from 'react';
 import {TouchableOpacity, SectionList, ActivityIndicator, StyleSheet, Text, View, Image} from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import firebaseDb from '../firebase/firebaseDb';
-
-function sortByName(array) {
-    return array.sort(function (a, b) {
-        let x = a["shopName"];
-        let y = b["shopName"];
-        return ((x < y) ? -1 : ((x > y) ? 1 : 0));
-    });
-}
+import { SearchBar } from 'react-native-elements';
 
 class AllShops extends React.Component {
     componentDidMount() {
-        // firebaseDb.firestore().collection('shops').get()
-        //     .then(querySnapshot => {
-        //         let results = [];
-        //         querySnapshot.docs.map(documentSnapshot => results.push(documentSnapshot.data()))
-        //         sortByName(results);
-        //         results = results.map(x =>
-        //             ({...x, letter: x.shopName[0].toUpperCase()})
-        //         );
-                let results = [...global.allShops];
-                sortByName(results);
-                results = results.map(x =>
-                    ({...x, letter: x.shopName[0].toUpperCase()})
-                );
-                const resultsByLetter = [];
-                results.map(shop => {
-                    let duplicateLetter = false;
-                    for (let i = 0; i < resultsByLetter.length; i++) {
-                        if (resultsByLetter[i].title === shop.letter) {
-                            resultsByLetter[i].data.push(shop);
-                            duplicateLetter = true;
-                            break;
-                        }
-                    }
-                    if (!duplicateLetter) {
-                        resultsByLetter.push({
-                            title: shop.letter,
-                            data: [shop],
-                        });
-                    }
-                })
-                this.setState({isLoading: false, shops: resultsByLetter})
+        let results = [...global.allShops];
+        results = results.map(x =>
+            ({...x, letter: x.shopName[0].toUpperCase()})
+        );
+        const resultsByLetter = [];
+        results.map(shop => {
+            let duplicateLetter = false;
+            for (let i = 0; i < resultsByLetter.length; i++) {
+                if (resultsByLetter[i].title === shop.letter) {
+                    resultsByLetter[i].data.push(shop);
+                    duplicateLetter = true;
+                    break;
+                }
             }
+            if (!duplicateLetter) {
+                resultsByLetter.push({
+                    title: shop.letter,
+                    data: [shop],
+                });
+            }
+        })
+        this.setState({isLoading: false, shops: resultsByLetter})
+    }
 
     state = {
         isLoading: true,
