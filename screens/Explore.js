@@ -27,22 +27,34 @@ class Explore extends React.Component {
         loading: true,
         activeIndex: 0,
         carouselRef: null,
+        hasCards: null,
+        hasMethods: null,
     }
     userId = firebaseDb.auth().currentUser.uid
     userDoc = firebaseDb.firestore().collection('users').doc(this.userId)
+    userCards = []
 
     getDeals = () => {
+        this.userCards = []
         this.userDoc.get()
             .then(snapshot => {
-                let userCards = []
-                if (snapshot.data().cards.exists && snapshot.data().methods.exists) {
-                    userCards.push(snapshot.data().cards)
-                    userCards.push(snapshot.data().methods)
-                }
+                this.setState({
+                    hasCards: snapshot.data().hasCards,
+                    hasMethods: snapshot.data().hasMethods
+                })
+                console.log(this.state.hasCards)
+                console.log(this.state.hasMethods)
+
+                this.userCards.push(snapshot.data().cards)
+                this.userCards.push(snapshot.data().methods)
 
                 let shopsWithDeals = [...global.allShops];
+                console.log("-------------------------------------------------------------------")
+                console.log(this.userCards)
+                console.log("-------------------------------------------------------------------")
 
-                if (userCards.length === 0) {
+                if (!this.state.hasCards && !this.state.hasMethods) {
+                    console.log("no")
                     shopsWithDeals = shopsWithDeals.filter(shop => shop.deals.length !== 0)
                         .flatMap(shop => {
                             shop.deals.map(deal => {
@@ -52,6 +64,7 @@ class Explore extends React.Component {
                             return shop.deals
                         })
                 } else {
+                    console.log("cards/methods")
                     shopsWithDeals = shopsWithDeals.filter(shop => shop.deals.length !== 0)
                         .flatMap(shop => {
                             shop.deals.map(deal => {
@@ -64,12 +77,12 @@ class Explore extends React.Component {
                                 return true
                             } else {
                                 for (let i = 0; i < deal.cards.length; i++) {
-                                    if (userCards[0].includes(deal.cards[i])) {
+                                    if (this.userCards[0].includes(deal.cards[i])) {
                                         return true
                                     }
                                 }
                                 for (let j = 0; j < deal.methods.length; j++) {
-                                    if (userCards[1].includes(deal.methods[j])) {
+                                    if (this.userCards[1].includes(deal.methods[j])) {
                                         return true
                                     }
                                 }
@@ -86,13 +99,13 @@ class Explore extends React.Component {
                     loading: false,
                 });
             })
-        }
+    }
 
     componentDidMount() {
         this.getDeals()
     }
 
-    get pagination () {
+    get pagination() {
         return (
             <Pagination
                 dotsLength={this.state.picked.length}
@@ -143,8 +156,17 @@ class Explore extends React.Component {
         }
         return (
             <View style={styles.container}>
-                <Text style = {{fontSize: 20}}>Discover personalised deals</Text>
-                <Text style = {{marginBottom: 20}}>(based on your cards and payment methods)</Text>
+                {this.state.hasCards && this.state.hasMethods ? (
+                    <View>
+                        <Text style={{fontSize: 20,textAlign: 'center'}}>Discover personalised deals</Text>
+                        <Text style={{marginBottom: 20,textAlign: 'center'}}>(based on your cards and payment methods)</Text>
+                    </View>
+                ) : (
+                    <View>
+                        <Text style={{fontSize: 20,textAlign: 'center'}}>Discover deals</Text>
+                        <Text style={{marginBottom: 20,textAlign: 'center'}}>(start adding your cards/payment methods!)</Text>
+                    </View>
+                )}
                 <BlueButton onPress={() => {
                     this.getDeals()
                     Toast.show("Refreshing...")
@@ -153,10 +175,12 @@ class Explore extends React.Component {
                 >
                     Show me more deals!
                 </BlueButton>
-                <View style={{flex: 1, flexDirection: 'row', justifyContent: 'center', paddingTop:20}}>
+                <View style={{flex: 1, flexDirection: 'row', justifyContent: 'center', paddingTop: 20}}>
                     <Carousel
                         layout={"default"}
-                        ref={ref => {if (this.state.carouselRef === null) this.setState({carouselRef: ref})}}
+                        ref={ref => {
+                            if (this.state.carouselRef === null) this.setState({carouselRef: ref})
+                        }}
                         data={this.state.picked}
                         sliderWidth={300}
                         itemWidth={350}

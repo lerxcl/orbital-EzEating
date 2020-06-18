@@ -56,11 +56,13 @@ class Cards extends React.Component {
     selectItem = item => {
         if (item.isSelect) {
             this.userDoc.update({
-                cards: firebaseDb.firestore.FieldValue.arrayRemove(item.id)
+                cards: firebaseDb.firestore.FieldValue.arrayRemove(item.id),
+                hasCards: this.state.allCards.filter(card => card.isSelect).length - 1 > 0
             })
         } else {
             this.userDoc.update({
-                cards: firebaseDb.firestore.FieldValue.arrayUnion(item.id)
+                cards: firebaseDb.firestore.FieldValue.arrayUnion(item.id),
+                hasCards: this.state.allCards.filter(card => card.isSelect).length + 1 > 0
             })
         }
         item.isSelect = !item.isSelect
