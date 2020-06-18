@@ -44,7 +44,7 @@ class MerchantDeals extends React.Component {
             }
 
                 <TouchableOpacity style = {styles.add} onPress = {() => 
-                    this.props.navigation.navigate("Merchant Deal Details", {deal: null})}>
+                    this.props.navigation.navigate("New Deal")}>
                         <MaterialCommunityIcons name = "plus" size = {30} color = "white"/>
                 </TouchableOpacity>
             </View>

@@ -32,6 +32,7 @@ import MerchantProfile from "./MerchantStack/MerchantProfile";
 import MerchantDealDetails from "./MerchantStack/MerchantDealDetails";
 import MerchantCards from "./MerchantStack/MerchantCards";
 import MerchantMethods from "./MerchantStack/MerchantMethods";
+import NewDeal from "./MerchantStack/NewDeal"
 import Settings from "./MerchantStack/Settings";
 import StoreDetails from "./MerchantStack/StoreDetails";
 
@@ -160,6 +161,10 @@ const MerchantDealStackScreen = () => (
                     headerTitle: () => <DrawerHeader isLogout = {true} navigation = {navigation} title = 'My Deals'/>
                 }
             }}
+        />
+        <MerchantDealStack.Screen
+            name='New Deal'
+            component={NewDeal}
         />
         <MerchantDealStack.Screen
             name='Merchant Deal Details'

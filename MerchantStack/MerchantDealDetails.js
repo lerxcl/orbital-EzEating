@@ -8,33 +8,6 @@ function MerchantDealDetails({route}) {
     const logo = userDoc.then(snapshot => {return snapshot.data().logo})
     const shopName = userDoc.then(snapshot => {return snapshot.data().shopName})
 
-    /*return (
-
-        <ScrollView>                
-                {logo ? 
-                <Image style={styles.logo} source={{uri: deal.logo}}/>
-                : <Image style={styles.logo} source = {require('../images/Portrait_Placeholder.png')}/>
-                }
-                {shopName ? 
-                <Text style={styles.dealHeader}>{shopName}</Text>
-                : <Text style={styles.dealHeader}>[please enter shop name]</Text>
-                }
-                {deal ? 
-                <View>
-                <Text style={styles.dealHeader}>{deal.title}</Text>
-                <Image style={styles.dealBanner} source={{uri: deal.image}}/>
-                <Text style={styles.info}>{deal.description}</Text>
-                </View>
-                : 
-                <View> 
-                <Text style={styles.dealHeader}>[please enter deal title]</Text>
-                <Image style={styles.dealBanner} source = {require('../images/Portrait_Placeholder.png')}/>
-                <Text style={styles.info}>[please enter deal description]</Text>
-                </View>
-                }
-        </ScrollView>
-    )*/
-
     return (
         <View>
             <Text>Deal details</Text>
