@@ -28,7 +28,8 @@ class MerchantProfile extends React.Component {
         openingHours: null,
         contact: null,
         type: null,
-        desc: null
+        desc: null,
+        deals: null
       };
 
     setName = (newName) => {
@@ -58,7 +59,8 @@ class MerchantProfile extends React.Component {
             openingHours: snapshot.data().openingHours,
             type: snapshot.data().type,
             contact: snapshot.data().contact,
-            desc: snapshot.data().desc}))
+            desc: snapshot.data().desc,
+            deals: snapshot.data().deals}))
         this.getPermissionAsync()
       }
     
@@ -86,7 +88,7 @@ class MerchantProfile extends React.Component {
     }
 
     render() {
-        const {image, name, openingHours, type, contact, desc, nameDialogVisible, contactDialogVisible,
+        const {image, name, openingHours, type, contact, desc, deals, nameDialogVisible, contactDialogVisible,
             hoursDialogVisible, descDialogVisible, typeDialogVisible} = this.state
 
         return (
@@ -199,7 +201,7 @@ class MerchantProfile extends React.Component {
                     <Dialog.Description>
                         Enter shop description
                     </Dialog.Description>
-                    <Dialog.Input placeholder = "Shop Description" onChangeText = {this.setDesc}/>
+                    <Dialog.Input multiline = {true} placeholder = "Shop Description" onChangeText = {this.setDesc}/>
                     <Dialog.Button label = "Cancel" onPress = {() => this.setState({descDialogVisible: false})}/>
                     <Dialog.Button label = "Submit" onPress = {() => {
                         this.setState({descDialogVisible: false, desc: this.newDesc})
@@ -237,16 +239,23 @@ class MerchantProfile extends React.Component {
                     <Text>Rating: No reviews yet</Text>
                 </View>
                 <Text style = {{alignSelf: 'center', marginBottom: 20, marginTop: 10}}> Complete your profile to publish your store!</Text>
-                <BlueButton style = {{width: 300, alignSelf: 'center'}} onPress={() => 
-                    firebaseDb.firestore().collection('shops').doc(this.userId).set({
-                        shopName: name,
-                        type: type,
-                        description: desc,
-                        rating: "No reviews yet",
-                        openingHrs: openingHours,
-                        deals: this.userDoc.get().then(snapshot => {return snapshot.data().deals})
+                <BlueButton style = {{width: 300, alignSelf: 'center'}} onPress={() => {
+                    if (name && type && desc && openingHours && image) {
+                        firebaseDb.firestore().collection('shops').doc(this.userId).set({
+                            shopName: name,
+                            type: type,
+                            description: desc,
+                            rating: "No reviews yet",
+                            openingHrs: openingHours,
+                            deals: deals,
+                            contact: contact,
+                            logo: image
+                        })
+                        Alert.alert("Published Successfully!")
+                    } else {
+                        Alert.alert("Please fill in all fields and upload logo before publishing!")
                     }
-                    )}>
+                }}>
                     Publish
                 </BlueButton>
             </ScrollView>
