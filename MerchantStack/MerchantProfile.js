@@ -1,24 +1,64 @@
 import React from 'react';
-import { ScrollView, Alert, Text, SafeAreaView, StyleSheet, View, Image, TouchableOpacity} from 'react-native';
+import { ScrollView, Alert, Text, StyleSheet, View, Image, TouchableOpacity} from 'react-native';
 import firebaseDb from '../firebase/firebaseDb';
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import * as ImagePicker from 'expo-image-picker';
 import Constants from 'expo-constants';
 import * as Permissions from 'expo-permissions';
 import BlueButton from "../component/BlueButton";
+import Dialog from "react-native-dialog";
 
 class MerchantProfile extends React.Component {
 
     userId = firebaseDb.auth().currentUser.uid
-
+    userDoc = firebaseDb.firestore().collection('merchants').doc(this.userId)
+    newName = ''
+    newHours = ''
+    newContact = ''
+    newDesc = ''
+    newType = ''
     state = {
-        name: '',
-        image: null
+        nameDialogVisible: false,
+        hoursDialogVisible: false,
+        contactDialogVisible: false,
+        descDialogVisible: false,
+        typeDialogVisible: false,
+        name: null,
+        image: null,
+        openingHours: null,
+        contact: null,
+        type: null,
+        desc: null
       };
 
+    setName = (newName) => {
+        this.newName = newName
+    }
+
+    setHours = (newHours) => {
+        this.newHours = newHours
+    }
+
+    setContact = (newContact) => {
+        this.newContact = newContact
+    }
+
+    setType = (newType) => {
+        this.newType = newType
+    }
+
+    setDesc = (newDesc) => {
+        this.newDesc = newDesc
+    }
+
     componentDidMount() {
-        firebaseDb.firestore().collection('merchants').doc(this.userId).get()
-                  .then(snapshot => this.setState({name: snapshot.data().name, image: snapshot.data().logo}))
+        this.userDoc.get().then(snapshot => this.setState({
+            name: snapshot.data().name, 
+            image: snapshot.data().logo,
+            openingHours: snapshot.data().openingHours,
+            type: snapshot.data().type,
+            contact: snapshot.data().contact,
+            desc: snapshot.data().desc}))
         this.getPermissionAsync()
       }
     
@@ -46,7 +86,8 @@ class MerchantProfile extends React.Component {
     }
 
     render() {
-        const {image, name} = this.state
+        const {image, name, openingHours, type, contact, desc, nameDialogVisible, contactDialogVisible,
+            hoursDialogVisible, descDialogVisible, typeDialogVisible} = this.state
 
         return (
             <ScrollView contentContainerstyle = {styles.container}>
@@ -75,24 +116,125 @@ class MerchantProfile extends React.Component {
                         <MaterialCommunityIcons name = "pencil-outline" size = {18} color = "#DFD8C8"/>
                     </TouchableOpacity>
                 </View>
+
                 <View style={styles.textContainer}>
                     <Text>Shop Name: {name}</Text>
+                    <TouchableOpacity style = {styles.arrow} 
+                        onPress={() => this.setState({nameDialogVisible: true})}>
+                        <MaterialCommunityIcons name = "pencil-outline" size = {25}/>
+                    </TouchableOpacity>
                 </View>
+
+                <Dialog.Container visible={nameDialogVisible}>
+                    <Dialog.Title>Change Shop Name</Dialog.Title>
+                    <Dialog.Description>
+                        Enter new shop name
+                    </Dialog.Description>
+                    <Dialog.Input placeholder = "Shop Name" onChangeText = {this.setName}/>
+                    <Dialog.Button label = "Cancel" onPress = {() => this.setState({nameDialogVisible: false})}/>
+                    <Dialog.Button label = "Submit" onPress = {() => {
+                        this.setState({nameDialogVisible: false, name: this.newName})
+                        firebaseDb.firestore().collection("merchants").doc(this.userId).update({
+                            name: this.newName
+                        })
+                    }}/> 
+                </Dialog.Container>
+
                 <View style={styles.textContainer}>
-                    <Text>Opening Hours: </Text>
+                    <Text>Opening Hours: {openingHours}</Text>
+                    <TouchableOpacity style = {styles.arrow} 
+                        onPress={() => this.setState({hoursDialogVisible: true})}>
+                        <MaterialCommunityIcons name = "pencil-outline" size = {25}/>
+                    </TouchableOpacity>
                 </View>
+
+                <Dialog.Container visible={hoursDialogVisible}>
+                    <Dialog.Title>Change Opening Hours</Dialog.Title>
+                    <Dialog.Description>
+                        Enter shop opening hours
+                    </Dialog.Description>
+                    <Dialog.Input placeholder = "Opening Hours" onChangeText = {this.setHours}/>
+                    <Dialog.Button label = "Cancel" onPress = {() => this.setState({hoursDialogVisible: false})}/>
+                    <Dialog.Button label = "Submit" onPress = {() => {
+                        this.setState({hoursDialogVisible: false, openingHours: this.newHours})
+                        firebaseDb.firestore().collection("merchants").doc(this.userId).update({
+                            openingHours: this.newHours
+                        })
+                    }}/> 
+                </Dialog.Container>
+
                 <View style={styles.textContainer}>
-                    <Text>Contact: </Text>
+                    <Text>Contact: {contact} </Text>
+                    <TouchableOpacity style = {styles.arrow} 
+                        onPress={() => this.setState({contactDialogVisible: true})}>
+                        <MaterialCommunityIcons name = "pencil-outline" size = {25}/>
+                    </TouchableOpacity>
                 </View>
+
+                <Dialog.Container visible={contactDialogVisible}>
+                    <Dialog.Title>Change Contact No.</Dialog.Title>
+                    <Dialog.Description>
+                        Enter contact no.
+                    </Dialog.Description>
+                    <Dialog.Input placeholder = "Contact" onChangeText = {this.setContact}/>
+                    <Dialog.Button label = "Cancel" onPress = {() => this.setState({contactDialogVisible: false})}/>
+                    <Dialog.Button label = "Submit" onPress = {() => {
+                        this.setState({contactDialogVisible: false, contact: this.newContact})
+                        firebaseDb.firestore().collection("merchants").doc(this.userId).update({
+                            contact: this.newContact
+                        })
+                    }}/> 
+                </Dialog.Container>
+
+                <View style={styles.textLongContainer}>
+                    <Text>Description: {desc}</Text>
+                    <TouchableOpacity style = {styles.arrowLong} 
+                        onPress={() => this.setState({descDialogVisible: true})}>
+                        <MaterialCommunityIcons name = "pencil-outline" size = {25}/>
+                    </TouchableOpacity>
+                </View>
+
+                <Dialog.Container visible={descDialogVisible}>
+                    <Dialog.Title>Change Description</Dialog.Title>
+                    <Dialog.Description>
+                        Enter shop description
+                    </Dialog.Description>
+                    <Dialog.Input placeholder = "Shop Description" onChangeText = {this.setDesc}/>
+                    <Dialog.Button label = "Cancel" onPress = {() => this.setState({descDialogVisible: false})}/>
+                    <Dialog.Button label = "Submit" onPress = {() => {
+                        this.setState({descDialogVisible: false, desc: this.newDesc})
+                        firebaseDb.firestore().collection("merchants").doc(this.userId).update({
+                            desc: this.newDesc
+                        })
+                    }}/> 
+                </Dialog.Container>
+
                 <View style={styles.textContainer}>
-                    <Text>Description: </Text>
+                    <Text>Type: {type}</Text>
+                    <TouchableOpacity style = {styles.arrow} 
+                        onPress={() => this.setState({typeDialogVisible: true})}>
+                        <MaterialCommunityIcons name = "pencil-outline" size = {25}/>
+                    </TouchableOpacity>
                 </View>
-                <View style={styles.textContainer}>
-                    <Text>Type: </Text>
-                </View>
+
+                <Dialog.Container visible={typeDialogVisible}>
+                    <Dialog.Title>Change Shop Type</Dialog.Title>
+                    <Dialog.Description>
+                        Enter shop type
+                    </Dialog.Description>
+                    <Dialog.Input placeholder = "Shop Type" onChangeText = {this.setType}/>
+                    <Dialog.Button label = "Cancel" onPress = {() => this.setState({typeDialogVisible: false})}/>
+                    <Dialog.Button label = "Submit" onPress = {() => {
+                        this.setState({typeDialogVisible: false, type: this.newType})
+                        firebaseDb.firestore().collection("merchants").doc(this.userId).update({
+                            type: this.newType
+                        })
+                    }}/> 
+                </Dialog.Container>
+
                 <View style={styles.textContainer}>
                     <Text>Users Favourited: 0</Text>
-                    <Text>Rating: 0</Text>
+                    <Text>Rating: No reviews yet</Text>
                 </View>
                 <Text style = {{alignSelf: 'center', marginBottom: 20, marginTop: 10}}> Complete your profile to publish your store!</Text>
                 <BlueButton style = {{width: 300, alignSelf: 'center'}} onPress={() => console.log("published")}>
@@ -135,6 +277,18 @@ const styles = StyleSheet.create({
         paddingVertical: 15,
         alignSelf: 'center'
     },
+    textLongContainer: {
+        borderColor: 'black',
+        borderWidth: 1,
+        borderRadius: 25,
+        paddingHorizontal: 16,
+        width: 300,
+        height: 400,
+        fontSize: 20,
+        marginVertical: 10,
+        paddingVertical: 15,
+        alignSelf: 'center'
+    },
     title: {
         marginTop: 10,
         fontSize: 25,
@@ -153,8 +307,17 @@ const styles = StyleSheet.create({
     },
     arrow: {
         position: "absolute",
-        width: 300,
+        width: 50,
         height: 50,
+        right: 10,
+        alignItems: "flex-end",
+        justifyContent: "center"
+    },
+    arrowLong: {
+        position: "absolute",
+        width: 50,
+        height: 50,
+        bottom: 10,
         right: 10,
         alignItems: "flex-end",
         justifyContent: "center"

@@ -2,7 +2,6 @@ import React from 'react';
 import { Image, TouchableOpacity, FlatList, StyleSheet, Text, View } from 'react-native';
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons"; 
 import firebaseDb from '../firebase/firebaseDb';
-import Dialog from "react-native-dialog";
 
 class MerchantDeals extends React.Component {
     state = {
@@ -43,23 +42,8 @@ class MerchantDeals extends React.Component {
                 />
             }
 
-            <Dialog.Container visible={this.state.DialogVisible}>
-                    <Dialog.Title>Add A New Deal!</Dialog.Title>
-                    <Dialog.Description>
-                        Enter details for new deal
-                    </Dialog.Description>
-                    <Dialog.Input placeholder = "Title"/>
-                    <Dialog.Input placeholder = "Image (link)"/>
-                    <Dialog.Input placeholder = "Description"/>
-                    <Dialog.Input placeholder = "Cards Accepted"/>
-                    <Dialog.Input placeholder = "Payment Methods Accepted"/>
-                    <Dialog.Button label = "Cancel" onPress = {() => this.setState({DialogVisible: false})}/>
-                    <Dialog.Button label = "Submit" onPress = {() => {
-                        this.setState({DialogVisible: false})
-                    }}/> 
-                </Dialog.Container>
-
-                <TouchableOpacity style = {styles.add} onPress = {() => this.setState({DialogVisible: true})}>
+                <TouchableOpacity style = {styles.add} onPress = {() => 
+                    this.props.navigation.navigate("Merchant Deal Details", {deal: null})}>
                         <MaterialCommunityIcons name = "plus" size = {30} color = "white"/>
                 </TouchableOpacity>
             </View>

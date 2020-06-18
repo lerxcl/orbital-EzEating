@@ -42,6 +42,8 @@ const ExploreStack = createStackNavigator();
 const Drawers = createDrawerNavigator();
 const MerchantDealStack = createStackNavigator();
 const MerchantProfileStack = createStackNavigator();
+const MerchantSettings = createStackNavigator();
+
 
 function HomeStackScreen() {
     return (
@@ -157,7 +159,7 @@ const MerchantDealStackScreen = () => (
             }}
         />
         <MerchantDealStack.Screen
-            name='Deal Details'
+            name='Merchant Deal Details'
             component={MerchantDealDetails}
         />
     </MerchantDealStack.Navigator>
@@ -190,6 +192,30 @@ const MerchantProfileStackScreen = () => (
             component={StoreDetails}
         />
     </MerchantProfileStack.Navigator>
+)
+
+const MerchantSettingsScreen = () => (
+    <MerchantSettings.Navigator
+        screenOptions={{
+            headerStyle: {
+                backgroundColor: "#454b64",
+            },
+            headerTintColor: '#fff',
+            headerTitleStyle: {
+                fontWeight: 'bold',
+            },
+            headerTitleAlign: 'center',
+        }}>
+        <MerchantSettings.Screen
+            name = 'Settings'
+            component = {Settings}
+            options = {({navigation}) => {
+                return {
+                    headerTitle: () => <DrawerHeader isLogout = {false} navigation = {navigation} title = 'Settings'/>
+                }
+            }}
+        />
+    </MerchantSettings.Navigator>
 )
 
 export default function App() {
@@ -229,7 +255,9 @@ export default function App() {
         <AuthContext.Provider value={authContext}>
             <NavigationContainer>
                 {userToken ? ( isMerchant ? (
-                    <Drawers.Navigator drawerContent={props => <DrawerContent {...props} />}>
+                    <Drawers.Navigator 
+                        drawerContent={props => <DrawerContent {...props} />}
+                    >
                         <Drawers.Screen
                             name='My Deals'
                             component={MerchantDealStackScreen}
@@ -248,7 +276,7 @@ export default function App() {
                         />
                         <Drawers.Screen
                             name='Settings'
-                            component={Settings}
+                            component={MerchantSettingsScreen}
                         />
                     </Drawers.Navigator>
                 ) : (
