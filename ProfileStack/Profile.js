@@ -7,8 +7,6 @@ import Constants from 'expo-constants';
 import * as Permissions from 'expo-permissions';
 import BlueButton from "../component/BlueButton";
 
-
-
 class Profile extends React.Component {
 
     state = {

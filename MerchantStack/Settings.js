@@ -101,6 +101,5 @@ const styles = StyleSheet.create({
         width: 400,
         marginVertical: 10,
         paddingVertical: 15,
-        marginTop: 50
     },
 })
