@@ -32,6 +32,36 @@ class AllShops extends React.Component {
     state = {
         isLoading: true,
         shops: null,
+        search: '',
+    }
+
+    updateSearch = (search) => {
+        let newResult = global.allShops.filter(shop => {
+            const shopName = shop.shopName.toUpperCase();
+            const searchInput = search.toUpperCase();
+            return shopName.indexOf(searchInput) > -1;
+        })
+        newResult = newResult.map(x =>
+            ({...x, letter: x.shopName[0].toUpperCase()})
+        );
+        const resultsByLetter = [];
+        newResult.map(shop => {
+            let duplicateLetter = false;
+            for (let i = 0; i < resultsByLetter.length; i++) {
+                if (resultsByLetter[i].title === shop.letter) {
+                    resultsByLetter[i].data.push(shop);
+                    duplicateLetter = true;
+                    break;
+                }
+            }
+            if (!duplicateLetter) {
+                resultsByLetter.push({
+                    title: shop.letter,
+                    data: [shop],
+                });
+            }
+        })
+        this.setState({search: search, shops: resultsByLetter});
     }
 
     renderSectionHeader = obj => <Text style={styles.name}>{obj.section.title}</Text>
@@ -46,6 +76,15 @@ class AllShops extends React.Component {
                 </View>)
 
         return (
+            <View style={{flex:1}}>
+            <SearchBar
+                placeholder="Search Here..."
+                onChangeText={this.updateSearch}
+                value={this.state.search}
+                searchIcon={{size:24}}
+                //containerStyle={{backgroundColor:'#698896'}}
+                //inputContainerStyle={{backgroundColor:'#698896'}}
+            />
             <View style={styles.container}>
                 <SectionList
                     sections={shops}
@@ -67,6 +106,7 @@ class AllShops extends React.Component {
                     )}
                     keyExtractor={item => item.shopName}
                 />
+            </View>
             </View>
         )
     }
