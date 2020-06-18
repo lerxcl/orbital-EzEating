@@ -233,11 +233,20 @@ class MerchantProfile extends React.Component {
                 </Dialog.Container>
 
                 <View style={styles.textContainer}>
-                    <Text>Users Favourited: 0</Text>
+                    <Text>Favourites: 0</Text>
                     <Text>Rating: No reviews yet</Text>
                 </View>
                 <Text style = {{alignSelf: 'center', marginBottom: 20, marginTop: 10}}> Complete your profile to publish your store!</Text>
-                <BlueButton style = {{width: 300, alignSelf: 'center'}} onPress={() => console.log("published")}>
+                <BlueButton style = {{width: 300, alignSelf: 'center'}} onPress={() => 
+                    firebaseDb.firestore().collection('shops').doc(this.userId).set({
+                        shopName: name,
+                        type: type,
+                        description: desc,
+                        rating: "No reviews yet",
+                        openingHrs: openingHours,
+                        deals: this.userDoc.get().then(snapshot => {return snapshot.data().deals})
+                    }
+                    )}>
                     Publish
                 </BlueButton>
             </ScrollView>

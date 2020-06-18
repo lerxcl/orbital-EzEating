@@ -11,7 +11,8 @@ class MerchantDeals extends React.Component {
 
     componentDidMount() {
         firebaseDb.firestore().collection('merchants').doc(firebaseDb.auth().currentUser.uid)
-                  .get().then(snapshot => this.setState({deals: snapshot.data().deals}))
+                  .get().then(snapshot => {
+                      if (snapshot.exists) this.setState({deals: snapshot.data().deals})})
     }
 
     render() {

@@ -52,14 +52,11 @@ class MerchantContainer extends React.Component {
                         displayName: "merchant"
                       })
                     }
-                    firebaseDb.firestore().collection('shops').doc(cred.user.uid).set({
+                    firebaseDb.firestore().collection('merchants').doc(cred.user.uid).set({
                         cards: this.state.selectedCards,
                         methods: this.state.selectedMethods,
-                        shopName: this.state.name,
+                        name: this.state.name,
                         deals: []
-                    })
-                    firebaseDb.firestore().collection('users').doc(cred.user.uid).set({
-                        fav: [], // creating empty array of user's favourite shops
                     })
                     this.setState({
                         name: '',
