@@ -67,8 +67,8 @@ class NewDeal extends React.Component {
 
     onSelectedChange = selected => {
         this.setState({selected: selected,
-            selectedCards: selected.filter(x => this.state.cards.filter(card => card.id === x)),
-            selectedMethods: selected.filter(x => this.state.methods.filter(method => method.id === x))
+            selectedCards: selected.filter(id => this.state.cards.filter(card => card.id === id).length === 1),
+            selectedMethods: selected.filter(id => this.state.methods.filter(method => method.id === id).length === 1)
         });
     }
 
@@ -157,7 +157,7 @@ class NewDeal extends React.Component {
 
                 <BlueButton
                     onPress={() => {
-                        if (image && title && desc) {
+                        if (title && desc) {
                         firebaseDb.firestore().collection('shops').doc(this.userId).get()
                             .then(documentSnapshot => {
                                 this.shopDeals = documentSnapshot.data().deals
