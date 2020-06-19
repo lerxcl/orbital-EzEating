@@ -8,6 +8,11 @@ import BlueButton from "../component/BlueButton";
 import * as ImagePicker from 'expo-image-picker';
 import Constants from 'expo-constants';
 import * as Permissions from 'expo-permissions';
+import { YellowBox } from 'react-native'
+
+YellowBox.ignoreWarnings([
+    'VirtualizedLists should never be nested', // TODO: Remove when fixed
+])
 
 
 class NewDeal extends React.Component {
@@ -77,6 +82,7 @@ class NewDeal extends React.Component {
         const {title, desc, image, methods, cards, selectedCards, selectedMethods} = this.state
 
         return (
+            <ScrollView nestedScrollEnabled={true}>
             <View style={styles.container}>
                 {!image &&
                 <View style={styles.box}>
@@ -153,6 +159,8 @@ class NewDeal extends React.Component {
                     tagTextColor="#CCC"
                     selectedItemTextColor="#CCC"
                     selectedItemIconColor="#CCC"
+                    fixedHeight={true}
+
                 />
 
                 <MultiSelect
@@ -169,6 +177,8 @@ class NewDeal extends React.Component {
                     tagTextColor="#CCC"
                     selectedItemTextColor="#CCC"
                     selectedItemIconColor="#CCC"
+                    fixedHeight={true}
+
                 />
 
                 <BlueButton
@@ -217,6 +227,7 @@ class NewDeal extends React.Component {
                     Submit
                 </BlueButton>
             </View>
+            </ScrollView>
         )
     }
 
