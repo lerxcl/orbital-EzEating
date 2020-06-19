@@ -2,18 +2,12 @@ import React from 'react';
 import {Alert, TextInput, TouchableOpacity, StyleSheet, Text, View, Image, ScrollView} from "react-native";
 import firebaseDb from "../firebase/firebaseDb";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import MultiSelect from 'react-native-multiple-select';
 import {getMethods, getCards} from '../component/API';
 import BlueButton from "../component/BlueButton";
 import * as ImagePicker from 'expo-image-picker';
 import Constants from 'expo-constants';
 import * as Permissions from 'expo-permissions';
-import { YellowBox } from 'react-native'
-
-YellowBox.ignoreWarnings([
-    'VirtualizedLists should never be nested', // TODO: Remove when fixed
-])
-
+import SectionedMultiSelect from 'react-native-sectioned-multi-select';
 
 class NewDeal extends React.Component {
     state = {
@@ -24,6 +18,8 @@ class NewDeal extends React.Component {
         cards: [],
         title: '',
         desc: '',
+        cardsAndMethods: [],
+        selected:[],
     }
     shopDeals = [];
     userId = firebaseDb.auth().currentUser.uid;
@@ -63,15 +59,17 @@ class NewDeal extends React.Component {
 
     componentDidMount() {
         this.getPermissionAsync()
-        getMethods(this.onMethodsReceived)
-        getCards(this.onCardsReceived)
+        const combined = [];
+        getCards(this.onCardsReceived).then(() => combined.push({name:"Cards", id:0, children:this.state.cards}))
+        getMethods(this.onMethodsReceived).then(() => combined.push({name:"Methods", id:1, children:this.state.methods}))
+        this.setState({cardsAndMethods: combined})
     }
 
-    onSelectedMethodsChange = selectedMethods => {
-        this.setState({selectedMethods});
-    }
-    onSelectedCardsChange = selectedCards => {
-        this.setState({selectedCards});
+    onSelectedChange = selected => {
+        this.setState({selected: selected,
+            selectedCards: selected.filter(x => this.state.cards.filter(card => card.id === x)),
+            selectedMethods: selected.filter(x => this.state.methods.filter(method => method.id === x))
+        });
     }
 
     updateTitle = (title) => this.setState({title});
@@ -79,10 +77,10 @@ class NewDeal extends React.Component {
 
     render() {
 
-        const {title, desc, image, methods, cards, selectedCards, selectedMethods} = this.state
+        const {title, desc, image, cardsAndMethods, selected, selectedCards, selectedMethods} = this.state
 
         return (
-            <ScrollView nestedScrollEnabled={true}>
+            <ScrollView>
             <View style={styles.container}>
                 {!image &&
                 <View style={styles.box}>
@@ -145,40 +143,16 @@ class NewDeal extends React.Component {
                 <Text style={{width: 300, marginBottom: 5, marginTop: 10, marginLeft: 50}}>This deal is only applicable
                     with...</Text>
 
-                <MultiSelect
-                    styleMainWrapper={styles.select}
-                    styleTextDropdown={styles.text}
-                    items={methods}
+                <SectionedMultiSelect
+                    items={cardsAndMethods}
                     uniqueKey="id"
-                    onSelectedItemsChange={this.onSelectedMethodsChange}
-                    selectedItems={selectedMethods}
+                    subKey="children"
                     selectText="Payment methods"
-                    searchInputPlaceholderText="Search Items..."
-                    tagRemoveIconColor="#CCC"
-                    tagBorderColor="#CCC"
-                    tagTextColor="#CCC"
-                    selectedItemTextColor="#CCC"
-                    selectedItemIconColor="#CCC"
-                    fixedHeight={true}
-
-                />
-
-                <MultiSelect
-                    styleMainWrapper={styles.select}
-                    styleTextDropdown={styles.text}
-                    items={cards}
-                    uniqueKey="id"
-                    onSelectedItemsChange={this.onSelectedCardsChange}
-                    selectedItems={selectedCards}
-                    selectText="Cards"
-                    searchInputPlaceholderText="Search Items..."
-                    tagRemoveIconColor="#CCC"
-                    tagBorderColor="#CCC"
-                    tagTextColor="#CCC"
-                    selectedItemTextColor="#CCC"
-                    selectedItemIconColor="#CCC"
-                    fixedHeight={true}
-
+                    showDropDowns={true}
+                    readOnlyHeadings={true}
+                    onSelectedItemsChange={this.onSelectedChange}
+                    selectedItems={selected}
+                    expandDropDowns={true}
                 />
 
                 <BlueButton
@@ -188,11 +162,11 @@ class NewDeal extends React.Component {
                             .then(documentSnapshot => {
                                 this.shopDeals = documentSnapshot.data().deals
                                 this.shopDeals.push({
-                                    cards: this.state.selectedCards,
-                                    description: this.state.desc,
-                                    image: this.state.image,
-                                    methods: this.state.selectedMethods,
-                                    title: this.state.title
+                                    cards: selectedCards,
+                                    description: desc,
+                                    image: image,
+                                    methods: selectedMethods,
+                                    title: title
                                 })
                                 return this.shopDeals
                             }).then(shopDeals => {
@@ -201,11 +175,11 @@ class NewDeal extends React.Component {
                             });
                         firebaseDb.firestore().collection('merchants').doc(this.userId).update({
                             deals: firebaseDb.firestore.FieldValue.arrayUnion({
-                                cards: this.state.selectedCards,
-                                description: this.state.desc,
-                                image: this.state.image,
-                                methods: this.state.selectedMethods,
-                                title: this.state.title
+                                cards: selectedCards,
+                                description: desc,
+                                image: image,
+                                methods: selectedMethods,
+                                title: title
                             })
                         })
                         this.setState({
