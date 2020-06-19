@@ -167,7 +167,7 @@ const MerchantDealStackScreen = () => (
             component={NewDeal}
         />
         <MerchantDealStack.Screen
-            name='Merchant Deal Details'
+            name='Deal Details'
             component={MerchantDealDetails}
         />
     </MerchantDealStack.Navigator>
