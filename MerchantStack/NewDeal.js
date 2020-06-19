@@ -247,16 +247,6 @@ const styles = StyleSheet.create({
         alignItems: "center",
         marginTop: 10
     },
-    text: {
-        fontSize: 12,
-        paddingHorizontal: 16,
-    },
-    select: {
-        paddingHorizontal: 16,
-        width: 300,
-        marginVertical: 5,
-        paddingVertical: 5
-    },
     image: {
         flex: 1,
         width: 200,

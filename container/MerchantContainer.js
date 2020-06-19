@@ -1,10 +1,9 @@
 import BlueButton from '../component/BlueButton';
-import {Alert, Image, StyleSheet, TextInput, Text, KeyboardAvoidingView} from "react-native";
+import {Alert, Image, StyleSheet, Text, TextInput, KeyboardAvoidingView} from "react-native";
 import React from "react";
 import firebaseDb from '../firebase/firebaseDb';
-import MultiSelect from 'react-native-multiple-select';
-import {getMethods, getCards} from '../component/API'
-
+import {getMethods, getCards} from '../component/API';
+import SectionedMultiSelect from 'react-native-sectioned-multi-select';
 
 class MerchantContainer extends React.Component {
     state = {
@@ -15,7 +14,9 @@ class MerchantContainer extends React.Component {
         selectedMethods: [],
         selectedCards: [],
         methods: [],
-        cards: []
+        cards: [],
+        cardsAndMethods: [],
+        selected:[],
     };
 
     onMethodsReceived = (methods) => {
@@ -27,13 +28,22 @@ class MerchantContainer extends React.Component {
             cards: prevState.cards = cards
         }))}
     componentDidMount() {
-        getMethods(this.onMethodsReceived)
-        getCards(this.onCardsReceived)}
+        const combined = [];
+        getCards(this.onCardsReceived).then(() => combined.push({name: "Cards", id: 0, children: this.state.cards}))
+        getMethods(this.onMethodsReceived).then(() => combined.push({
+            name: "Methods",
+            id: 1,
+            children: this.state.methods
+        }))
+        this.setState({cardsAndMethods: combined})
+    }
 
-    onSelectedMethodsChange = selectedMethods => {
-        this.setState({selectedMethods});}
-    onSelectedCardsChange = selectedCards => {
-        this.setState({selectedCards});}
+    onSelectedChange = selected => {
+        this.setState({selected: selected,
+            selectedCards: selected.filter(id => this.state.cards.filter(card => card.id === id).length === 1),
+            selectedMethods: selected.filter(id => this.state.methods.filter(method => method.id === id).length === 1)
+        });
+    }
 
     updateName = (name) => this.setState({name});
     updateEmail = (email) => this.setState({email});
@@ -71,7 +81,7 @@ class MerchantContainer extends React.Component {
     }
 
     render() {
-        const {name, email, password, selectedMethods, selectedCards, methods, cards} = this.state
+        const {name, email, password, selected, cardsAndMethods} = this.state
 
         return (
             <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -107,36 +117,18 @@ class MerchantContainer extends React.Component {
                     autoCapitalize='none'
                 />
 
-                <MultiSelect
-                    styleMainWrapper={styles.select}
-                    styleTextDropdown={styles.text}
-                    items={methods}
-                    uniqueKey="id"
-                    onSelectedItemsChange={this.onSelectedMethodsChange}
-                    selectedItems={selectedMethods}
-                    selectText="Payment methods accepted"
-                    searchInputPlaceholderText="Search Items..."
-                    tagRemoveIconColor="#CCC"
-                    tagBorderColor="#CCC"
-                    tagTextColor="#CCC"
-                    selectedItemTextColor="#CCC"
-                    selectedItemIconColor="#CCC"
-                />
+                <Text>Cards/Methods</Text>
 
-                <MultiSelect
-                    styleMainWrapper={styles.select}
-                    styleTextDropdown={styles.text}
-                    items={cards}
+                <SectionedMultiSelect
+                    items={cardsAndMethods}
                     uniqueKey="id"
-                    onSelectedItemsChange={this.onSelectedCardsChange}
-                    selectedItems={selectedCards}
-                    selectText="Cards accepted"
-                    searchInputPlaceholderText="Search Items..."
-                    tagRemoveIconColor="#CCC"
-                    tagBorderColor="#CCC"
-                    tagTextColor="#CCC"
-                    selectedItemTextColor="#CCC"
-                    selectedItemIconColor="#CCC"
+                    subKey="children"
+                    selectText="Payment methods"
+                    showDropDowns={true}
+                    readOnlyHeadings={true}
+                    onSelectedItemsChange={this.onSelectedChange}
+                    selectedItems={selected}
+                    expandDropDowns={true}
                 />
 
                 <BlueButton
@@ -176,16 +168,6 @@ const styles = StyleSheet.create({
         borderRadius: 25,
         width: 300,
     },
-    text: {
-        fontSize: 12,
-        paddingHorizontal: 16,
-    },
-    select: {
-        paddingHorizontal: 16,
-        width: 300,
-        marginVertical: 5,
-        paddingVertical: 5,
-    }
 });
 
 export default MerchantContainer;
