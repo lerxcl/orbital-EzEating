@@ -42,16 +42,11 @@ class Explore extends React.Component {
                     hasCards: snapshot.data().hasCards,
                     hasMethods: snapshot.data().hasMethods
                 })
-                console.log(this.state.hasCards)
-                console.log(this.state.hasMethods)
 
                 this.userCards.push(snapshot.data().cards)
                 this.userCards.push(snapshot.data().methods)
 
                 let shopsWithDeals = [...global.allShops];
-                console.log("-------------------------------------------------------------------")
-                console.log(this.userCards)
-                console.log("-------------------------------------------------------------------")
 
                 if (!this.state.hasCards && !this.state.hasMethods) {
                     console.log("no")
@@ -62,17 +57,18 @@ class Explore extends React.Component {
                                 deal.logo = shop.logo
                             })
                             return shop.deals
-                        })
+                        }).filter(deal => deal.cards.length === 0  && deal.methods.length === 0)
                 } else {
                     console.log("cards/methods")
                     shopsWithDeals = shopsWithDeals.filter(shop => shop.deals.length !== 0)
-                        .flatMap(shop => {
+                        .map(shop => {
                             shop.deals.map(deal => {
                                 deal.name = shop.shopName
                                 deal.logo = shop.logo
                             })
                             return shop.deals
-                        }).filter(deal => {
+                        }).flatMap(deals => deals)
+                        .filter(deal => {
                             if (deal.cards.length === 0 && deal.methods.length === 0) {
                                 return true
                             } else {
