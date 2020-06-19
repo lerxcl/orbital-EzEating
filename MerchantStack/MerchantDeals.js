@@ -2,6 +2,9 @@ import React from 'react';
 import { Image, TouchableOpacity, FlatList, StyleSheet, Text, View } from 'react-native';
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons"; 
 import firebaseDb from '../firebase/firebaseDb';
+import BlueButton from '../component/BlueButton';
+import Toast from 'react-native-simple-toast';
+
 
 class MerchantDeals extends React.Component {
     state = {
@@ -9,16 +12,29 @@ class MerchantDeals extends React.Component {
         DialogVisible: false,
     }
 
-    componentDidMount() {
+    getData = () => {
         firebaseDb.firestore().collection('merchants').doc(firebaseDb.auth().currentUser.uid)
                   .get().then(snapshot => {
                       if (snapshot.exists) this.setState({deals: snapshot.data().deals})})
+    }
+
+    componentDidMount() {
+        this.getData()
+        
     }
 
     render() {
         const {deals} = this.state
         return (
             <View style={styles.container}>
+                
+            <BlueButton onPress={() => {
+                this.getData();
+                Toast.show("Refreshing...")
+            }}
+            >
+                Refresh
+            </BlueButton>
 
             {deals.length === 0 &&
                 <Text> Start adding deals to feature for your store! </Text>
