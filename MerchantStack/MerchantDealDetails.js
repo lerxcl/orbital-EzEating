@@ -81,11 +81,13 @@ function MerchantDealDetails({route}) {
                     </TouchableOpacity>
                 </View>
 
+                <View style = {styles.box}>
                 <Text style={styles.info}>{desc}</Text>
                 <TouchableOpacity style = {styles.arrowInfo} 
                         onPress={() => setDescDialog(true)}>
                         <MaterialCommunityIcons name = "pencil-outline" size = {25}/>
                     </TouchableOpacity>
+                </View>
 
                 <Dialog.Container visible={descDialog}>
                     <Dialog.Title>Edit Deal Description </Dialog.Title>
@@ -124,9 +126,11 @@ const styles = StyleSheet.create({
         marginTop: 10
     },
     box: {
-        width: 350,
+        width: 300,
         height: 300,
-        marginBottom: 20 
+        marginBottom: 20,
+        borderBottomWidth: 1,
+        alignItems: 'center'
     },
     dealBanner: {
         width: 350,
@@ -135,11 +139,12 @@ const styles = StyleSheet.create({
         marginBottom: 20
     },
     dealHeader: {
-        fontSize: 20,
+        fontSize: 18,
         fontWeight: 'bold',
         paddingHorizontal: 40,
         textAlign: 'center',
-        borderBottomWidth: 1
+        borderBottomWidth: 1,
+        width: 300,
     },
     arrow: {
         position: "absolute",
@@ -153,17 +158,15 @@ const styles = StyleSheet.create({
         position: "absolute",
         width: 50,
         height: 50,
-        right: 50,
+        right: 20,
         bottom: -5,
         alignItems: "flex-end",
         justifyContent: "center"
     },
     info: {
         marginTop: 20,
-        fontSize: 15,
         paddingHorizontal: 40,
-        borderBottomWidth: 1,
-        width: 300,
-        height: 250
+        width: 350,
+        height: 300
     },
 })
