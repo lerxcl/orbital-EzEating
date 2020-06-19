@@ -57,7 +57,7 @@ class Explore extends React.Component {
                                 deal.logo = shop.logo
                             })
                             return shop.deals
-                        }).filter(deal => deal.cards.length === 0  && deal.methods.length === 0)
+                        }).filter(deal => deal.cards.length === 0 && deal.methods.length === 0)
                 } else {
                     console.log("cards/methods")
                     shopsWithDeals = shopsWithDeals.filter(shop => shop.deals.length !== 0)
@@ -152,10 +152,10 @@ class Explore extends React.Component {
         }
         return (
             <View style={styles.container}>
-                {this.state.hasCards && this.state.hasMethods ? (
+                {this.state.hasCards || this.state.hasMethods ? (
                     <View>
                         <Text style={{fontSize: 20,textAlign: 'center'}}>Discover personalised deals</Text>
-                        <Text style={{marginBottom: 20,textAlign: 'center'}}>(based on your cards and payment methods)</Text>
+                        <Text style={{marginBottom: 20,textAlign: 'center'}}>(based on your cards/payment methods)</Text>
                     </View>
                 ) : (
                     <View>
