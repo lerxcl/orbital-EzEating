@@ -5,6 +5,11 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import MultiSelect from 'react-native-multiple-select';
 import {getMethods, getCards} from '../component/API';
 import BlueButton from "../component/BlueButton"
+import { YellowBox } from 'react-native'
+
+YellowBox.ignoreWarnings([
+    'VirtualizedLists should never be nested', // TODO: Remove when fixed
+])
 
 
 class NewDeal extends React.Component {
@@ -51,6 +56,7 @@ class NewDeal extends React.Component {
         const {title, desc, image, methods, cards, selectedCards, selectedMethods} = this.state
 
         return (
+            <ScrollView nestedScrollEnabled={true}>
             <View style={styles.container}>
                 {!image &&
                 <View style={styles.box}>
@@ -107,6 +113,8 @@ class NewDeal extends React.Component {
                     tagTextColor="#CCC"
                     selectedItemTextColor="#CCC"
                     selectedItemIconColor="#CCC"
+                    fixedHeight={true}
+
                 />
 
                 <MultiSelect
@@ -123,34 +131,39 @@ class NewDeal extends React.Component {
                     tagTextColor="#CCC"
                     selectedItemTextColor="#CCC"
                     selectedItemIconColor="#CCC"
+                    fixedHeight={true}
+
                 />
 
                 <BlueButton
                     onPress={() => {
-                        firebaseDb.firestore().collection('shops').doc(this.userId).get()
-                            .then(documentSnapshot => {
-                                this.shopDeals = documentSnapshot.data().deals
-                                this.shopDeals.push({
-                                    cards: this.state.selectedCards,
-                                    description: this.state.desc,
-                                    image: this.state.image,
-                                    methods: this.state.selectedMethods,
-                                    title: this.state.title
-                                })
-                                return this.shopDeals
-                            }).then(shopDeals => {
-                            firebaseDb.firestore().collection('shops').doc(this.userId).update({
-                                deals: shopDeals
-                            });
-                            Alert.alert("Published Successfully!")
-                        })
-
-
+                        if (title && image && desc) {
+                            firebaseDb.firestore().collection('shops').doc(this.userId).get()
+                                .then(documentSnapshot => {
+                                    this.shopDeals = documentSnapshot.data().deals
+                                    this.shopDeals.push({
+                                        cards: this.state.selectedCards,
+                                        description: this.state.desc,
+                                        image: this.state.image,
+                                        methods: this.state.selectedMethods,
+                                        title: this.state.title
+                                    })
+                                    return this.shopDeals
+                                }).then(shopDeals => {
+                                firebaseDb.firestore().collection('shops').doc(this.userId).update({
+                                    deals: shopDeals
+                                });
+                                Alert.alert("Published Successfully!")
+                            })
+                        } else {
+                            Alert.alert("Please fill in all fields and upload picture before publishing!")
+                        }
                     }}
                 >
                     Submit
                 </BlueButton>
             </View>
+            </ScrollView>
         )
     }
 
