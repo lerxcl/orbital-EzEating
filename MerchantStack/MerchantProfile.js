@@ -201,7 +201,7 @@ class MerchantProfile extends React.Component {
                     <Dialog.Description>
                         Enter shop description
                     </Dialog.Description>
-                    <Dialog.Input multiline = {true} placeholder = "Shop Description" onChangeText = {this.setDesc}/>
+                    <Dialog.Input numberOfLines = {6} multiline = {true} defaultValue = {desc} onChangeText = {this.setDesc}/>
                     <Dialog.Button label = "Cancel" onPress = {() => this.setState({descDialogVisible: false})}/>
                     <Dialog.Button label = "Submit" onPress = {() => {
                         this.setState({descDialogVisible: false, desc: this.newDesc})

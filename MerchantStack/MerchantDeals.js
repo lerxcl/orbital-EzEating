@@ -27,7 +27,7 @@ class MerchantDeals extends React.Component {
         const {deals} = this.state
         return (
             <View style={styles.container}>
-                
+
             <BlueButton onPress={() => {
                 this.getData();
                 Toast.show("Refreshing...")
@@ -45,7 +45,7 @@ class MerchantDeals extends React.Component {
                     data={deals}
                     renderItem={({item}) => (
                     <TouchableOpacity style={styles.itemContainer} onPress={() => this.props.navigation
-                        .navigate('Merchant Deal Details', {
+                        .navigate('Deal Details', {
                             deal: item
                         })}>
                         <View style={{alignItems: 'flex-end', flex: 0.2}}>
