@@ -6,8 +6,7 @@ import * as ImagePicker from 'expo-image-picker';
 import Constants from 'expo-constants';
 import * as Permissions from 'expo-permissions';
 import Dialog from "react-native-dialog";
-
-
+import BlueButton from '../component/BlueButton'
 
 function MerchantDealDetails({route}) {
     const {deal} = route.params;
@@ -99,6 +98,20 @@ function MerchantDealDetails({route}) {
                     }}/>
                 </Dialog.Container>
 
+            <Text style = {{marginBottom: 20}}>Please save changes before leaving page!</Text>
+
+            <BlueButton style = {{width: 300, alignSelf: 'center'}} onPress={() => {
+                    userDoc.update({
+                        deals: firebaseDb.firestore.FieldValue.arrayRemove({title: deal.title, cards: deal.cards, methods: deal.methods, image: deal.image, description: deal.description})
+                    })
+                    userDoc.update({
+                        deals: firebaseDb.firestore.FieldValue.arrayUnion({title: title, cards: deal.cards, methods: deal.methods, image: image, description: desc})
+                    })
+                    Alert.alert("Deal details saved!")
+                }}>
+                    Save
+                </BlueButton>
+
             </View>
         </ScrollView>
     )
@@ -127,7 +140,7 @@ const styles = StyleSheet.create({
     },
     box: {
         width: 300,
-        height: 300,
+        height: 200,
         marginBottom: 20,
         borderBottomWidth: 1,
         alignItems: 'center'
@@ -167,6 +180,6 @@ const styles = StyleSheet.create({
         marginTop: 20,
         paddingHorizontal: 40,
         width: 350,
-        height: 300
+        height: 200
     },
 })
