@@ -1,5 +1,5 @@
 import React from 'react';
-import {Alert, TextInput, TouchableOpacity, StyleSheet, Text, View, Image, ScrollView} from "react-native"; 
+import {Alert, TextInput, TouchableOpacity, StyleSheet, Text, View, Image, ScrollView} from "react-native";
 import firebaseDb from "../firebase/firebaseDb";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import MultiSelect from 'react-native-multiple-select';
@@ -15,25 +15,33 @@ class NewDeal extends React.Component {
         methods: [],
         cards: [],
         title: '',
-        desc: ''
+        desc: '',
     }
+    shopDeals = [];
+    userId = firebaseDb.auth().currentUser.uid;
 
     onMethodsReceived = (methods) => {
         this.setState(prevState => ({
             methods: prevState.methods = methods
-        }))}
+        }))
+    }
     onCardsReceived = (cards) => {
         this.setState(prevState => ({
             cards: prevState.cards = cards
-        }))}
+        }))
+    }
+
     componentDidMount() {
         getMethods(this.onMethodsReceived)
-        getCards(this.onCardsReceived)}
+        getCards(this.onCardsReceived)
+    }
 
     onSelectedMethodsChange = selectedMethods => {
-        this.setState({selectedMethods});}
+        this.setState({selectedMethods});
+    }
     onSelectedCardsChange = selectedCards => {
-        this.setState({selectedCards});}
+        this.setState({selectedCards});
+    }
 
     updateTitle = (title) => this.setState({title});
     updateDesc = (desc) => this.setState({desc});
@@ -41,44 +49,49 @@ class NewDeal extends React.Component {
     render() {
 
         const {title, desc, image, methods, cards, selectedCards, selectedMethods} = this.state
-        
+
         return (
-            <View style = {styles.container}>
-                {!image && 
-                <View style = {styles.box}>
-                    <TouchableOpacity style = {styles.add} onPress = {() => {
-                    Alert.alert(
-                        'Add image for deal',
-                        'Do you want to add an image for this deal?',
-                        [
-                        {text: 'No', onPress: () => {}},
-                        {text: 'Yes', onPress: () => console.log("change image")}
-                        ]
-                    )}}>
-                        <MaterialCommunityIcons name = "plus" size = {50} color = 'black'/>
+            <View style={styles.container}>
+                {!image &&
+                <View style={styles.box}>
+                    <TouchableOpacity style={styles.add} onPress={() => {
+                        Alert.alert(
+                            'Add image for deal',
+                            'Do you want to add an image for this deal?',
+                            [
+                                {
+                                    text: 'No', onPress: () => {
+                                    }
+                                },
+                                {text: 'Yes', onPress: () => console.log("change image")}
+                            ]
+                        )
+                    }}>
+                        <MaterialCommunityIcons name="plus" size={50} color='black'/>
                     </TouchableOpacity>
                 </View>}
 
                 {image &&
-                <Image source = {{ uri: image }}
-                           style = {styles.image}
-                           resizeMode = "center"/>}
+                <Image source={{uri: image}}
+                       style={styles.image}
+                       resizeMode="center"/>}
 
                 <View style={styles.textContainer}>
-                    <TextInput 
-                    placeholder="Enter Deal Title"
-                    value={title}
-                    onChangeText={this.updateTitle}/>
+                    <TextInput
+                        placeholder="Enter Deal Title"
+                        value={title}
+                        onChangeText={this.updateTitle}/>
                 </View>
                 <View style={styles.textContainerLong}>
-                    <TextInput 
-                    multiline = {true} 
-                    placeholder = 'Enter Deal Description'
-                    value={desc}
-                    onChangeText={this.updateDesc}/>
+                    <TextInput
+                        multiline={true}
+                        placeholder='Enter Deal Description'
+                        value={desc}
+                        onChangeText={this.updateDesc}/>
                 </View>
 
-                <Text style = {{width: 300, marginBottom: 5, marginTop: 10, marginLeft: 50}}>This deal is only applicable with...</Text>
+                <Text style={{width: 300, marginBottom: 5, marginTop: 10, marginLeft: 50}}>This deal is only applicable
+                    with...</Text>
 
                 <MultiSelect
                     styleMainWrapper={styles.select}
@@ -113,7 +126,27 @@ class NewDeal extends React.Component {
                 />
 
                 <BlueButton
-                    onPress={() => console.log("submit")}
+                    onPress={() => {
+                        firebaseDb.firestore().collection('shops').doc(this.userId).get()
+                            .then(documentSnapshot => {
+                                this.shopDeals = documentSnapshot.data().deals
+                                this.shopDeals.push({
+                                    cards: this.state.selectedCards,
+                                    description: this.state.desc,
+                                    image: this.state.image,
+                                    methods: this.state.selectedMethods,
+                                    title: this.state.title
+                                })
+                                return this.shopDeals
+                            }).then(shopDeals => {
+                            firebaseDb.firestore().collection('shops').doc(this.userId).update({
+                                deals: shopDeals
+                            });
+                            Alert.alert("Published Successfully!")
+                        })
+
+
+                    }}
                 >
                     Submit
                 </BlueButton>
@@ -122,6 +155,7 @@ class NewDeal extends React.Component {
     }
 
 }
+
 export default NewDeal;
 
 const styles = StyleSheet.create({
