@@ -6,7 +6,7 @@ import BlueButton from '../component/BlueButton';
 
 let Toast;
 if (Platform.OS === "android") {
-    Toast = require('react-native-simple-toast')
+    Toast = require('react-native-simple-toast').default
 }
 
 class MerchantDeals extends React.Component {

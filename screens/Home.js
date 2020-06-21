@@ -3,14 +3,13 @@ import {ActivityIndicator, StyleSheet, Text, View, TouchableOpacity, FlatList, I
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import firebaseDb from '../firebase/firebaseDb';
 import BlueButton from "../component/BlueButton";
-import {YellowBox} from 'react-native';
+import {Platform, YellowBox} from 'react-native';
 import _ from 'lodash';
 
 let Toast;
 if (Platform.OS === "android") {
-    Toast = require('react-native-simple-toast')
+    Toast = require('react-native-simple-toast').default
 }
-
 
 YellowBox.ignoreWarnings(['Setting a timer']);
 const _console = _.clone(console);
@@ -53,7 +52,7 @@ function Home({navigation}) {
                         if (Platform.OS === 'ios') {
 
                         } else {
-                            Toast.show("Done refreshing", Toast.LONG)
+                            Toast.show("Done refreshing")
                         }
                     })
                 }

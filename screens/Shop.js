@@ -6,7 +6,7 @@ import firebaseDb from '../firebase/firebaseDb';
 
 let Toast;
 if (Platform.OS === "android") {
-    Toast = require('react-native-simple-toast')
+    Toast = require('react-native-simple-toast').default
 }
 
 function isEquivalent(a, b) {
