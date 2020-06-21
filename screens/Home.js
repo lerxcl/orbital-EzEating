@@ -5,11 +5,12 @@ import firebaseDb from '../firebase/firebaseDb';
 import BlueButton from "../component/BlueButton";
 import {Platform, YellowBox} from 'react-native';
 import _ from 'lodash';
+import {Toast} from 'native-base';
 
-let Toast;
-if (Platform.OS === "android") {
-    Toast = require('react-native-simple-toast').default
-}
+// let Toast;
+// if (Platform.OS === "android") {
+//     Toast = require('react-native-simple-toast').default
+// }
 
 YellowBox.ignoreWarnings(['Setting a timer']);
 const _console = _.clone(console);
@@ -49,11 +50,12 @@ function Home({navigation}) {
                             })
                         }).then(() => {
                         setShops(result)
-                        if (Platform.OS === 'ios') {
-
-                        } else {
-                            Toast.show("Done refreshing")
-                        }
+                        Toast.show({text:"Done refreshing", type:"success"})
+                        // if (Platform.OS === 'ios') {
+                        //
+                        // } else {
+                        //     Toast.show("Done refreshing")
+                        // }
                     })
                 }
             })
@@ -87,11 +89,12 @@ function Home({navigation}) {
 
             <BlueButton onPress={() => {
                 getData();
-                if (Platform.OS === 'ios') {
-
-                } else {
-                    Toast.show("Refreshing...")
-                }
+                Toast.show({text:"Refreshing..."})
+                // if (Platform.OS === 'ios') {
+                //
+                // } else {
+                //     Toast.show("Refreshing...")
+                // }
             }}
             >
                 Refresh

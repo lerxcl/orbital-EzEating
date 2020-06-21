@@ -1,5 +1,5 @@
 import React from 'react';
-
+import { Root } from "native-base";
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import {createMaterialBottomTabNavigator} from '@react-navigation/material-bottom-tabs';
@@ -308,6 +308,7 @@ export default function App() {
     }
 
     return (
+        <Root>
         <AuthContext.Provider value={authContext}>
             <NavigationContainer>
                 {userToken ? ( isMerchant ? (
@@ -395,5 +396,6 @@ export default function App() {
                     </Stack.Navigator>)}
             </NavigationContainer>
         </AuthContext.Provider>
+        </Root>
     );
 }
