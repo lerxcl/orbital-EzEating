@@ -2,8 +2,12 @@ import React from 'react';
 import {ActivityIndicator, StyleSheet, Text, View, Image, TouchableOpacity} from 'react-native';
 import Carousel, {Pagination} from 'react-native-snap-carousel';
 import BlueButton from "../component/BlueButton";
-import Toast from "react-native-simple-toast";
 import firebaseDb from '../firebase/firebaseDb';
+
+let Toast;
+if (Platform.OS === "android") {
+    Toast = require('react-native-simple-toast')
+}
 
 function randSelect(shopsWithDeals) {
     let randomDeals = [];
@@ -165,8 +169,12 @@ class Explore extends React.Component {
                 )}
                 <BlueButton onPress={() => {
                     this.getDeals()
-                    Toast.show("Refreshing...")
-                    Toast.show("Done")
+                    if (Platform.OS === 'ios') {
+
+                    } else {
+                        Toast.show("Refreshing...")
+                        Toast.show("Done")
+                    }
                 }}
                 >
                     Show me more deals!

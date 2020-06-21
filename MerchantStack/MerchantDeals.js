@@ -3,8 +3,11 @@ import { Image, TouchableOpacity, FlatList, StyleSheet, Text, View } from 'react
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons"; 
 import firebaseDb from '../firebase/firebaseDb';
 import BlueButton from '../component/BlueButton';
-import Toast from 'react-native-simple-toast';
 
+let Toast;
+if (Platform.OS === "android") {
+    Toast = require('react-native-simple-toast')
+}
 
 class MerchantDeals extends React.Component {
     state = {
@@ -30,7 +33,11 @@ class MerchantDeals extends React.Component {
 
             <BlueButton onPress={() => {
                 this.getData();
-                Toast.show("Refreshing...")
+                if (Platform.OS === 'ios') {
+
+                } else {
+                    Toast.show("Refreshing...")
+                }
             }}
             >
                 Refresh

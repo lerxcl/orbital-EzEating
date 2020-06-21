@@ -3,7 +3,11 @@ import {StyleSheet, Text, View, Image, ActivityIndicator, ScrollView} from "reac
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import BlueButton from "../component/BlueButton";
 import firebaseDb from '../firebase/firebaseDb';
-import Toast from 'react-native-simple-toast';
+
+let Toast;
+if (Platform.OS === "android") {
+    Toast = require('react-native-simple-toast')
+}
 
 function isEquivalent(a, b) {
     var aProps = Object.getOwnPropertyNames(a);
@@ -92,7 +96,11 @@ function Shop({route}) {
                         fav: firebaseDb.firestore.FieldValue.arrayUnion(shopId)
                     })
                     setUpdate(true);
-                    Toast.show("Added");
+                    if (Platform.OS === 'ios') {
+
+                    } else {
+                        Toast.show("Added");
+                    }
                 }
                 }>
                     Add to Favourites!
@@ -103,7 +111,11 @@ function Shop({route}) {
                         fav: firebaseDb.firestore.FieldValue.arrayRemove(shopId)
                     })
                     setUpdate(true);
-                    Toast.show("Removed");
+                    if (Platform.OS === 'ios') {
+
+                    } else {
+                        Toast.show("Removed");
+                    }
                 }}>
                     Remove from Favourites
                 </BlueButton>}
