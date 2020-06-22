@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, {useEffect} from 'react';
 import {Alert, TouchableOpacity, StyleSheet, Text, View, Image, ScrollView} from "react-native";
 import firebaseDb from '../firebase/firebaseDb';
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
@@ -7,7 +7,7 @@ import Constants from 'expo-constants';
 import * as Permissions from 'expo-permissions';
 import Dialog from "react-native-dialog";
 import BlueButton from '../component/BlueButton';
-import { MultiPickerMaterialDialog } from 'react-native-material-dialog';
+import {MultiPickerMaterialDialog} from 'react-native-material-dialog';
 import {getCards, getMethods} from '../component/API';
 
 function MerchantDealDetails({route}) {
@@ -39,10 +39,10 @@ function MerchantDealDetails({route}) {
 
     useEffect(() => {
         if (isLoading) {
-        getPermissionAsync()
-        getCards(onCardsReceived)
-        getMethods(onMethodsReceived)
-        setIsLoading(false)
+            getPermissionAsync()
+            getCards(onCardsReceived)
+            getMethods(onMethodsReceived)
+            setIsLoading(false)
         }
     })
 
@@ -66,21 +66,21 @@ function MerchantDealDetails({route}) {
 
     const getPermissionAsync = async () => {
         if (Constants.platform.ios) {
-          const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
-          if (status !== 'granted') {
-            alert('Sorry, we need camera roll permissions to make this work!');
-          }
+            const {status} = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+            if (status !== 'granted') {
+                alert('Sorry, we need camera roll permissions to make this work!');
+            }
         }
-      }
-    
-      const pickImage = async () => {
+    }
+
+    const pickImage = async () => {
         let result = await ImagePicker.launchImageLibraryAsync({
-          mediaTypes: ImagePicker.MediaTypeOptions.Images,
-          allowsEditing: true,
-          aspect: [3, 3],
-          quality: 1
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsEditing: true,
+            aspect: [3, 3],
+            quality: 1
         });
-        
+
         if (!result.cancelled) {
             setImage(result.uri)
         }
@@ -90,49 +90,54 @@ function MerchantDealDetails({route}) {
         <ScrollView>
             <View style={styles.container}>
                 <Image style={styles.dealBanner} source={{uri: image}}/>
-                <TouchableOpacity style = {styles.edit} onPress = {() => {
+                <TouchableOpacity style={styles.edit} onPress={() => {
                     Alert.alert(
                         'Change Deal Image',
                         'Do you want to change this image?',
                         [
-                        {text: 'Cancel', onPress: () => {}},
-                        {text: 'Yes', onPress: () => pickImage()}
+                            {
+                                text: 'Cancel', onPress: () => {
+                                }
+                            },
+                            {text: 'Yes', onPress: () => pickImage()}
                         ]
-                    )}}>
-                        <MaterialCommunityIcons name = "pencil-outline" size = {18} color = "#DFD8C8"/>
-                    </TouchableOpacity>
+                    )
+                }}>
+                    <MaterialCommunityIcons name="pencil-outline" size={18} color="#DFD8C8"/>
+                </TouchableOpacity>
 
                 <Dialog.Container visible={titleDialog}>
                     <Dialog.Title>Edit Deal Title </Dialog.Title>
-                    <Dialog.Input defaultValue = {title} onChangeText = {(title) => setNewTitle(title)}/>
-                    <Dialog.Button label = "Cancel" onPress = {() => setTitleDialog(false)}/>
-                    <Dialog.Button label = "Submit" onPress = {() => {
+                    <Dialog.Input defaultValue={title} onChangeText={(title) => setNewTitle(title)}/>
+                    <Dialog.Button label="Cancel" onPress={() => setTitleDialog(false)}/>
+                    <Dialog.Button label="Submit" onPress={() => {
                         setTitleDialog(false)
                         setTitle(newTitle)
                     }}/>
-                </Dialog.Container>    
+                </Dialog.Container>
 
-                <View style = {styles.container}>
-                <Text style={styles.dealHeader}>{title}</Text>
-                <TouchableOpacity style = {styles.arrow} 
-                        onPress={() => setTitleDialog(true)}>
-                        <MaterialCommunityIcons name = "pencil-outline" size = {25}/>
+                <View style={styles.container}>
+                    <Text style={styles.dealHeader}>{title}</Text>
+                    <TouchableOpacity style={styles.arrow}
+                                      onPress={() => setTitleDialog(true)}>
+                        <MaterialCommunityIcons name="pencil-outline" size={25}/>
                     </TouchableOpacity>
                 </View>
 
-                <View style = {styles.box}>
-                <Text style={styles.info}>{desc}</Text>
-                <TouchableOpacity style = {styles.arrowInfo} 
-                        onPress={() => setDescDialog(true)}>
-                        <MaterialCommunityIcons name = "pencil-outline" size = {25}/>
+                <View style={styles.box}>
+                    <Text style={styles.info}>{desc}</Text>
+                    <TouchableOpacity style={styles.arrowInfo}
+                                      onPress={() => setDescDialog(true)}>
+                        <MaterialCommunityIcons name="pencil-outline" size={25}/>
                     </TouchableOpacity>
                 </View>
 
                 <Dialog.Container visible={descDialog}>
                     <Dialog.Title>Edit Deal Description </Dialog.Title>
-                    <Dialog.Input multiline = {true} numberOfLines = {6} defaultValue = {desc} onChangeText = {(desc) => setNewDesc(desc)}/>
-                    <Dialog.Button label = "Cancel" onPress = {() => setDescDialog(false)}/>
-                    <Dialog.Button label = "Submit" onPress = {() => {
+                    <Dialog.Input multiline={true} numberOfLines={6} defaultValue={desc}
+                                  onChangeText={(desc) => setNewDesc(desc)}/>
+                    <Dialog.Button label="Cancel" onPress={() => setDescDialog(false)}/>
+                    <Dialog.Button label="Submit" onPress={() => {
                         setDescDialog(false)
                         setDesc(newDesc)
                     }}/>
@@ -148,7 +153,7 @@ function MerchantDealDetails({route}) {
                         setCardVisible(false);
                         setSelectCards(result.selectedItems)
                     }}
-                    scrolled = {true}
+                    scrolled={true}
                 />
 
                 <MultiPickerMaterialDialog
@@ -161,80 +166,124 @@ function MerchantDealDetails({route}) {
                         setMethodVisible(false);
                         setSelectMethods(result.selectedItems)
                     }}
-                    scrolled = {true}
+                    scrolled={true}
                 />
 
-            <BlueButton
-                onPress={() =>
-                  setCardVisible(true)
-                }
-              >
-                Cards
-              </BlueButton>
-              <Text multiline={true} style={styles.info}>
-                {selectedCards.length === 0
-                  ? "No cards selected."
-                  : `Selected: ${selectedCards
-                      .map(item => item.label)
-                      .join(", ")}`}
-              </Text>
-
-              <BlueButton
-                onPress={() =>
-                  setMethodVisible(true)
-                }
-              >
-                Payment Apps
-              </BlueButton>
-              <Text multiline={true} style={styles.info}>
-                {selectedMethods.length === 0
-                  ? "No apps selected."
-                  : `Selected: ${selectedMethods
-                      .map(item => item.label)
-                      .join(", ")}`}
-              </Text>
-
-            <Text style = {{marginBottom: 20}}>Please save changes before leaving page!</Text>
-
-            <View style = {{flexDirection: 'row'}}>
-            <BlueButton onPress={() => {
-                    userDoc.update({
-                        deals: firebaseDb.firestore.FieldValue.arrayRemove({title: deal.title, cards: deal.cards, methods: deal.methods, image: deal.image, description: deal.description})
-                    })
-                    userDoc.update({
-                        deals: firebaseDb.firestore.FieldValue.arrayUnion({title: title, cards: selectedCards, methods: selectedMethods, image: image, description: desc})
-                    })
-                    firebaseDb.firestore().collection('shops').doc(userId).update({
-                        deals: firebaseDb.firestore.FieldValue.arrayRemove({title: deal.title, cards: deal.cards, methods: deal.methods, image: deal.image, description: deal.description})
-                    })
-                    firebaseDb.firestore().collection('shops').doc(userId).update({
-                        deals: firebaseDb.firestore.FieldValue.arrayUnion({title: title, cards: selectedCards, methods: selectedMethods, image: image, description: desc})
-                    })
-                    Alert.alert("Deal details saved!")
-                }}>
-                    Save
+                <BlueButton
+                    onPress={() =>
+                        setCardVisible(true)
+                    }
+                >
+                    Cards
                 </BlueButton>
 
-            <BlueButton style = {{backgroundColor: 'darkred', marginLeft: 20}} onPress= {() => {
-                Alert.alert(
-                    'Delete Deal',
-                    'Are you sure you want to remove this deal from your store?',
-                    [
-                    {text: 'Cancel', onPress: () => {}},
-                    {text: 'Yes', onPress: () => {
-                userDoc.update({
-                    deals: firebaseDb.firestore.FieldValue.arrayRemove({title: deal.title, cards: deal.cards, methods: deal.methods, image: deal.image, description: deal.description})
-                })
-                firebaseDb.firestore().collection('shops').doc(userId).update({
-                    deals: firebaseDb.firestore.FieldValue.arrayRemove({title: deal.title, cards: deal.cards, methods: deal.methods, image: deal.image, description: deal.description})
-                })
-                Alert.alert('Deal deleted!')
-            }}
-            ])
-            }}>
-                Delete
-            </BlueButton>
-            </View>
+                <Text multiline={true} style={styles.info}>
+                    {selectedCards.length === 0
+                        ? "No cards selected."
+                        : `Selected: ${selectedCards
+                            .map(item => item.label)
+                            .join(", ")}`}
+                </Text>
+
+                <View style={{paddingTop: 20}}>
+                    <BlueButton
+                        onPress={() =>
+                            setMethodVisible(true)
+                        }
+                    >
+                        Payment Apps
+                    </BlueButton>
+                </View>
+                <Text multiline={true} style={styles.info}>
+                    {selectedMethods.length === 0
+                        ? "No apps selected."
+                        : `Selected: ${selectedMethods
+                            .map(item => item.label)
+                            .join(", ")}`}
+                </Text>
+
+                <Text style={{paddingTop:15, marginBottom: 20, fontWeight:'bold'}}>Please save changes before leaving page!</Text>
+
+                <View style={{flexDirection: 'row'}}>
+                    <BlueButton onPress={() => {
+                        userDoc.update({
+                            deals: firebaseDb.firestore.FieldValue.arrayRemove({
+                                title: deal.title,
+                                cards: deal.cards,
+                                methods: deal.methods,
+                                image: deal.image,
+                                description: deal.description
+                            })
+                        })
+                        userDoc.update({
+                            deals: firebaseDb.firestore.FieldValue.arrayUnion({
+                                title: title,
+                                cards: selectedCards,
+                                methods: selectedMethods,
+                                image: image,
+                                description: desc
+                            })
+                        })
+                        firebaseDb.firestore().collection('shops').doc(userId).update({
+                            deals: firebaseDb.firestore.FieldValue.arrayRemove({
+                                title: deal.title,
+                                cards: deal.cards,
+                                methods: deal.methods,
+                                image: deal.image,
+                                description: deal.description
+                            })
+                        })
+                        firebaseDb.firestore().collection('shops').doc(userId).update({
+                            deals: firebaseDb.firestore.FieldValue.arrayUnion({
+                                title: title,
+                                cards: selectedCards,
+                                methods: selectedMethods,
+                                image: image,
+                                description: desc
+                            })
+                        })
+                        Alert.alert("Deal details saved!")
+                    }}>
+                        Save
+                    </BlueButton>
+
+                    <BlueButton style={{backgroundColor: 'darkred', marginLeft: 20}} onPress={() => {
+                        Alert.alert(
+                            'Delete Deal',
+                            'Are you sure you want to remove this deal from your store?',
+                            [
+                                {
+                                    text: 'Cancel', onPress: () => {
+                                    }
+                                },
+                                {
+                                    text: 'Yes', onPress: () => {
+                                        userDoc.update({
+                                            deals: firebaseDb.firestore.FieldValue.arrayRemove({
+                                                title: deal.title,
+                                                cards: deal.cards,
+                                                methods: deal.methods,
+                                                image: deal.image,
+                                                description: deal.description
+                                            })
+                                        })
+                                        firebaseDb.firestore().collection('shops').doc(userId).update({
+                                            deals: firebaseDb.firestore.FieldValue.arrayRemove({
+                                                title: deal.title,
+                                                cards: deal.cards,
+                                                methods: deal.methods,
+                                                image: deal.image,
+                                                description: deal.description
+                                            })
+                                        })
+                                        Alert.alert('Deal deleted!')
+                                    }
+                                }
+                            ])
+                    }}>
+                        Delete
+                    </BlueButton>
+                </View>
 
             </View>
         </ScrollView>
@@ -249,6 +298,7 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
+        padding: 20,
     },
     edit: {
         position: "absolute",
@@ -264,7 +314,7 @@ const styles = StyleSheet.create({
     },
     box: {
         width: 300,
-        height: 200,
+        //height: 200,
         marginBottom: 20,
         borderBottomWidth: 1,
         alignItems: 'center'
@@ -304,6 +354,6 @@ const styles = StyleSheet.create({
         marginTop: 20,
         paddingHorizontal: 40,
         width: 350,
-        height: 200
+        //height: 200
     },
 })
