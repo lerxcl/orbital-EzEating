@@ -44,7 +44,7 @@ class MerchantDeals extends React.Component {
             </BlueButton>
 
             {deals.length === 0 &&
-                <Text> Start adding deals to feature for your store! </Text>
+                <Text style = {{marginTop: 20, fontSize: 18}}> Click '+' to start adding deals! </Text>
             }
 
             {deals.length > 0 &&

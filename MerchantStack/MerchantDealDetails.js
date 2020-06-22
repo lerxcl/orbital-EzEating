@@ -6,10 +6,13 @@ import * as ImagePicker from 'expo-image-picker';
 import Constants from 'expo-constants';
 import * as Permissions from 'expo-permissions';
 import Dialog from "react-native-dialog";
-import BlueButton from '../component/BlueButton'
+import BlueButton from '../component/BlueButton';
+import { MultiPickerMaterialDialog } from 'react-native-material-dialog';
+import {getCards, getMethods} from '../component/API';
 
 function MerchantDealDetails({route}) {
     const {deal} = route.params;
+    const [isLoading, setIsLoading] = React.useState(true)
     const [image, setImage] = React.useState(deal.image)
     const [title, setTitle] = React.useState(deal.title)
     const [desc, setDesc] = React.useState(deal.description)
@@ -17,12 +20,49 @@ function MerchantDealDetails({route}) {
     const [newDesc, setNewDesc] = React.useState('')
     const [titleDialog, setTitleDialog] = React.useState(false)
     const [descDialog, setDescDialog] = React.useState(false)
+    const [cardVisible, setCardVisible] = React.useState(false)
+    const [methodVisible, setMethodVisible] = React.useState(false)
+    const [cards, setCards] = React.useState([])
+    const [selectedCards, setSelectCards] = React.useState(deal.cards.map(item => {
+        item.label = item.name
+        item.value = item.id
+        return item
+    }))
+    const [methods, setMethods] = React.useState([])
+    const [selectedMethods, setSelectMethods] = React.useState(deal.methods.map(item => {
+        item.label = item.name
+        item.value = item.id
+        return item
+    }))
     const userId = firebaseDb.auth().currentUser.uid
     const userDoc = firebaseDb.firestore().collection('merchants').doc(userId)
 
     useEffect(() => {
+        if (isLoading) {
         getPermissionAsync()
+        getCards(onCardsReceived)
+        getMethods(onMethodsReceived)
+        setIsLoading(false)
+        }
     })
+
+    const onCardsReceived = (allCards) => {
+        allCards.map(item => {
+            item.label = item.name
+            item.value = item.id
+            return item
+        })
+        setCards(allCards)
+    }
+
+    const onMethodsReceived = (allMethods) => {
+        allMethods.map(item => {
+            item.label = item.name
+            item.value = item.id
+            return item
+        })
+        setMethods(allMethods)
+    }
 
     const getPermissionAsync = async () => {
         if (Constants.platform.ios) {
@@ -98,19 +138,103 @@ function MerchantDealDetails({route}) {
                     }}/>
                 </Dialog.Container>
 
+                <MultiPickerMaterialDialog
+                    title={'Choose cards relevant to deal'}
+                    items={cards}
+                    visible={cardVisible}
+                    selectedItems={selectedCards}
+                    onCancel={() => setCardVisible(false)}
+                    onOk={result => {
+                        setCardVisible(false);
+                        setSelectCards(result.selectedItems)
+                    }}
+                    scrolled = {true}
+                />
+
+                <MultiPickerMaterialDialog
+                    title={'Choose methods relevant to deal'}
+                    items={methods}
+                    visible={methodVisible}
+                    selectedItems={selectedMethods}
+                    onCancel={() => setMethodVisible(false)}
+                    onOk={result => {
+                        setMethodVisible(false);
+                        setSelectMethods(result.selectedItems)
+                    }}
+                    scrolled = {true}
+                />
+
+            <BlueButton
+                onPress={() =>
+                  setCardVisible(true)
+                }
+              >
+                Cards
+              </BlueButton>
+              <Text multiline={true} style={styles.info}>
+                {selectedCards.length === 0
+                  ? "No cards selected."
+                  : `Selected: ${selectedCards
+                      .map(item => item.label)
+                      .join(", ")}`}
+              </Text>
+
+              <BlueButton
+                onPress={() =>
+                  setMethodVisible(true)
+                }
+              >
+                Payment Apps
+              </BlueButton>
+              <Text multiline={true} style={styles.info}>
+                {selectedMethods.length === 0
+                  ? "No apps selected."
+                  : `Selected: ${selectedMethods
+                      .map(item => item.label)
+                      .join(", ")}`}
+              </Text>
+
             <Text style = {{marginBottom: 20}}>Please save changes before leaving page!</Text>
 
-            <BlueButton style = {{width: 300, alignSelf: 'center'}} onPress={() => {
+            <View style = {{flexDirection: 'row'}}>
+            <BlueButton onPress={() => {
                     userDoc.update({
                         deals: firebaseDb.firestore.FieldValue.arrayRemove({title: deal.title, cards: deal.cards, methods: deal.methods, image: deal.image, description: deal.description})
                     })
                     userDoc.update({
-                        deals: firebaseDb.firestore.FieldValue.arrayUnion({title: title, cards: deal.cards, methods: deal.methods, image: image, description: desc})
+                        deals: firebaseDb.firestore.FieldValue.arrayUnion({title: title, cards: selectedCards, methods: selectedMethods, image: image, description: desc})
+                    })
+                    firebaseDb.firestore().collection('shops').doc(userId).update({
+                        deals: firebaseDb.firestore.FieldValue.arrayRemove({title: deal.title, cards: deal.cards, methods: deal.methods, image: deal.image, description: deal.description})
+                    })
+                    firebaseDb.firestore().collection('shops').doc(userId).update({
+                        deals: firebaseDb.firestore.FieldValue.arrayUnion({title: title, cards: selectedCards, methods: selectedMethods, image: image, description: desc})
                     })
                     Alert.alert("Deal details saved!")
                 }}>
                     Save
                 </BlueButton>
+
+            <BlueButton style = {{backgroundColor: 'darkred', marginLeft: 20}} onPress= {() => {
+                Alert.alert(
+                    'Delete Deal',
+                    'Are you sure you want to remove this deal from your store?',
+                    [
+                    {text: 'Cancel', onPress: () => {}},
+                    {text: 'Yes', onPress: () => {
+                userDoc.update({
+                    deals: firebaseDb.firestore.FieldValue.arrayRemove({title: deal.title, cards: deal.cards, methods: deal.methods, image: deal.image, description: deal.description})
+                })
+                firebaseDb.firestore().collection('shops').doc(userId).update({
+                    deals: firebaseDb.firestore.FieldValue.arrayRemove({title: deal.title, cards: deal.cards, methods: deal.methods, image: deal.image, description: deal.description})
+                })
+                Alert.alert('Deal deleted!')
+            }}
+            ])
+            }}>
+                Delete
+            </BlueButton>
+            </View>
 
             </View>
         </ScrollView>

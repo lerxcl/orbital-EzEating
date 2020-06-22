@@ -20,6 +20,9 @@ class NewDeal extends React.Component {
         desc: '',
         cardsAndMethods: [],
         selected:[],
+        selectedItemObjects: [],
+        selectedCardsO: [],
+        selectedMethodsO: []
     }
     shopDeals = [];
     userId = firebaseDb.auth().currentUser.uid;
@@ -69,6 +72,13 @@ class NewDeal extends React.Component {
         this.setState({selected: selected,
             selectedCards: selected.filter(id => this.state.cards.filter(card => card.id === id).length === 1),
             selectedMethods: selected.filter(id => this.state.methods.filter(method => method.id === id).length === 1)
+        });
+    }
+
+    onSelectedObjectChange = selected => {
+        this.setState({selectedItemObjects: selected,
+            selectedCardsO: selected.filter(c => this.state.cards.filter(card => card.id === c.id).length === 1),
+            selectedMethodsO: selected.filter(m => this.state.methods.filter(method => method.id === m.id).length === 1)
         });
     }
 
@@ -151,6 +161,7 @@ class NewDeal extends React.Component {
                     showDropDowns={true}
                     readOnlyHeadings={true}
                     onSelectedItemsChange={this.onSelectedChange}
+                    onSelectedItemObjectsChange = {this.onSelectedObjectChange}
                     selectedItems={selected}
                     expandDropDowns={true}
                 />
@@ -175,10 +186,10 @@ class NewDeal extends React.Component {
                             });
                         firebaseDb.firestore().collection('merchants').doc(this.userId).update({
                             deals: firebaseDb.firestore.FieldValue.arrayUnion({
-                                cards: selectedCards,
+                                cards: selectedCardsO,
                                 description: desc,
                                 image: image,
-                                methods: selectedMethods,
+                                methods: selectedMethodsO,
                                 title: title
                             })
                         })
@@ -187,7 +198,7 @@ class NewDeal extends React.Component {
                             desc: '',
                             image: null,
                             selectedMethods: [],
-                            selectedCards: []
+                            selected: []
                         })
                         Alert.alert("Deal Submitted Successfully!")
                         })}
