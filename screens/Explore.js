@@ -3,11 +3,7 @@ import {ActivityIndicator, StyleSheet, Text, View, Image, TouchableOpacity} from
 import Carousel, {Pagination} from 'react-native-snap-carousel';
 import BlueButton from "../component/BlueButton";
 import firebaseDb from '../firebase/firebaseDb';
-
-let Toast;
-if (Platform.OS === "android") {
-    Toast = require('react-native-simple-toast').default
-}
+import {Toast} from 'native-base';
 
 function randSelect(shopsWithDeals) {
     let randomDeals = [];
@@ -98,6 +94,7 @@ class Explore extends React.Component {
                     picked: randomDeals,
                     loading: false,
                 });
+                Toast.show({text:"Done refreshing", type:"success", textStyle:{textAlign:"center"}})
             })
     }
 
@@ -168,13 +165,8 @@ class Explore extends React.Component {
                     </View>
                 )}
                 <BlueButton onPress={() => {
+                    Toast.show({text:"Refreshing...", textStyle:{textAlign:"center"}})
                     this.getDeals()
-                    if (Platform.OS === 'ios') {
-
-                    } else {
-                        Toast.show("Refreshing...")
-                        Toast.show("Done")
-                    }
                 }}
                 >
                     Show me more deals!
@@ -220,4 +212,4 @@ const styles = StyleSheet.create({
     text: {
         fontSize: 15,
     },
-})
+});
