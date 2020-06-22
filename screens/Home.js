@@ -3,13 +3,9 @@ import {ActivityIndicator, StyleSheet, Text, View, TouchableOpacity, FlatList, I
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import firebaseDb from '../firebase/firebaseDb';
 import BlueButton from "../component/BlueButton";
-import {Platform, YellowBox} from 'react-native';
+import {YellowBox} from 'react-native';
 import _ from 'lodash';
-
-let Toast;
-if (Platform.OS === "android") {
-    Toast = require('react-native-simple-toast').default
-}
+import {Toast} from 'native-base';
 
 YellowBox.ignoreWarnings(['Setting a timer']);
 const _console = _.clone(console);
@@ -49,12 +45,8 @@ function Home({navigation}) {
                             })
                         }).then(() => {
                         setShops(result)
-                        if (Platform.OS === 'ios') {
-
-                        } else {
-                            Toast.show("Done refreshing")
-                        }
                     })
+                    Toast.show({text:"Done refreshing", type:"success", textStyle:{textAlign:"center"}})
                 }
             })
     }
@@ -86,12 +78,8 @@ function Home({navigation}) {
             <Text style={styles.favourites}> Favourites </Text>
 
             <BlueButton onPress={() => {
+                Toast.show({text:"Refreshing...", textStyle:{textAlign:"center"}})
                 getData();
-                if (Platform.OS === 'ios') {
-
-                } else {
-                    Toast.show("Refreshing...")
-                }
             }}
             >
                 Refresh
