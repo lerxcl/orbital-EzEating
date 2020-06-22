@@ -186,10 +186,10 @@ class NewDeal extends React.Component {
                             });
                         firebaseDb.firestore().collection('merchants').doc(this.userId).update({
                             deals: firebaseDb.firestore.FieldValue.arrayUnion({
-                                cards: selectedCardsO,
+                                cards: this.state.selectedCardsO,
                                 description: desc,
                                 image: image,
-                                methods: selectedMethodsO,
+                                methods: this.state.selectedMethodsO,
                                 title: title
                             })
                         })
