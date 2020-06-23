@@ -37,11 +37,25 @@ function MerchantDealDetails({route}) {
     const userId = firebaseDb.auth().currentUser.uid
     const userDoc = firebaseDb.firestore().collection('merchants').doc(userId)
 
+    let shopDeals = [];
+
     useEffect(() => {
         if (isLoading) {
             getPermissionAsync()
             getCards(onCardsReceived)
             getMethods(onMethodsReceived)
+            firebaseDb.firestore().collection('merchants').doc(userId).get()
+                .then(snapshot => {
+                    shopDeals = snapshot.data().deals
+                    shopDeals.push({
+                        cards: selectedCards,
+                        description: desc,
+                        image: image,
+                        methods: selectedMethods,
+                        title: title
+                    })
+                })
+
             setIsLoading(false)
         }
     })
@@ -206,14 +220,20 @@ function MerchantDealDetails({route}) {
 
                 <View style={{flexDirection: 'row'}}>
                     <BlueButton onPress={() => {
+                        selectedCards.map(card => {
+                            delete card.label;
+                            delete card.value;
+                            delete card.image;
+                        })
+
+                        selectedMethods.map(method => {
+                            delete method.label;
+                            delete method.value;
+                            delete method.image;
+                        })
+
                         userDoc.update({
-                            deals: firebaseDb.firestore.FieldValue.arrayRemove({
-                                title: deal.title,
-                                cards: deal.cards,
-                                methods: deal.methods,
-                                image: deal.image,
-                                description: deal.description
-                            })
+                            deals: shopDeals.filter(d => d.title !== deal.title)
                         })
                         userDoc.update({
                             deals: firebaseDb.firestore.FieldValue.arrayUnion({
@@ -225,13 +245,7 @@ function MerchantDealDetails({route}) {
                             })
                         })
                         firebaseDb.firestore().collection('shops').doc(userId).update({
-                            deals: firebaseDb.firestore.FieldValue.arrayRemove({
-                                title: deal.title,
-                                cards: deal.cards,
-                                methods: deal.methods,
-                                image: deal.image,
-                                description: deal.description
-                            })
+                            deals: shopDeals.filter(d => d.title !== deal.title)
                         })
                         firebaseDb.firestore().collection('shops').doc(userId).update({
                             deals: firebaseDb.firestore.FieldValue.arrayUnion({
@@ -259,22 +273,10 @@ function MerchantDealDetails({route}) {
                                 {
                                     text: 'Yes', onPress: () => {
                                         userDoc.update({
-                                            deals: firebaseDb.firestore.FieldValue.arrayRemove({
-                                                title: deal.title,
-                                                cards: deal.cards,
-                                                methods: deal.methods,
-                                                image: deal.image,
-                                                description: deal.description
-                                            })
+                                            deals: shopDeals.filter(d => d.title !== deal.title)
                                         })
                                         firebaseDb.firestore().collection('shops').doc(userId).update({
-                                            deals: firebaseDb.firestore.FieldValue.arrayRemove({
-                                                title: deal.title,
-                                                cards: deal.cards,
-                                                methods: deal.methods,
-                                                image: deal.image,
-                                                description: deal.description
-                                            })
+                                            deals: shopDeals.filter(d => d.title !== deal.title)
                                         })
                                         Alert.alert('Deal deleted!')
                                     }
@@ -356,4 +358,4 @@ const styles = StyleSheet.create({
         width: 350,
         //height: 200
     },
-})
+});
