@@ -10,7 +10,7 @@ import BlueButton from '../component/BlueButton';
 import {MultiPickerMaterialDialog} from 'react-native-material-dialog';
 import {getCards, getMethods} from '../component/API';
 
-function MerchantDealDetails({route}) {
+function MerchantDealDetails({navigation, route}) {
     const {deal} = route.params;
     const [isLoading, setIsLoading] = React.useState(true)
     const [image, setImage] = React.useState(deal.image)
@@ -96,16 +96,44 @@ function MerchantDealDetails({route}) {
         });
 
         if (!result.cancelled) {
-            uploadImage(result.uri);
-        }
-    }
+            const fileExtension = result.uri.split('.').pop();
+            console.log("EXT: " + fileExtension);
+            
+            let uuid = require('random-uuid-v4');
+            let uuidv4 = uuid();
 
-    const uploadImage = async(uri) => {
-        const response = await fetch(uri);
-        const blob = await response.blob();
-        let ref = firebaseDb.storage().ref().child("deal banner");
-        return ref.put(blob);
-    }
+            const fileName = `${uuidv4}.${fileExtension}`;
+            console.log(fileName);
+        
+            let storageRef = firebaseDb.storage().ref(`deals/images/${fileName}`);
+            const response = await fetch(result.uri);
+            const blob = await response.blob();
+        
+            storageRef.put(blob)
+              .on(
+                firebaseDb.storage.TaskEvent.STATE_CHANGED,
+                snapshot => {
+                  console.log("snapshot: " + snapshot.state);
+                  console.log("progress: " + (snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+        
+                  if (snapshot.state === firebaseDb.storage.TaskState.SUCCESS) {
+                    console.log("Success");
+                  }
+                },
+                error => {
+                  unsubscribe();
+                  console.log("image upload error: " + error.toString());
+                },
+                () => {
+                  storageRef.getDownloadURL()
+                    .then((downloadUrl) => {
+                      console.log("File available at: " + downloadUrl);
+        
+                      setImage(downloadUrl)
+                    })
+                })
+            }
+        }
 
     return (
         <ScrollView>
@@ -245,8 +273,8 @@ function MerchantDealDetails({route}) {
                         userDoc.update({
                             deals: firebaseDb.firestore.FieldValue.arrayUnion({
                                 title: title,
-                                cards: selectedCardsDB,
-                                methods: selectedMethodsDB,
+                                cards: selectedCards,
+                                methods: selectedMethods,
                                 image: image,
                                 description: desc
                             })
@@ -257,12 +285,13 @@ function MerchantDealDetails({route}) {
                         firebaseDb.firestore().collection('shops').doc(userId).update({
                             deals: firebaseDb.firestore.FieldValue.arrayUnion({
                                 title: title,
-                                cards: selectedCardsDB,
-                                methods: selectedMethodsDB,
+                                cards: selectedCards,
+                                methods: selectedMethods,
                                 image: image,
                                 description: desc
                             })
                         })
+                        navigation.navigate('Deals')
                         Alert.alert("Deal details saved!")
                     }}>
                         Save
@@ -285,6 +314,7 @@ function MerchantDealDetails({route}) {
                                         firebaseDb.firestore().collection('shops').doc(userId).update({
                                             deals: shopDeals.filter(d => d.title !== deal.title)
                                         })
+                                        navigation.navigate('Deals')
                                         Alert.alert('Deal deleted!')
                                     }
                                 }

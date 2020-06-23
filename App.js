@@ -34,7 +34,6 @@ import MerchantCards from "./MerchantStack/MerchantCards";
 import MerchantMethods from "./MerchantStack/MerchantMethods";
 import NewDeal from "./MerchantStack/NewDeal"
 import Settings from "./MerchantStack/Settings";
-import StoreDetails from "./MerchantStack/StoreDetails";
 
 const Stack = createStackNavigator();
 const Tabs = createMaterialBottomTabNavigator();
@@ -194,10 +193,6 @@ const MerchantProfileStackScreen = () => (
                     headerTitle: () => <DrawerHeader isLogout = {false} navigation = {navigation} title = 'My Store'/>
                 }
             }}
-        />
-        <MerchantProfileStack.Screen
-            name='Store Details'
-            component={StoreDetails}
         />
     </MerchantProfileStack.Navigator>
 )

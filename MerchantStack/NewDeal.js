@@ -45,20 +45,54 @@ class NewDeal extends React.Component {
         });
 
         if (!result.cancelled) {
-            this.setState({image: result.uri})
+            this.uploadImage(result.uri)
         }
     }
-    imageURL = null;
+    //imageURL = null;
 
     uploadImage = async (uri) => {
         const response = await fetch(uri);
         const blob = await response.blob();
-        let ref = firebaseDb.storage().ref().child("deals/" + this.state.title + " " + this.state.desc);
-        const snapshot = await ref.put(blob);
-        const result = await snapshot.ref.getDownloadURL()
-        this.imageURL = result;
-        console.log(this.imageURL)
-    }
+        const fileExtension = uri.split('.').pop();
+        console.log("EXT: " + fileExtension);
+            
+        let uuid = require('random-uuid-v4');
+        let uuidv4 = uuid();
+
+        const fileName = `${uuidv4}.${fileExtension}`;
+        console.log(fileName);
+        
+        let ref = firebaseDb.storage().ref(`deals/images/${fileName}`);
+        //let ref = firebaseDb.storage().ref().child("deals/" + this.state.title + " " + this.state.desc);
+        ref.put(blob)
+              .on(
+                firebaseDb.storage.TaskEvent.STATE_CHANGED,
+                snapshot => {
+                  console.log("snapshot: " + snapshot.state);
+                  console.log("progress: " + (snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+        
+                  if (snapshot.state === firebaseDb.storage.TaskState.SUCCESS) {
+                    console.log("Success");
+                  }
+                },
+                error => {
+                  unsubscribe();
+                  console.log("image upload error: " + error.toString());
+                },
+                () => {
+                  ref.getDownloadURL()
+                    .then((downloadUrl) => {
+                      console.log("File available at: " + downloadUrl);
+        
+                      this.setState({image: downloadUrl})
+                    })
+                })
+            }
+        
+        //const snapshot = await ref.put(blob);
+        //const result = await snapshot.ref.getDownloadURL()
+        //this.imageURL = result;
+        //console.log(this.imageURL)
 
     onMethodsReceived = (methods) => {
         this.setState(prevState => ({
@@ -194,7 +228,6 @@ class NewDeal extends React.Component {
                     <BlueButton
                         onPress={() => {
                             if (image && title && desc) {
-                                this.uploadImage(this.state.image).then(
 
                                 firebaseDb.firestore().collection('shops').doc(this.userId).get()
                                     .then(documentSnapshot => {
@@ -202,7 +235,7 @@ class NewDeal extends React.Component {
                                         this.shopDeals.push({
                                             cards: selectedCards,
                                             description: desc,
-                                            image: this.imageURL,
+                                            image: image,
                                             methods: selectedMethods,
                                             title: title
                                         })
@@ -215,7 +248,7 @@ class NewDeal extends React.Component {
                                         deals: firebaseDb.firestore.FieldValue.arrayUnion({
                                             cards: this.state.selectedCardsO,
                                             description: desc,
-                                            image: this.imageURL,
+                                            image: image,
                                             methods: this.state.selectedMethodsO,
                                             title: title
                                         })
@@ -228,7 +261,7 @@ class NewDeal extends React.Component {
                                         selected: []
                                     })
                                     Alert.alert("Deal Submitted Successfully!")
-                                }))
+                                })
                             } else {
                                 Alert.alert("Sorry, more information is needed")
                             }

@@ -1,0 +1,1 @@
+declare module 'random-uuid-v4';

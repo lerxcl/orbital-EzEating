@@ -82,10 +82,44 @@ class MerchantProfile extends React.Component {
         });
         
         if (!result.cancelled) {
-          this.setState({ image: result.uri })
-          firebaseDb.firestore().collection('merchants').doc(this.userId).update({logo: result.uri})
-          }
-    }
+            const fileExtension = result.uri.split('.').pop();
+            console.log("EXT: " + fileExtension);
+            
+            let uuid = require('random-uuid-v4');
+            let uuidv4 = uuid();
+
+            const fileName = `${uuidv4}.${fileExtension}`;
+            console.log(fileName);
+        
+            let storageRef = firebaseDb.storage().ref(`profile/merchants/${fileName}`);
+            const response = await fetch(result.uri);
+            const blob = await response.blob();
+        
+            storageRef.put(blob)
+              .on(
+                firebaseDb.storage.TaskEvent.STATE_CHANGED,
+                snapshot => {
+                  console.log("snapshot: " + snapshot.state);
+                  console.log("progress: " + (snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+        
+                  if (snapshot.state === firebaseDb.storage.TaskState.SUCCESS) {
+                    console.log("Success");
+                  }
+                },
+                error => {
+                  unsubscribe();
+                  console.log("image upload error: " + error.toString());
+                },
+                () => {
+                  storageRef.getDownloadURL()
+                    .then((downloadUrl) => {
+                      console.log("File available at: " + downloadUrl);
+        
+                      this.setState({image: downloadUrl})
+                    })
+                })
+            }
+        }
 
     render() {
         const {image, name, openingHours, type, contact, desc, deals, nameDialogVisible, contactDialogVisible,
@@ -104,15 +138,11 @@ class MerchantProfile extends React.Component {
                     </View>
                     <TouchableOpacity style = {styles.edit} onPress = {() => {
                     Alert.alert(
-                        'Change/Remove Shop Logo',
-                        'Do you want to change or remove your shop logo?',
+                        'Change Shop Logo',
+                        'Do you want to change your shop logo?',
                         [
                         {text: 'Cancel', onPress: () => {}},
-                        {text: 'Remove', onPress: () => {
-                            this.setState({ image: null})
-                            firebaseDb.firestore().collection('merchants').doc(this.userId).update({logo: null})
-                        }},
-                        {text: 'Change', onPress: this.pickImage}
+                        {text: 'Yes', onPress: this.pickImage}
                         ]
                     )}}>
                         <MaterialCommunityIcons name = "pencil-outline" size = {18} color = "#DFD8C8"/>
@@ -238,9 +268,11 @@ class MerchantProfile extends React.Component {
                     <Text>Favourites: 0</Text>
                     <Text>Rating: No reviews yet</Text>
                 </View>
-                <Text style = {{alignSelf: 'center', marginBottom: 20, marginTop: 10}}> Complete your profile to publish your store!</Text>
+                <Text style = {{alignSelf: 'center', marginTop: 10}}> Complete your profile to publish your store!</Text>
+                <Text style = {{alignSelf: 'center', marginBottom: 20}}> (don't forget to publish after making any changes) </Text>
                 <BlueButton style = {{width: 300, alignSelf: 'center'}} onPress={() => {
                     if (name && type && desc && openingHours && image) {
+                        firebaseDb.firestore().collection('merchants').doc(this.userId).update({logo: image})
                         firebaseDb.firestore().collection('shops').doc(this.userId).set({
                             shopName: name,
                             type: type,
