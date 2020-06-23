@@ -19,34 +19,45 @@ class NewDeal extends React.Component {
         title: '',
         desc: '',
         cardsAndMethods: [],
-        selected:[],
+        selected: [],
         selectedItemObjects: [],
         selectedCardsO: [],
-        selectedMethodsO: []
+        selectedMethodsO: [],
     }
     shopDeals = [];
     userId = firebaseDb.auth().currentUser.uid;
 
     getPermissionAsync = async () => {
         if (Constants.platform.ios) {
-          const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
-          if (status !== 'granted') {
-            alert('Sorry, we need camera roll permissions to make this work!');
-          }
+            const {status} = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+            if (status !== 'granted') {
+                alert('Sorry, we need camera roll permissions to make this work!');
+            }
         }
-      }
-    
-      pickImage = async () => {
+    }
+
+    pickImage = async () => {
         let result = await ImagePicker.launchImageLibraryAsync({
-          mediaTypes: ImagePicker.MediaTypeOptions.Images,
-          allowsEditing: true,
-          aspect: [3, 3],
-          quality: 1
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsEditing: true,
+            aspect: [3, 3],
+            quality: 1
         });
-        
+
         if (!result.cancelled) {
-          this.setState({ image: result.uri })
-          }
+            this.setState({image: result.uri})
+        }
+    }
+    imageURL = null;
+
+    uploadImage = async (uri) => {
+        const response = await fetch(uri);
+        const blob = await response.blob();
+        let ref = firebaseDb.storage().ref().child("deals/" + this.state.title + " " + this.state.desc);
+        const snapshot = await ref.put(blob);
+        const result = await snapshot.ref.getDownloadURL()
+        this.imageURL = result;
+        console.log(this.imageURL)
     }
 
     onMethodsReceived = (methods) => {
@@ -63,20 +74,26 @@ class NewDeal extends React.Component {
     componentDidMount() {
         this.getPermissionAsync()
         const combined = [];
-        getCards(this.onCardsReceived).then(() => combined.push({name:"Cards", id:0, children:this.state.cards}))
-        getMethods(this.onMethodsReceived).then(() => combined.push({name:"Methods", id:1, children:this.state.methods}))
+        getCards(this.onCardsReceived).then(() => combined.push({name: "Cards", id: 0, children: this.state.cards}))
+        getMethods(this.onMethodsReceived).then(() => combined.push({
+            name: "Methods",
+            id: 1,
+            children: this.state.methods
+        }))
         this.setState({cardsAndMethods: combined})
     }
 
     onSelectedChange = selected => {
-        this.setState({selected: selected,
+        this.setState({
+            selected: selected,
             selectedCards: selected.filter(id => this.state.cards.filter(card => card.id === id).length === 1),
             selectedMethods: selected.filter(id => this.state.methods.filter(method => method.id === id).length === 1)
         });
     }
 
     onSelectedObjectChange = selected => {
-        this.setState({selectedItemObjects: selected,
+        this.setState({
+            selectedItemObjects: selected,
             selectedCardsO: selected.filter(c => this.state.cards.filter(card => card.id === c.id).length === 1),
             selectedMethodsO: selected.filter(m => this.state.methods.filter(method => method.id === m.id).length === 1)
         });
@@ -91,127 +108,137 @@ class NewDeal extends React.Component {
 
         return (
             <ScrollView>
-            <View style={styles.container}>
-                {!image &&
-                <View style={styles.box}>
-                    <TouchableOpacity style={styles.add} onPress={() => {
-                        Alert.alert(
-                            'Add image for deal',
-                            'Do you want to add an image for this deal?',
-                            [
-                                {
-                                    text: 'No', onPress: () => {
-                                    }
-                                },
-                                {text: 'Yes', onPress: this.pickImage}
-                            ]
-                        )
-                    }}>
-                        <MaterialCommunityIcons name="plus" size={50} color='black'/>
-                    </TouchableOpacity>
-                </View>}
+                <View style={styles.container}>
+                    {!image &&
+                    <View style={styles.box}>
+                        <TouchableOpacity style={styles.add} onPress={() => {
+                            Alert.alert(
+                                'Add image for deal',
+                                'Do you want to add an image for this deal?',
+                                [
+                                    {
+                                        text: 'No', onPress: () => {
+                                        }
+                                    },
+                                    {text: 'Yes', onPress: this.pickImage}
+                                ]
+                            )
+                        }}>
+                            <MaterialCommunityIcons name="plus" size={50} color='black'/>
+                        </TouchableOpacity>
+                    </View>}
 
-                {image &&
-                <View style = {{alignSelf: 'center'}}>
-                <View style = {styles.profileImage}>
-                
-                <Image source={{uri: image}}
-                       style={styles.image}
-                       resizeMode="center"/>
+                    {image &&
+                    <View style={{alignSelf: 'center'}}>
+                        <View style={styles.profileImage}>
 
+                            <Image source={{uri: image}}
+                                   style={styles.image}
+                                   resizeMode="center"/>
+
+                        </View>
+                        <TouchableOpacity style={styles.edit} onPress={() => {
+                            Alert.alert(
+                                'Change/Remove Deal Image',
+                                'Do you want to change or remove this deal image?',
+                                [
+                                    {
+                                        text: 'Cancel', onPress: () => {
+                                        }
+                                    },
+                                    {
+                                        text: 'Remove', onPress: () => {
+                                            this.setState({image: null})
+                                        }
+                                    },
+                                    {text: 'Change', onPress: this.pickImage}
+                                ]
+                            )
+                        }}>
+                            <MaterialCommunityIcons name="pencil-outline" size={18} color="#DFD8C8"/>
+                        </TouchableOpacity>
+                    </View>
+                    }
+
+                    <View style={styles.textContainer}>
+                        <TextInput
+                            placeholder="Enter Deal Title"
+                            value={title}
+                            onChangeText={this.updateTitle}/>
+                    </View>
+                    <View style={styles.textContainerLong}>
+                        <TextInput
+                            multiline={true}
+                            placeholder='Enter Deal Description'
+                            value={desc}
+                            onChangeText={this.updateDesc}/>
+                    </View>
+
+                    <Text style={{width: 300, marginBottom: 5, marginTop: 10, marginLeft: 50}}>This deal is only
+                        applicable
+                        with...</Text>
+
+                    <SectionedMultiSelect
+                        items={cardsAndMethods}
+                        uniqueKey="id"
+                        subKey="children"
+                        selectText="Payment methods"
+                        showDropDowns={true}
+                        readOnlyHeadings={true}
+                        onSelectedItemsChange={this.onSelectedChange}
+                        onSelectedItemObjectsChange={this.onSelectedObjectChange}
+                        selectedItems={selected}
+                        expandDropDowns={true}
+                    />
+
+                    <BlueButton
+                        onPress={() => {
+                            if (image && title && desc) {
+                                this.uploadImage(this.state.image).then(
+
+                                firebaseDb.firestore().collection('shops').doc(this.userId).get()
+                                    .then(documentSnapshot => {
+                                        this.shopDeals = documentSnapshot.data().deals
+                                        this.shopDeals.push({
+                                            cards: selectedCards,
+                                            description: desc,
+                                            image: this.imageURL,
+                                            methods: selectedMethods,
+                                            title: title
+                                        })
+                                        return this.shopDeals
+                                    }).then(shopDeals => {
+                                    firebaseDb.firestore().collection('shops').doc(this.userId).update({
+                                        deals: shopDeals
+                                    });
+                                    firebaseDb.firestore().collection('merchants').doc(this.userId).update({
+                                        deals: firebaseDb.firestore.FieldValue.arrayUnion({
+                                            cards: this.state.selectedCardsO,
+                                            description: desc,
+                                            image: this.imageURL,
+                                            methods: this.state.selectedMethodsO,
+                                            title: title
+                                        })
+                                    })
+                                    this.setState({
+                                        title: '',
+                                        desc: '',
+                                        image: null,
+                                        selectedMethods: [],
+                                        selected: []
+                                    })
+                                    Alert.alert("Deal Submitted Successfully!")
+                                }))
+                            } else {
+                                Alert.alert("Sorry, more information is needed")
+                            }
+
+
+                        }}
+                    >
+                        Submit
+                    </BlueButton>
                 </View>
-                <TouchableOpacity style = {styles.edit} onPress = {() => {
-                    Alert.alert(
-                        'Change/Remove Deal Image',
-                        'Do you want to change or remove this deal image?',
-                        [
-                        {text: 'Cancel', onPress: () => {}},
-                        {text: 'Remove', onPress: () => {
-                            this.setState({ image: null})}},
-                        {text: 'Change', onPress: this.pickImage}
-                        ]
-                    )}}>
-                        <MaterialCommunityIcons name = "pencil-outline" size = {18} color = "#DFD8C8"/>
-                    </TouchableOpacity>
-                </View>
-                }
-
-                <View style={styles.textContainer}>
-                    <TextInput
-                        placeholder="Enter Deal Title"
-                        value={title}
-                        onChangeText={this.updateTitle}/>
-                </View>
-                <View style={styles.textContainerLong}>
-                    <TextInput
-                        multiline={true}
-                        placeholder='Enter Deal Description'
-                        value={desc}
-                        onChangeText={this.updateDesc}/>
-                </View>
-
-                <Text style={{width: 300, marginBottom: 5, marginTop: 10, marginLeft: 50}}>This deal is only applicable
-                    with...</Text>
-
-                <SectionedMultiSelect
-                    items={cardsAndMethods}
-                    uniqueKey="id"
-                    subKey="children"
-                    selectText="Payment methods"
-                    showDropDowns={true}
-                    readOnlyHeadings={true}
-                    onSelectedItemsChange={this.onSelectedChange}
-                    onSelectedItemObjectsChange = {this.onSelectedObjectChange}
-                    selectedItems={selected}
-                    expandDropDowns={true}
-                />
-
-                <BlueButton
-                    onPress={() => {
-                        if (image && title && desc) {
-                        firebaseDb.firestore().collection('shops').doc(this.userId).get()
-                            .then(documentSnapshot => {
-                                this.shopDeals = documentSnapshot.data().deals
-                                this.shopDeals.push({
-                                    cards: selectedCards,
-                                    description: desc,
-                                    image: image,
-                                    methods: selectedMethods,
-                                    title: title
-                                })
-                                return this.shopDeals
-                            }).then(shopDeals => {
-                            firebaseDb.firestore().collection('shops').doc(this.userId).update({
-                                deals: shopDeals
-                            });
-                        firebaseDb.firestore().collection('merchants').doc(this.userId).update({
-                            deals: firebaseDb.firestore.FieldValue.arrayUnion({
-                                cards: this.state.selectedCardsO,
-                                description: desc,
-                                image: image,
-                                methods: this.state.selectedMethodsO,
-                                title: title
-                            })
-                        })
-                        this.setState({
-                            title: '',
-                            desc: '',
-                            image: null,
-                            selectedMethods: [],
-                            selected: []
-                        })
-                        Alert.alert("Deal Submitted Successfully!")
-                        })}
-                        else {
-                            Alert.alert("Sorry, more information is needed")
-                        }
-
-
-                    }}
-                >
-                    Submit
-                </BlueButton>
-            </View>
             </ScrollView>
         )
     }
@@ -285,4 +312,4 @@ const styles = StyleSheet.create({
         paddingVertical: 15,
         alignSelf: 'center',
     },
-})
+});
