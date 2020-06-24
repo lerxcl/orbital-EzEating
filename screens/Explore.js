@@ -57,7 +57,7 @@ class Explore extends React.Component {
                                 deal.logo = shop.logo
                             })
                             return shop.deals
-                        }).filter(deal => !deal.cards.dealCards && !deal.cards.dealMethods)
+                        }).filter(deal => !deal.cards.dealCards && !deal.methods.dealMethods)
                 } else {
                     console.log("cards/methods")
                     shopsWithDeals = shopsWithDeals.filter(shop => shop.deals.length !== 0)
@@ -69,7 +69,7 @@ class Explore extends React.Component {
                             return shop.deals
                         }).flatMap(deals => deals)
                         .filter(deal => {
-                            if (!deal.cards.dealCards && !deal.cards.dealMethods) {
+                            if (!deal.cards.dealCards && !deal.methods.dealMethods) {
                                 return true
                             } else {
                                 for (let i = 0; i < deal.cards.length; i++) {
