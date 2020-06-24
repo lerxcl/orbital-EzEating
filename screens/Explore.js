@@ -51,13 +51,13 @@ class Explore extends React.Component {
                 if (!this.state.hasCards && !this.state.hasMethods) {
                     console.log("no")
                     shopsWithDeals = shopsWithDeals.filter(shop => shop.deals.length !== 0)
-                        .flatMap(shop => {
+                        .map(shop => {
                             shop.deals.map(deal => {
                                 deal.name = shop.shopName
                                 deal.logo = shop.logo
                             })
                             return shop.deals
-                        }).filter(deal => !deal.cards.dealCards && !deal.methods.dealMethods)
+                        }).flatMap(deals => deals).filter(deal => deal.cards.length === 0 && deal.methods.length === 0)
                 } else {
                     console.log("cards/methods")
                     shopsWithDeals = shopsWithDeals.filter(shop => shop.deals.length !== 0)
@@ -69,16 +69,16 @@ class Explore extends React.Component {
                             return shop.deals
                         }).flatMap(deals => deals)
                         .filter(deal => {
-                            if (!deal.cards.dealCards && !deal.methods.dealMethods) {
+                            if (deal.cards.length === 0 && deal.methods.length === 0) {
                                 return true
                             } else {
                                 for (let i = 0; i < deal.cards.length; i++) {
-                                    if (this.userCards[0].includes(deal.cards[i].id)) {
+                                    if (this.userCards[0].includes(deal.cards[i])) {
                                         return true
                                     }
                                 }
                                 for (let j = 0; j < deal.methods.length; j++) {
-                                    if (this.userCards[1].includes(deal.methods[j].id)) {
+                                    if (this.userCards[1].includes(deal.methods[j])) {
                                         return true
                                     }
                                 }
