@@ -48,7 +48,6 @@ class NewDeal extends React.Component {
             this.uploadImage(result.uri)
         }
     }
-    //imageURL = null;
 
     uploadImage = async (uri) => {
         const response = await fetch(uri);
@@ -63,7 +62,6 @@ class NewDeal extends React.Component {
         console.log(fileName);
         
         let ref = firebaseDb.storage().ref(`deals/images/${fileName}`);
-        //let ref = firebaseDb.storage().ref().child("deals/" + this.state.title + " " + this.state.desc);
         ref.put(blob)
               .on(
                 firebaseDb.storage.TaskEvent.STATE_CHANGED,
@@ -88,11 +86,6 @@ class NewDeal extends React.Component {
                     })
                 })
             }
-        
-        //const snapshot = await ref.put(blob);
-        //const result = await snapshot.ref.getDownloadURL()
-        //this.imageURL = result;
-        //console.log(this.imageURL)
 
     onMethodsReceived = (methods) => {
         this.setState(prevState => ({
@@ -228,7 +221,6 @@ class NewDeal extends React.Component {
                     <BlueButton
                         onPress={() => {
                             if (image && title && desc) {
-
                                 firebaseDb.firestore().collection('shops').doc(this.userId).get()
                                     .then(documentSnapshot => {
                                         this.shopDeals = documentSnapshot.data().deals
@@ -237,7 +229,9 @@ class NewDeal extends React.Component {
                                             description: desc,
                                             image: image,
                                             methods: selectedMethods,
-                                            title: title
+                                            title: title,
+                                            dealCards: selectedCards.length !== 0,
+                                            dealMethods: selectedMethods.length !== 0,
                                         })
                                         return this.shopDeals
                                     }).then(shopDeals => {
@@ -250,7 +244,9 @@ class NewDeal extends React.Component {
                                             description: desc,
                                             image: image,
                                             methods: this.state.selectedMethodsO,
-                                            title: title
+                                            title: title,
+                                            dealCards: selectedCards.length !== 0,
+                                            dealMethods: selectedMethods.length !== 0,
                                         })
                                     })
                                     this.setState({

@@ -255,18 +255,6 @@ function MerchantDealDetails({navigation, route}) {
 
                 <View style={{flexDirection: 'row'}}>
                     <BlueButton onPress={() => {
-                        const selectedCardsDB = [...selectedCards].map(card => {
-                            delete card.label;
-                            delete card.value;
-                            delete card.image;
-                        })
-
-                        const selectedMethodsDB = [...selectedMethods].map(method => {
-                            delete method.label;
-                            delete method.value;
-                            delete method.image;
-                        })
-
                         userDoc.update({
                             deals: shopDeals.filter(d => d.title !== deal.title || d.description !== deal.description)
                         })
@@ -276,7 +264,9 @@ function MerchantDealDetails({navigation, route}) {
                                 cards: selectedCards,
                                 methods: selectedMethods,
                                 image: image,
-                                description: desc
+                                description: desc,
+                                dealCards: selectedCards.length !== 0,
+                                dealMethods: selectedMethods.length !== 0,
                             })
                         })
                         firebaseDb.firestore().collection('shops').doc(userId).update({
@@ -288,7 +278,9 @@ function MerchantDealDetails({navigation, route}) {
                                 cards: selectedCards,
                                 methods: selectedMethods,
                                 image: image,
-                                description: desc
+                                description: desc,
+                                dealCards: selectedCards.length !== 0,
+                                dealMethods: selectedMethods.length !== 0,
                             })
                         })
                         navigation.navigate('Deals')
