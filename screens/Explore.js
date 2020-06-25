@@ -112,8 +112,8 @@ class Explore extends React.Component {
             <TouchableOpacity style={{
                 backgroundColor: '#bc9eb2',
                 borderRadius: 20,
-                height: 420,
-                padding: 50,
+                height: 400,
+                padding: 25,
                 marginLeft: 10,
                 marginRight: 10,
             }} onPress={() => this.props.navigation
@@ -156,7 +156,7 @@ class Explore extends React.Component {
                 >
                     Show me more deals!
                 </BlueButton>
-                <View style={{flex: 1, flexDirection: 'row', justifyContent: 'center', paddingTop: 20}}>
+                <View style={{flex: 1, flexDirection: 'row', justifyContent: 'center', paddingTop: 15}}>
                     <Carousel
                         layout={"default"}
                         ref={ref => {
