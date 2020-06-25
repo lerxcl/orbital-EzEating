@@ -102,11 +102,7 @@ class NewDeal extends React.Component {
         this.getPermissionAsync()
         const combined = [];
         getCards(this.onCardsReceived).then(() => combined.push({name: "Cards", id: 0, children: this.state.cards}))
-        getMethods(this.onMethodsReceived).then(() => combined.push({
-            name: "Methods",
-            id: 1,
-            children: this.state.methods
-        }))
+        getMethods(this.onMethodsReceived).then(() => combined.push({ame: "Methods", id: 1, children: this.state.methods}))
         this.setState({cardsAndMethods: combined})
     }
 
@@ -221,6 +217,7 @@ class NewDeal extends React.Component {
                     <BlueButton
                         onPress={() => {
                             if (image && title && desc) {
+                                console.log(this.state.selectedCardsO)
                                 firebaseDb.firestore().collection('shops').doc(this.userId).get()
                                     .then(documentSnapshot => {
                                         this.shopDeals = documentSnapshot.data().deals

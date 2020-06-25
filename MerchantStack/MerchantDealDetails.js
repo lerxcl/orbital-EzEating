@@ -261,7 +261,6 @@ function MerchantDealDetails({navigation, route}) {
 
                 <View style={{flexDirection: 'row'}}>
                     <BlueButton onPress={() => {
-
                         const selectedMethodsDB = [...selectedMethods].map(method => {
                             delete method.label;
                             delete method.value;
@@ -295,8 +294,6 @@ function MerchantDealDetails({navigation, route}) {
                                 }),
                                 image: deal.image,
                                 description: deal.description,
-                                dealCards: deal.cards.length !== 0,
-                                dealMethods: deal.methods.length !== 0,
                             })
                         })
                         userDoc.update({
@@ -306,8 +303,6 @@ function MerchantDealDetails({navigation, route}) {
                                 methods: selectedMethodsDB,
                                 image: image,
                                 description: desc,
-                                dealCards: selectedCards.length !== 0,
-                                dealMethods: selectedMethods.length !== 0,
                             })
                         })
                         firebaseDb.firestore().collection('shops').doc(userId).update({
@@ -317,8 +312,6 @@ function MerchantDealDetails({navigation, route}) {
                                 methods: deal.methods.map(method => {return method.id}),
                                 image: deal.image,
                                 description: deal.description,
-                                dealCards: deal.cards.length !== 0,
-                                dealMethods: deal.methods.length !== 0,
                             })
                         })
                         firebaseDb.firestore().collection('shops').doc(userId).update({
@@ -328,8 +321,6 @@ function MerchantDealDetails({navigation, route}) {
                                 methods: selectedMethodsShop,
                                 image: image,
                                 description: desc,
-                                dealCards: selectedCards.length !== 0,
-                                dealMethods: selectedMethods.length !== 0,
                             })
                         })
                         navigation.navigate('Deals')
@@ -365,8 +356,6 @@ function MerchantDealDetails({navigation, route}) {
                                                 }),
                                                 image: deal.image,
                                                 description: deal.description,
-                                                dealCards: deal.cards.length !== 0,
-                                                dealMethods: deal.methods.length !== 0,
                                             })
                                         })
                                         firebaseDb.firestore().collection('shops').doc(userId).update({
@@ -376,8 +365,6 @@ function MerchantDealDetails({navigation, route}) {
                                                 methods: deal.methods.map(method => {return method.id}),
                                                 image: deal.image,
                                                 description: deal.description,
-                                                dealCards: deal.cards.length !== 0,
-                                                dealMethods: deal.methods.length !== 0,
                                             })
                                         })
                                         navigation.navigate('Deals')
