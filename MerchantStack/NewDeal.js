@@ -230,8 +230,6 @@ class NewDeal extends React.Component {
                                             image: image,
                                             methods: selectedMethods,
                                             title: title,
-                                            dealCards: selectedCards.length !== 0,
-                                            dealMethods: selectedMethods.length !== 0,
                                         })
                                         return this.shopDeals
                                     }).then(shopDeals => {
@@ -245,8 +243,6 @@ class NewDeal extends React.Component {
                                             image: image,
                                             methods: this.state.selectedMethodsO,
                                             title: title,
-                                            dealCards: selectedCards.length !== 0,
-                                            dealMethods: selectedMethods.length !== 0,
                                         })
                                     })
                                     this.setState({
