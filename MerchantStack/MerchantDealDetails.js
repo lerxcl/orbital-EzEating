@@ -1,5 +1,5 @@
-import React, {useEffect} from 'react';
-import {Alert, TouchableOpacity, StyleSheet, Text, View, Image, ScrollView} from "react-native";
+import React, {useEffect, useState} from 'react';
+import {Alert, TouchableOpacity, StyleSheet, Text, View, Image, ScrollView, ActivityIndicator} from "react-native";
 import firebaseDb from '../firebase/firebaseDb';
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import * as ImagePicker from 'expo-image-picker';
@@ -12,28 +12,31 @@ import {getCards, getMethods} from '../component/API';
 
 function MerchantDealDetails({navigation, route}) {
     const {deal} = route.params;
-    const [isLoading, setIsLoading] = React.useState(true)
-    const [image, setImage] = React.useState(deal.image)
-    const [title, setTitle] = React.useState(deal.title)
-    const [desc, setDesc] = React.useState(deal.description)
-    const [newTitle, setNewTitle] = React.useState('')
-    const [newDesc, setNewDesc] = React.useState('')
-    const [titleDialog, setTitleDialog] = React.useState(false)
-    const [descDialog, setDescDialog] = React.useState(false)
-    const [cardVisible, setCardVisible] = React.useState(false)
-    const [methodVisible, setMethodVisible] = React.useState(false)
-    const [cards, setCards] = React.useState([])
-    const [selectedCards, setSelectCards] = React.useState(deal.cards.map(item => {
+    const [isLoading, setIsLoading] = useState(true)
+    const [image, setImage] = useState(deal.image)
+    const [title, setTitle] = useState(deal.title)
+    const [desc, setDesc] = useState(deal.description)
+    const [newTitle, setNewTitle] = useState('')
+    const [newDesc, setNewDesc] = useState('')
+    const [titleDialog, setTitleDialog] = useState(false)
+    const [descDialog, setDescDialog] = useState(false)
+    const [cardVisible, setCardVisible] = useState(false)
+    const [methodVisible, setMethodVisible] = useState(false)
+    const [cards, setCards] = useState([])
+    const [selectedCards, setSelectCards] = useState(deal.cards.map(item => {
         item.label = item.name
         item.value = item.id
         return item
     }))
-    const [methods, setMethods] = React.useState([])
-    const [selectedMethods, setSelectMethods] = React.useState(deal.methods.map(item => {
+    const [methods, setMethods] = useState([])
+    const [selectedMethods, setSelectMethods] = useState(deal.methods.map(item => {
         item.label = item.name
         item.value = item.id
         return item
     }))
+    const [progress, setProgress] = useState(0);
+    const [uploading, setUploading] = useState(false)
+
     const userId = firebaseDb.auth().currentUser.uid
     const userDoc = firebaseDb.firestore().collection('merchants').doc(userId)
 
@@ -96,6 +99,7 @@ function MerchantDealDetails({navigation, route}) {
         });
 
         if (!result.cancelled) {
+            setUploading(true)
             const fileExtension = result.uri.split('.').pop();
             console.log("EXT: " + fileExtension);
             
@@ -113,18 +117,16 @@ function MerchantDealDetails({navigation, route}) {
               .on(
                 firebaseDb.storage.TaskEvent.STATE_CHANGED,
                 snapshot => {
-                  console.log("snapshot: " + snapshot.state);
-                  console.log("progress: " + (snapshot.bytesTransferred / snapshot.totalBytes) * 100);
-        
-                  if (snapshot.state === firebaseDb.storage.TaskState.SUCCESS) {
-                    console.log("Success");
-                  }
+                    setProgress(
+                        (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+                    );
                 },
                 error => {
                   unsubscribe();
                   console.log("image upload error: " + error.toString());
                 },
                 () => {
+                  setUploading(false)
                   storageRef.getDownloadURL()
                     .then((downloadUrl) => {
                       console.log("File available at: " + downloadUrl);
@@ -139,6 +141,10 @@ function MerchantDealDetails({navigation, route}) {
         <ScrollView>
             <View style={styles.container}>
                 <Image style={styles.dealBanner} source={{uri: image}}/>
+                {uploading && 
+                <View style={styles.container}>
+                    <ActivityIndicator size='large'/>
+                </View>}
                 <TouchableOpacity style={styles.edit} onPress={() => {
                     Alert.alert(
                         'Change Deal Image',

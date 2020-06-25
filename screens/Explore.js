@@ -5,11 +5,11 @@ import BlueButton from "../component/BlueButton";
 import firebaseDb from '../firebase/firebaseDb';
 import {Toast} from 'native-base';
 
-function randSelect(shopsWithDeals) {
+function randSelect(shopsWithDeals, count) {
     let randomDeals = [];
     let alrPicked = [];
 
-    for (let i = 0; i < 8; i++) {
+    for (let i = 0; i < Math.min(count, 10); i++) {
         let rand = Math.floor(Math.random() * shopsWithDeals.length);
         while (alrPicked.includes(rand)) {
             rand = Math.floor(Math.random() * shopsWithDeals.length);
@@ -31,8 +31,10 @@ class Explore extends React.Component {
     userId = firebaseDb.auth().currentUser.uid
     userDoc = firebaseDb.firestore().collection('users').doc(this.userId)
     userCards = []
+    count = 0;
 
     getDeals = () => {
+        this.count = 0;
         this.userCards = []
         this.userDoc.get()
             .then(snapshot => {
@@ -49,7 +51,9 @@ class Explore extends React.Component {
                                             return shop.deals
                                         })
                                         .filter(deal => {
+                                            console.log(deal.name + " " + deal.methods)
                                             if (deal.cards.length === 0 && deal.methods.length === 0) {
+                                                this.count++
                                                 return true
                                             } else {
                                                 for (let i = 0; i < deal.cards.length; i++) {
@@ -65,8 +69,10 @@ class Explore extends React.Component {
                                                 return false
                                             }
                                         })
+                
+                console.log(this.count)
 
-                const randomDeals = randSelect(shopsWithDeals);
+                const randomDeals = randSelect(shopsWithDeals, this.count);
 
                 this.setState({
                     all: shopsWithDeals,
