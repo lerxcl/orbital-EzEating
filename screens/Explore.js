@@ -9,7 +9,7 @@ function randSelect(shopsWithDeals) {
     let randomDeals = [];
     let alrPicked = [];
 
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 8; i++) {
         let rand = Math.floor(Math.random() * shopsWithDeals.length);
         while (alrPicked.includes(rand)) {
             rand = Math.floor(Math.random() * shopsWithDeals.length);
@@ -27,8 +27,6 @@ class Explore extends React.Component {
         loading: true,
         activeIndex: 0,
         carouselRef: null,
-        hasCards: null,
-        hasMethods: null,
     }
     userId = firebaseDb.auth().currentUser.uid
     userDoc = firebaseDb.firestore().collection('users').doc(this.userId)
@@ -38,54 +36,35 @@ class Explore extends React.Component {
         this.userCards = []
         this.userDoc.get()
             .then(snapshot => {
-                this.setState({
-                    hasCards: snapshot.data().hasCards,
-                    hasMethods: snapshot.data().hasMethods
-                })
 
                 this.userCards.push(snapshot.data().cards)
                 this.userCards.push(snapshot.data().methods)
 
-                let shopsWithDeals = [...global.allShops];
-
-                if (!this.state.hasCards && !this.state.hasMethods) {
-                    console.log("no")
-                    shopsWithDeals = shopsWithDeals.filter(shop => shop.deals.length !== 0)
-                        .map(shop => {
-                            shop.deals.map(deal => {
-                                deal.name = shop.shopName
-                                deal.logo = shop.logo
-                            })
-                            return shop.deals
-                        }).flatMap(deals => deals).filter(deal => deal.cards.length === 0 && deal.methods.length === 0)
-                } else {
-                    console.log("cards/methods")
-                    shopsWithDeals = shopsWithDeals.filter(shop => shop.deals.length !== 0)
-                        .map(shop => {
-                            shop.deals.map(deal => {
-                                deal.name = shop.shopName
-                                deal.logo = shop.logo
-                            })
-                            return shop.deals
-                        }).flatMap(deals => deals)
-                        .filter(deal => {
-                            if (deal.cards.length === 0 && deal.methods.length === 0) {
-                                return true
-                            } else {
-                                for (let i = 0; i < deal.cards.length; i++) {
-                                    if (this.userCards[0].includes(deal.cards[i])) {
-                                        return true
-                                    }
-                                }
-                                for (let j = 0; j < deal.methods.length; j++) {
-                                    if (this.userCards[1].includes(deal.methods[j])) {
-                                        return true
-                                    }
-                                }
-                                return false
-                            }
-                        })
-                }
+                let shopsWithDeals = [...global.allShops].filter(shop => shop.deals.length !== 0)
+                                        .flatMap(shop => {
+                                            shop.deals.map(deal => {
+                                                deal.name = shop.shopName
+                                                deal.logo = shop.logo
+                                            })
+                                            return shop.deals
+                                        })
+                                        .filter(deal => {
+                                            if (deal.cards.length === 0 && deal.methods.length === 0) {
+                                                return true
+                                            } else {
+                                                for (let i = 0; i < deal.cards.length; i++) {
+                                                    if (this.userCards[0].includes(deal.cards[i])) {
+                                                        return true
+                                                    }
+                                                }
+                                                for (let j = 0; j < deal.methods.length; j++) {
+                                                    if (this.userCards[1].includes(deal.methods[j])) {
+                                                        return true
+                                                    }
+                                                }
+                                                return false
+                                            }
+                                        })
 
                 const randomDeals = randSelect(shopsWithDeals);
 
@@ -96,7 +75,7 @@ class Explore extends React.Component {
                 });
                 Toast.show({text:"Done refreshing", type:"success", textStyle:{textAlign:"center"}})
             })
-    }
+        }
 
     componentDidMount() {
         this.getDeals()
@@ -160,7 +139,7 @@ class Explore extends React.Component {
                     </View>
                 ) : (
                     <View>
-                        <Text style={{fontSize: 20,textAlign: 'center'}}>Discover deals</Text>
+                        <Text style={{marginTop: 10, fontSize: 20,textAlign: 'center'}}>Discover deals</Text>
                         <Text style={{marginBottom: 20,textAlign: 'center'}}>(start adding your cards/payment methods!)</Text>
                     </View>
                 )}
@@ -211,5 +190,6 @@ const styles = StyleSheet.create({
     },
     text: {
         fontSize: 15,
+        marginBottom: 10
     },
 });
