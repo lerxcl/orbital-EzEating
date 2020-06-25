@@ -67,8 +67,6 @@ class SignUpContainer extends React.Component {
                         cards: this.state.selectedCards,
                         methods: this.state.selectedMethods,
                         fav: [], // creating empty array of user's favourite shops
-                        hasCards: this.state.selectedCards.length > 0,
-                        hasMethods: this.state.selectedMethods.length > 0,
                     })
 
                     this.setState({

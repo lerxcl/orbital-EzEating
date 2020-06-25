@@ -51,7 +51,7 @@ class Explore extends React.Component {
                                             return shop.deals
                                         })
                                         .filter(deal => {
-                                            console.log(deal.name + " " + deal.methods)
+                                            //console.log(deal.name + " " + deal.methods)
                                             if (deal.cards.length === 0 && deal.methods.length === 0) {
                                                 this.count++
                                                 return true
@@ -70,7 +70,7 @@ class Explore extends React.Component {
                                             }
                                         })
                 
-                console.log(this.count)
+                //console.log(this.count)
 
                 const randomDeals = randSelect(shopsWithDeals, this.count);
 
@@ -138,7 +138,7 @@ class Explore extends React.Component {
         }
         return (
             <View style={styles.container}>
-                {this.state.hasCards || this.state.hasMethods ? (
+                {this.userCards[0].length !== 0 || this.userCards[1].length !== 0 ? (
                     <View>
                         <Text style={{fontSize: 20,textAlign: 'center'}}>Discover personalised deals</Text>
                         <Text style={{marginBottom: 20,textAlign: 'center'}}>(based on your cards/payment methods)</Text>

@@ -57,12 +57,10 @@ class Methods extends React.Component {
         if (item.isSelect) {
             this.userDoc.update({
                 methods: firebaseDb.firestore.FieldValue.arrayRemove(item.id),
-                hasMethods: this.state.allMethods.filter(method => method.isSelect).length - 1 > 0
             })
         } else {
             this.userDoc.update({
                 methods: firebaseDb.firestore.FieldValue.arrayUnion(item.id),
-                hasMethods: this.state.allMethods.filter(method => method.isSelect).length + 1 > 0
             })
         }
         item.isSelect = !item.isSelect
