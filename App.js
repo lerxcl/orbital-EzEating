@@ -75,6 +75,10 @@ function HomeStackScreen() {
                 name='Shop Details'
                 component={Shop}
             />
+            <HomeStack.Screen
+                name='Deal Details'
+                component={DealDetails}
+            />
         </HomeStack.Navigator>
     )
 }
