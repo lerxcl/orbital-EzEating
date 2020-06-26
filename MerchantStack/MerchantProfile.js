@@ -85,12 +85,16 @@ class MerchantProfile extends React.Component {
         });
         
         if (!result.cancelled) {
+            if (this.state.image !== undefined) {
+                firebaseDb.storage().refFromURL(this.state.image).delete()
+                    .then(() => console.log("deleted successfully") );
+            }
 
             this.setState({uploading: true})
-            
+
             const fileName = result.uri.substring(result.uri.lastIndexOf('/') + 1);
             console.log(fileName);
-        
+
             let storageRef = firebaseDb.storage().ref(`profile/merchants/${fileName}`);
             const response = await fetch(result.uri);
             const blob = await response.blob();
@@ -99,7 +103,7 @@ class MerchantProfile extends React.Component {
               .on(
                 firebaseDb.storage.TaskEvent.STATE_CHANGED,
                 snapshot => {
-                
+
                   this.setState({progress: (snapshot.bytesTransferred / snapshot.totalBytes)})
                   console.log("snapshot: " + snapshot.state);
                   console.log("progress: " + (snapshot.bytesTransferred / snapshot.totalBytes) * 100);

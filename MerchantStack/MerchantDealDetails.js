@@ -41,25 +41,11 @@ function MerchantDealDetails({navigation, route}) {
     const userId = firebaseDb.auth().currentUser.uid
     const userDoc = firebaseDb.firestore().collection('merchants').doc(userId)
 
-    let shopDeals = [];
-
     useEffect(() => {
         if (isLoading) {
             getPermissionAsync()
             getCards(onCardsReceived)
             getMethods(onMethodsReceived)
-            firebaseDb.firestore().collection('merchants').doc(userId).get()
-                .then(snapshot => {
-                    shopDeals = snapshot.data().deals
-                    shopDeals.push({
-                        cards: selectedCards,
-                        description: desc,
-                        image: image,
-                        methods: selectedMethods,
-                        title: title
-                    })
-                })
-
             setIsLoading(false)
         }
     })
@@ -100,6 +86,9 @@ function MerchantDealDetails({navigation, route}) {
         });
 
         if (!result.cancelled) {
+            firebaseDb.storage().refFromURL(deal.image).delete()
+                .then(() => console.log("deleted successfully") );
+
             setUploading(true)
 
             const fileName = result.uri.substring(result.uri.lastIndexOf('/') + 1);
