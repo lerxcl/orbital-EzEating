@@ -112,7 +112,14 @@ class Explore extends React.Component {
             <TouchableOpacity style={{
                 backgroundColor: '#bc9eb2',
                 borderRadius: 20,
-                height: 400,
+                ...Platform.select({
+                    ios: {
+                        height:500,
+                    },
+                    android: {
+                        height:400,
+                    },
+                }),
                 padding: 25,
                 marginLeft: 10,
                 marginRight: 10,
