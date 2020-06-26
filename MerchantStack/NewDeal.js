@@ -8,6 +8,7 @@ import * as ImagePicker from 'expo-image-picker';
 import Constants from 'expo-constants';
 import * as Permissions from 'expo-permissions';
 import SectionedMultiSelect from 'react-native-sectioned-multi-select';
+import {ProgressBar} from 'react-native-paper';
 
 class NewDeal extends React.Component {
     state = {
@@ -23,6 +24,8 @@ class NewDeal extends React.Component {
         selectedItemObjects: [],
         selectedCardsO: [],
         selectedMethodsO: [],
+        progress: 0,
+        uploading: false
     }
     shopDeals = [];
     userId = firebaseDb.auth().currentUser.uid;
@@ -45,6 +48,7 @@ class NewDeal extends React.Component {
         });
 
         if (!result.cancelled) {
+            this.setState({uploading: true})
             this.uploadImage(result.uri)
         }
     }
@@ -52,14 +56,6 @@ class NewDeal extends React.Component {
     uploadImage = async (uri) => {
         const response = await fetch(uri);
         const blob = await response.blob();
-        const fileExtension = uri.split('.').pop();
-        console.log("EXT: " + fileExtension);
-            
-        // let uuid = require('random-uuid-v4');
-        // let uuidv4 = uuid();
-        //
-        // const fileName = `${uuidv4}.${fileExtension}`;
-
         const fileName = uri.substring(uri.lastIndexOf('/') + 1);
         console.log(fileName);
         
@@ -68,6 +64,7 @@ class NewDeal extends React.Component {
               .on(
                 firebaseDb.storage.TaskEvent.STATE_CHANGED,
                 snapshot => {
+                  this.setState({progress: (snapshot.bytesTransferred / snapshot.totalBytes)})
                   console.log("snapshot: " + snapshot.state);
                   console.log("progress: " + (snapshot.bytesTransferred / snapshot.totalBytes) * 100);
         
@@ -80,6 +77,7 @@ class NewDeal extends React.Component {
                   console.log("image upload error: " + error.toString());
                 },
                 () => {
+                  this.setState({uploading: false})
                   ref.getDownloadURL()
                     .then((downloadUrl) => {
                       console.log("File available at: " + downloadUrl);
@@ -129,7 +127,7 @@ class NewDeal extends React.Component {
 
     render() {
 
-        const {title, desc, image, cardsAndMethods, selected, selectedCards, selectedMethods} = this.state
+        const {title, desc, image, cardsAndMethods, selected, selectedCards, selectedMethods, uploading, progress} = this.state
 
         return (
             <ScrollView>
@@ -164,19 +162,11 @@ class NewDeal extends React.Component {
                         </View>
                         <TouchableOpacity style={styles.edit} onPress={() => {
                             Alert.alert(
-                                'Change/Remove Deal Image',
-                                'Do you want to change or remove this deal image?',
+                                'Change Deal Image',
+                                'Do you want to change this deal image?',
                                 [
-                                    {
-                                        text: 'Cancel', onPress: () => {
-                                        }
-                                    },
-                                    {
-                                        text: 'Remove', onPress: () => {
-                                            this.setState({image: null})
-                                        }
-                                    },
-                                    {text: 'Change', onPress: this.pickImage}
+                                    {text: 'Cancel', onPress: () => {}},
+                                    {text: 'Yes', onPress: this.pickImage}
                                 ]
                             )
                         }}>
@@ -184,6 +174,13 @@ class NewDeal extends React.Component {
                         </TouchableOpacity>
                     </View>
                     }
+
+                {uploading &&
+                    <View>
+                        <Text style = {{marginBottom: 5}}>Uploading photo:</Text>
+                        <ProgressBar width = {300} progress = {progress} color = 'darkblue'/>
+                        <Text style = {{fontSize: 10}}>{Math.round(progress * 100)}%</Text>
+                    </View>}
 
                     <View style={styles.textContainer}>
                         <TextInput

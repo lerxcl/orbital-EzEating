@@ -9,6 +9,7 @@ import Dialog from "react-native-dialog";
 import BlueButton from '../component/BlueButton';
 import {MultiPickerMaterialDialog} from 'react-native-material-dialog';
 import {getCards, getMethods} from '../component/API';
+import {ProgressBar} from 'react-native-paper';
 
 function MerchantDealDetails({navigation, route}) {
     const {deal} = route.params;
@@ -100,13 +101,6 @@ function MerchantDealDetails({navigation, route}) {
 
         if (!result.cancelled) {
             setUploading(true)
-            // const fileExtension = result.uri.split('.').pop();
-            // console.log("EXT: " + fileExtension);
-            
-            // let uuid = require('random-uuid-v4');
-            // let uuidv4 = uuid();
-            //
-            // const fileName = `${uuidv4}.${fileExtension}`;
 
             const fileName = result.uri.substring(result.uri.lastIndexOf('/') + 1);
             console.log(fileName);
@@ -120,7 +114,7 @@ function MerchantDealDetails({navigation, route}) {
                 firebaseDb.storage.TaskEvent.STATE_CHANGED,
                 snapshot => {
                     setProgress(
-                        (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+                        (snapshot.bytesTransferred / snapshot.totalBytes)
                     );
                 },
                 error => {
@@ -143,10 +137,14 @@ function MerchantDealDetails({navigation, route}) {
         <ScrollView>
             <View style={styles.container}>
                 <Image style={styles.dealBanner} source={{uri: image}}/>
-                {uploading && 
-                <View style={styles.container}>
-                    <ActivityIndicator size='large'/>
+                
+                {uploading &&
+                <View>
+                    <Text style = {{marginBottom: 5}}>Uploading photo:</Text>
+                    <ProgressBar width = {300} progress = {progress} color = 'darkblue'/>
+                    <Text style = {{fontSize: 10}}>{Math.round(progress * 100)}%</Text>
                 </View>}
+
                 <TouchableOpacity style={styles.edit} onPress={() => {
                     Alert.alert(
                         'Change Deal Image',

@@ -7,6 +7,7 @@ import Constants from 'expo-constants';
 import * as Permissions from 'expo-permissions';
 import BlueButton from "../component/BlueButton";
 import Dialog from "react-native-dialog";
+import {ProgressBar} from 'react-native-paper';
 
 class MerchantProfile extends React.Component {
 
@@ -29,7 +30,9 @@ class MerchantProfile extends React.Component {
         contact: null,
         type: null,
         desc: null,
-        deals: null
+        deals: null,
+        progress: 0,
+        uploading: false
       };
 
     setName = (newName) => {
@@ -82,14 +85,9 @@ class MerchantProfile extends React.Component {
         });
         
         if (!result.cancelled) {
-            const fileExtension = result.uri.split('.').pop();
-            console.log("EXT: " + fileExtension);
-            
-            // let uuid = require('random-uuid-v4');
-            // let uuidv4 = uuid();
-            //
-            // const fileName = `${uuidv4}.${fileExtension}`;
 
+            this.setState({uploading: true})
+            
             const fileName = result.uri.substring(result.uri.lastIndexOf('/') + 1);
             console.log(fileName);
         
@@ -101,6 +99,8 @@ class MerchantProfile extends React.Component {
               .on(
                 firebaseDb.storage.TaskEvent.STATE_CHANGED,
                 snapshot => {
+                
+                  this.setState({progress: (snapshot.bytesTransferred / snapshot.totalBytes)})
                   console.log("snapshot: " + snapshot.state);
                   console.log("progress: " + (snapshot.bytesTransferred / snapshot.totalBytes) * 100);
         
@@ -113,6 +113,7 @@ class MerchantProfile extends React.Component {
                   console.log("image upload error: " + error.toString());
                 },
                 () => {
+                  this.setState({uploading: false})
                   storageRef.getDownloadURL()
                     .then((downloadUrl) => {
                       console.log("File available at: " + downloadUrl);
@@ -125,7 +126,7 @@ class MerchantProfile extends React.Component {
 
     render() {
         const {image, name, openingHours, type, contact, desc, deals, nameDialogVisible, contactDialogVisible,
-            hoursDialogVisible, descDialogVisible, typeDialogVisible} = this.state
+            hoursDialogVisible, descDialogVisible, typeDialogVisible, progress, uploading} = this.state
 
         return (
             <ScrollView contentContainerstyle = {styles.container}>
@@ -138,6 +139,13 @@ class MerchantProfile extends React.Component {
                            style = {styles.image}
                            resizeMode = "center"/>}
                     </View>
+                    {uploading &&
+                    <View>
+                        <Text style = {{marginBottom: 5}}>Uploading photo:</Text>
+                        <ProgressBar width = {300} progress = {progress} color = 'darkblue'/>
+                        <Text style = {{fontSize: 10}}>{Math.round(progress * 100)}%</Text>
+                    </View>}
+
                     <TouchableOpacity style = {styles.edit} onPress = {() => {
                     Alert.alert(
                         'Change Shop Logo',
