@@ -100,13 +100,15 @@ function MerchantDealDetails({navigation, route}) {
 
         if (!result.cancelled) {
             setUploading(true)
-            const fileExtension = result.uri.split('.').pop();
-            console.log("EXT: " + fileExtension);
+            // const fileExtension = result.uri.split('.').pop();
+            // console.log("EXT: " + fileExtension);
             
-            let uuid = require('random-uuid-v4');
-            let uuidv4 = uuid();
+            // let uuid = require('random-uuid-v4');
+            // let uuidv4 = uuid();
+            //
+            // const fileName = `${uuidv4}.${fileExtension}`;
 
-            const fileName = `${uuidv4}.${fileExtension}`;
+            const fileName = result.uri.substring(result.uri.lastIndexOf('/') + 1);
             console.log(fileName);
         
             let storageRef = firebaseDb.storage().ref(`deals/images/${fileName}`);

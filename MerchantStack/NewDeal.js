@@ -55,10 +55,12 @@ class NewDeal extends React.Component {
         const fileExtension = uri.split('.').pop();
         console.log("EXT: " + fileExtension);
             
-        let uuid = require('random-uuid-v4');
-        let uuidv4 = uuid();
+        // let uuid = require('random-uuid-v4');
+        // let uuidv4 = uuid();
+        //
+        // const fileName = `${uuidv4}.${fileExtension}`;
 
-        const fileName = `${uuidv4}.${fileExtension}`;
+        const fileName = uri.substring(uri.lastIndexOf('/') + 1);
         console.log(fileName);
         
         let ref = firebaseDb.storage().ref(`deals/images/${fileName}`);
