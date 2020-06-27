@@ -25,9 +25,32 @@ function DealDetails({route}) {
 
     }
 
+    const getMethods = async () => {
+        let methods = [];
+        let snapshot = await firebaseDb.firestore().collection('methods').get()
+
+        snapshot.forEach((doc) => {
+            if (deal.methods.includes(doc.id)) {
+                let obj = {
+                    id: doc.id,
+                    name: doc.data().name,
+                    image: doc.data().image,
+                }
+                methods.push(obj)
+            }
+        });
+        return methods
+    }
+
     useEffect(() => {
-        if (loading && deal.cards.length !== 0) {
+        if (loading && deal.cards.length !== 0 && deal.methods.length === 0) {
             getCards().then(result => setCardInfo(result))
+        } else if (loading && deal.cards.length === 0 && deal.methods.length !== 0) {
+            getMethods().then(result => setCardInfo(result))
+        } else if (loading && deal.cards.length !== 0 && deal.methods.length !== 0) {
+            getCards().then(result1 => {
+                getMethods().then(result2 => setCardInfo(result1.concat(result2)))
+            })
         }
 
         return () => setLoading(false)
