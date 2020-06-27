@@ -10,7 +10,7 @@ import {
     Image
 } from 'react-native';
 import firebaseDb from '../firebase/firebaseDb';
-import {getCards} from '../component/API';
+import {getNetworks} from '../component/API';
 import {CheckBox} from 'react-native-elements';
 
 class MerchantCards extends React.Component {
@@ -22,7 +22,7 @@ class MerchantCards extends React.Component {
     userDoc = firebaseDb.firestore().collection('merchants').doc(this.userId)
 
     componentDidMount() {
-        getCards(this.onCardsReceived).then(() => {
+        getNetworks(this.onCardsReceived).then(() => {
             this.getData()
         })
     }
@@ -58,8 +58,14 @@ class MerchantCards extends React.Component {
             this.userDoc.update({
                 cards: firebaseDb.firestore.FieldValue.arrayRemove(item.id)
             })
+            firebaseDb.firestore().collection('shops').doc(this.userId).update({
+                cards: firebaseDb.firestore.FieldValue.arrayRemove(item.id)
+            })
         } else {
             this.userDoc.update({
+                cards: firebaseDb.firestore.FieldValue.arrayUnion(item.id)
+            })
+            firebaseDb.firestore().collection('shops').doc(this.userId).update({
                 cards: firebaseDb.firestore.FieldValue.arrayUnion(item.id)
             })
         }
@@ -109,7 +115,7 @@ class MerchantCards extends React.Component {
         return (
             <SafeAreaView style={styles.container}>
                 <View style={{flexDirection: 'row'}}>
-                    <Text style={styles.description}>Linked cards are checked</Text>
+                    <Text style={styles.description}>Accepted cards are checked</Text>
                 </View>
                 <Text>(Tap checkbox to add/remove cards)</Text>
                 <FlatList

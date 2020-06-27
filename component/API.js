@@ -32,5 +32,21 @@ export async function getCards(cardsRetrieved) {
     cardsRetrieved(cards);
 }
 
+export async function getNetworks(netsRetrieved) {
+    var nets = [];
+    var snapshot = await firebaseDb.firestore().collection('networks').get()
+
+    snapshot.forEach((doc) => {
+        var obj = {
+            id: doc.id,
+            name: doc.data().name,
+            image: doc.data().image,
+        }
+        nets.push(obj)
+    }); 
+
+    netsRetrieved(nets);
+}
+
 
 

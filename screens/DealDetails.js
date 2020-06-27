@@ -6,6 +6,7 @@ function DealDetails({route}) {
     const {deal} = route.params;
     const [cardinfo, setCardInfo] = React.useState([])
     const [loading, setLoading] = React.useState(true);
+    const numColumns = 3
 
     const getCards = async () => {
         let cards = [];
@@ -78,24 +79,27 @@ function DealDetails({route}) {
             }
 
             {cardinfo.length !== 0 &&
-            <ScrollView contentContainerStyle = {{alignItems: 'center'}}>
-                <Image style={styles.logo} source={{uri: deal.logo}}/>
-                <Text style={styles.dealHeader}>{deal.name}</Text>
-                <Text style={styles.dealHeader}>{deal.title}</Text>
-                <Image style={styles.dealBanner} source={{uri: deal.image}}/>
-                <Text style={styles.info}>{deal.description}</Text>
-                <Text style = {{marginTop: 20, marginBottom: 10}}>Deal is only applicable with:</Text>
                 <FlatList
-                    horizontal = {true}
+                    ListHeaderComponent = {
+                        <View style = {{alignItems: 'center'}}>
+                            <Image style={styles.logo} source={{uri: deal.logo}}/>
+                            <Text style={styles.dealHeader1}>{deal.name}</Text>
+                            <Text style={styles.dealHeader2}>{deal.title}</Text>
+                            <Image style={styles.dealBanner} source={{uri: deal.image}}/>
+                            <Text style={styles.info}>{deal.description}</Text>
+                            <Text style = {{marginTop: 20, marginBottom: 10}}>Deal is only applicable with:</Text>
+                        </View>
+                    }
+                    contentContainerStyle = {{alignItems: 'center'}}
+                    numColumns={numColumns}
                     data={cardinfo}
                     renderItem={({item}) => (
-                    <View style={{flexDirection: 'row', marginBottom: 20, alignItems: 'center', justifyContent: 'center'}}>
-                        <Image style={styles.image} source={{uri: item.image}}/>
-                    </View>
-                    )}
+                            <View>
+                                <Image style={styles.image} source={{uri: item.image}}/>
+                            </View>
+                        )}
                     keyExtractor={item => item.id}
-                />
-            </ScrollView>}
+                />}
         </View>
 
     )
@@ -120,20 +124,30 @@ const styles = StyleSheet.create({
         height: 300,
         resizeMode: 'contain',
     },
-    dealHeader: {
+    dealHeader1: {
         fontSize: 20,
         fontWeight: 'bold',
         paddingHorizontal: 40,
         textAlign: 'center',
+        marginTop: -30
+    },
+    dealHeader2: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        paddingHorizontal: 40,
+        textAlign: 'center',
+        marginTop: 20,
+        marginBottom: 10
     },
     info: {
+        marginTop: 20, 
         fontSize: 15,
         paddingHorizontal: 40,
     },
     image: {
-        resizeMode: 'center',
         width: 100,
         height: 70,
+        resizeMode: 'center'
     },
     name: {
         fontSize: 14,

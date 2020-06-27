@@ -2,7 +2,7 @@ import BlueButton from '../component/BlueButton';
 import {Alert, Image, StyleSheet, Text, TextInput, KeyboardAvoidingView} from "react-native";
 import React from "react";
 import firebaseDb from '../firebase/firebaseDb';
-import {getMethods, getCards} from '../component/API';
+import {getNetworks, getMethods} from '../component/API';
 import SectionedMultiSelect from 'react-native-sectioned-multi-select';
 
 class MerchantContainer extends React.Component {
@@ -29,7 +29,7 @@ class MerchantContainer extends React.Component {
         }))}
     componentDidMount() {
         const combined = [];
-        getCards(this.onCardsReceived).then(() => combined.push({name: "Cards", id: 0, children: this.state.cards}))
+        getNetworks(this.onCardsReceived).then(() => combined.push({name: "Cards", id: 0, children: this.state.cards}))
         getMethods(this.onMethodsReceived).then(() => combined.push({
             name: "Methods",
             id: 1,

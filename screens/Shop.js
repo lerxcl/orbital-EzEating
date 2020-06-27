@@ -26,11 +26,57 @@ function Shop({navigation, route}) {
     const [fav, setFav] = useState([])
     const [shopId, setshopId] = useState(0)
     const userId = firebaseDb.auth().currentUser.uid
+    const [cardinfo, setCardInfo] = React.useState([])
     const userDoc = firebaseDb.firestore().collection('users').doc(userId)
     const [isLoading, setisLoading] = useState(false)
     const [update, setUpdate] = useState(false);
+    const numColumns = 3
+
+    const getCards = async () => {
+        let cards = [];
+        let snapshot = await firebaseDb.firestore().collection('networks').get()
+
+        snapshot.forEach((doc) => {
+            if (shop.cards.includes(doc.id)) {
+                let obj = {
+                    id: doc.id,
+                    name: doc.data().name,
+                    image: doc.data().image,
+                }
+                cards.push(obj)
+            }
+        });
+        return cards
+
+    }
+
+    const getMethods = async () => {
+        let methods = [];
+        let snapshot = await firebaseDb.firestore().collection('methods').get()
+
+        snapshot.forEach((doc) => {
+            if (shop.methods.includes(doc.id)) {
+                let obj = {
+                    id: doc.id,
+                    name: doc.data().name,
+                    image: doc.data().image,
+                }
+                methods.push(obj)
+            }
+        });
+        return methods
+    }
 
     useEffect(() => {
+        if (!isLoading && shop.cards.length !== 0 && shop.methods.length === 0) {
+            getCards().then(result => setCardInfo(result))
+        } else if (!isLoading && shop.cards.length === 0 && shop.methods.length !== 0) {
+            getMethods().then(result => setCardInfo(result))
+        } else if (!isLoading && shop.cards.length !== 0 && shop.methods.length !== 0) {
+            getCards().then(result1 => {
+                getMethods().then(result2 => setCardInfo(result1.concat(result2)))
+            })
+        }
         if (!isLoading || update) {
             firebaseDb.firestore().collection('shops').get().then(snapshot =>
                 snapshot.forEach(doc => {
@@ -149,6 +195,23 @@ function Shop({navigation, route}) {
                 keyExtractor={item => item.image}
                 ListFooterComponent = {
                     <View>
+                        {cardinfo.length !== 0 &&
+                        <FlatList
+                        ListHeaderComponent = {
+                            <View style = {styles.container}>
+                                <Text style = {styles.header2}>Payment Accepted</Text>
+                            </View>
+                        }
+                        contentContainerStyle = {{alignItems: 'center'}}
+                        numColumns={numColumns}
+                        data={cardinfo}
+                        renderItem={({item}) => (
+                            <View>
+                                <Image style={styles.image2} source={{uri: item.image}}/>
+                            </View>
+                        )}
+                        keyExtractor={item => item.id}
+                        />}
                         {!fav.includes(shopId) && 
                         <BlueButton style = {{marginBottom: 20, marginTop: 20}} onPress={() => {
                             userDoc.update({
@@ -172,6 +235,7 @@ function Shop({navigation, route}) {
                     </View>}
                 />
             </View>}
+
         </View>
     )
 }
@@ -210,6 +274,12 @@ const styles = StyleSheet.create({
         width: 70,
         height: 70,
     },
+    image2: {
+        width: 100,
+        height: 70,
+        resizeMode: 'center',
+        alignSelf: 'center'
+    },
     name: {
         fontSize: 12,
         fontWeight: 'bold',
@@ -223,6 +293,11 @@ const styles = StyleSheet.create({
     header: {
         fontSize: 20,
         fontStyle: 'italic',
+    },
+    header2: {
+        fontSize: 20,
+        fontStyle: 'italic',
+        marginBottom: 10
     },
     dealHeader: {
         fontSize: 20,

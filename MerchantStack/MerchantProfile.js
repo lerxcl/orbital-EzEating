@@ -63,7 +63,9 @@ class MerchantProfile extends React.Component {
             type: snapshot.data().type,
             contact: snapshot.data().contact,
             desc: snapshot.data().desc,
-            deals: snapshot.data().deals}))
+            deals: snapshot.data().deals,
+            cards: snapshot.data().cards,
+            methods: snapshot.data().methods}))
         this.getPermissionAsync()
       }
     
@@ -129,8 +131,8 @@ class MerchantProfile extends React.Component {
         }
 
     render() {
-        const {image, name, openingHours, type, contact, desc, deals, nameDialogVisible, contactDialogVisible,
-            hoursDialogVisible, descDialogVisible, typeDialogVisible, progress, uploading} = this.state
+        const {image, name, openingHours, type, contact, desc, deals, cards, methods, progress, uploading,
+            nameDialogVisible, contactDialogVisible,hoursDialogVisible, descDialogVisible, typeDialogVisible} = this.state
 
         return (
             <ScrollView contentContainerstyle = {styles.container}>
@@ -295,7 +297,9 @@ class MerchantProfile extends React.Component {
                             openingHrs: openingHours,
                             deals: deals,
                             contact: contact,
-                            logo: image
+                            logo: image,
+                            cards: cards,
+                            methods: methods
                         })
                         Alert.alert("Published Successfully!")
                     } else {

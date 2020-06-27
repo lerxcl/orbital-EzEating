@@ -16,10 +16,12 @@ import {CheckBox} from 'react-native-elements';
 class MerchantMethods extends React.Component {
     state = {
         allMethods: [],
-        loading: true
+        loading: true,
+        exist: false
     }
     userId = firebaseDb.auth().currentUser.uid
     userDoc = firebaseDb.firestore().collection('merchants').doc(this.userId)
+    shopDoc = firebaseDb.firestore().collection('shops').doc(this.userId)
 
     componentDidMount() {
         getMethods(this.onMethodsReceived).then(() => {
@@ -58,10 +60,18 @@ class MerchantMethods extends React.Component {
             this.userDoc.update({
                 methods: firebaseDb.firestore.FieldValue.arrayRemove(item.id)
             })
+            this.shopDoc.update({
+                methods: firebaseDb.firestore.FieldValue.arrayRemove(item.id)
+            })
+            
         } else {
             this.userDoc.update({
                 methods: firebaseDb.firestore.FieldValue.arrayUnion(item.id)
             })
+            this.shopDoc.update({
+                methods: firebaseDb.firestore.FieldValue.arrayUnion(item.id)
+            })
+            
         }
         item.isSelect = !item.isSelect
 
@@ -113,7 +123,7 @@ class MerchantMethods extends React.Component {
         return (
             <SafeAreaView style={styles.container}>
                 <View style={{flexDirection: 'row'}}>
-                    <Text style={styles.description}>Linked apps are checked</Text>
+                    <Text style={styles.description}>Accepted apps are checked</Text>
                 </View>
                 <Text>(Tap checkbox to add/remove apps)</Text>
                 <FlatList
