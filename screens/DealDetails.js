@@ -1,26 +1,37 @@
-import React, { useEffect } from 'react';
+import React, {useEffect} from 'react';
 import {FlatList, StyleSheet, Text, View, Image, ScrollView} from "react-native";
 import firebaseDb from '../firebase/firebaseDb';
 
 function DealDetails({route}) {
     const {deal} = route.params;
     const [cardinfo, setCardInfo] = React.useState([])
+    const [loading, setLoading] = React.useState(true);
 
-    useEffect (() => {
-        if (deal.cards.length !== 0) {
-        deal.cards.map(card => {
-        firebaseDb.firestore().collection('cards').doc(card).get().then(snapshot => {
-            let obj = {
-                id: card,
-                name: snapshot.data().name,
-                image: snapshot.data().image,
+    const getCards = async () => {
+        let cards = [];
+        let snapshot = await firebaseDb.firestore().collection('cards').get()
+
+        snapshot.forEach((doc) => {
+            if (deal.cards.includes(doc.id)) {
+                let obj = {
+                    id: doc.id,
+                    name: doc.data().name,
+                    image: doc.data().image,
+                }
+                cards.push(obj)
             }
-            return obj
-        })})
-        console.log(deal.cards)
-    }})
-            
-            
+        });
+        return cards
+
+    }
+
+    useEffect(() => {
+        if (loading && deal.cards.length !== 0) {
+            getCards().then(result => setCardInfo(result))
+        }
+
+        return () => setLoading(false)
+    })
 
     return (
         <View>
@@ -39,31 +50,34 @@ function DealDetails({route}) {
 
             {cardinfo.length !== 0 &&
             <FlatList
-            ListHeaderComponent = {
-                <View style={styles.container}>
-                    <Image style={styles.logo} source={{uri: deal.logo}}/>
-                    <Text style={styles.dealHeader}>{deal.name}</Text>
-                    <Text style={styles.dealHeader}>{deal.title}</Text>
-                    <Image style={styles.dealBanner} source={{uri: deal.image}}/>
-                    <Text style={styles.info}>{deal.description}</Text>
-                </View>
-            }
-            data = {cardinfo}
-            renderItem={({item}) => (
-                <View>
-                    <View style={{alignItems: 'flex-end', flex: 0.2}}>
-                        <Image style={styles.image}
-                            source={{uri: item.image}}/>
+                ListHeaderComponent={
+                    <View style={styles.container}>
+                        <Image style={styles.logo} source={{uri: deal.logo}}/>
+                        <Text style={styles.dealHeader}>{deal.name}</Text>
+                        <Text style={styles.dealHeader}>{deal.title}</Text>
+                        <Image style={styles.dealBanner} source={{uri: deal.image}}/>
+                        <Text style={styles.info}>{deal.description}</Text>
                     </View>
-                    <Text style={styles.name}>{item.name}</Text>
-                </View>
-            )}
-            keyExtractor={item => item.id}
+                }
+                data={cardinfo}
+                renderItem={({item}) => (
+                    <View style={styles.container}>
+                        <View style={styles.itemContainer}>
+                            <View style={{alignItems: 'flex-end', flex: 0.4}}>
+                                <Image style={styles.image}
+                                       source={{uri: item.image}}/>
+                            </View>
+                            <Text style={styles.name}>{item.name}</Text>
+                        </View>
+                    </View>
+
+                )}
+                keyExtractor={item => item.id}
             />}
 
-    
+
         </View>
-        
+
     )
 }
 
@@ -98,14 +112,23 @@ const styles = StyleSheet.create({
     },
     image: {
         resizeMode: 'center',
-        width: 70,
+        width: 100,
         height: 70,
     },
     name: {
-        fontSize: 12,
+        fontSize: 14,
         fontWeight: 'bold',
         justifyContent: 'center',
         flexDirection: 'column',
+    },
+    itemContainer: {
+        borderColor: 'black',
+        borderWidth: 1,
+        borderRadius: 10,
+        paddingHorizontal: 16,
+        width: 300,
+        height: 100,
+        paddingVertical: 10,
     },
 })
 
