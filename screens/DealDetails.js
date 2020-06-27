@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import {FlatList, StyleSheet, Text, View, Image, ScrollView} from "react-native";
+import {ActivityIndicator, FlatList, StyleSheet, Text, View, Image, ScrollView} from "react-native";
 import firebaseDb from '../firebase/firebaseDb';
 
 function DealDetails({route}) {
@@ -58,6 +58,12 @@ function DealDetails({route}) {
 
     return (
         <View>
+            {loading && 
+            <View style={styles.container}>
+                <ActivityIndicator size='large'/>
+            </View>}
+
+
             {cardinfo.length === 0 &&
             <ScrollView>
                 <View style={styles.container}>
@@ -72,33 +78,24 @@ function DealDetails({route}) {
             }
 
             {cardinfo.length !== 0 &&
-            <FlatList
-                ListHeaderComponent={
-                    <View style={styles.container}>
-                        <Image style={styles.logo} source={{uri: deal.logo}}/>
-                        <Text style={styles.dealHeader}>{deal.name}</Text>
-                        <Text style={styles.dealHeader}>{deal.title}</Text>
-                        <Image style={styles.dealBanner} source={{uri: deal.image}}/>
-                        <Text style={styles.info}>{deal.description}</Text>
+            <ScrollView contentContainerStyle = {{alignItems: 'center'}}>
+                <Image style={styles.logo} source={{uri: deal.logo}}/>
+                <Text style={styles.dealHeader}>{deal.name}</Text>
+                <Text style={styles.dealHeader}>{deal.title}</Text>
+                <Image style={styles.dealBanner} source={{uri: deal.image}}/>
+                <Text style={styles.info}>{deal.description}</Text>
+                <Text style = {{marginTop: 20, marginBottom: 10}}>Deal is only applicable with:</Text>
+                <FlatList
+                    horizontal = {true}
+                    data={cardinfo}
+                    renderItem={({item}) => (
+                    <View style={{flexDirection: 'row', marginBottom: 20, alignItems: 'center', justifyContent: 'center'}}>
+                        <Image style={styles.image} source={{uri: item.image}}/>
                     </View>
-                }
-                data={cardinfo}
-                renderItem={({item}) => (
-                    <View style={styles.container}>
-                        <View style={styles.itemContainer}>
-                            <View style={{alignItems: 'flex-end', flex: 0.4}}>
-                                <Image style={styles.image}
-                                       source={{uri: item.image}}/>
-                            </View>
-                            <Text style={styles.name}>{item.name}</Text>
-                        </View>
-                    </View>
-
-                )}
-                keyExtractor={item => item.id}
-            />}
-
-
+                    )}
+                    keyExtractor={item => item.id}
+                />
+            </ScrollView>}
         </View>
 
     )

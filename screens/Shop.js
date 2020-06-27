@@ -150,7 +150,7 @@ function Shop({navigation, route}) {
                 ListFooterComponent = {
                     <View>
                         {!fav.includes(shopId) && 
-                        <BlueButton onPress={() => {
+                        <BlueButton style = {{marginBottom: 20, marginTop: 20}} onPress={() => {
                             userDoc.update({
                             fav: firebaseDb.firestore.FieldValue.arrayUnion(shopId)
                             })
@@ -160,7 +160,7 @@ function Shop({navigation, route}) {
                         Add to Favourites!
                         </BlueButton>}
     
-                        {fav.includes(shopId) && <BlueButton onPress={() => {
+                        {fav.includes(shopId) && <BlueButton style = {{marginBottom: 20, marginTop: 20, backgroundColor: 'darkred'}} onPress={() => {
                             userDoc.update({
                             fav: firebaseDb.firestore.FieldValue.arrayRemove(shopId)
                             })
