@@ -52,6 +52,8 @@ function DealDetails({route}) {
             getCards().then(result1 => {
                 getMethods().then(result2 => setCardInfo(result1.concat(result2)))
             })
+        } else {
+            setLoading(false)
         }
 
         return () => setLoading(false)
