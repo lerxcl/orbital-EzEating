@@ -1,5 +1,5 @@
 import BlueButton from '../component/BlueButton';
-import {Alert, Image, StyleSheet, TextInput, Text, KeyboardAvoidingView} from "react-native";
+import {Alert, Image, StyleSheet, SafeAreaView, TextInput, Text, KeyboardAvoidingView} from "react-native";
 import React from "react";
 import firebaseDb from '../firebase/firebaseDb';
 import {getMethods, getCards} from '../component/API'
@@ -85,6 +85,7 @@ class SignUpContainer extends React.Component {
         const {name, email, password, selected, cardsAndMethods} = this.state
 
         return (
+
             <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"}
                               style={styles.container}>
             
@@ -130,6 +131,7 @@ class SignUpContainer extends React.Component {
                     onSelectedItemsChange={this.onSelectedChange}
                     selectedItems={selected}
                     expandDropDowns={true}
+                    modalWithSafeAreaView={true}
                 />
 
                 <BlueButton
@@ -139,6 +141,7 @@ class SignUpContainer extends React.Component {
                     Sign Up
                 </BlueButton>
             </KeyboardAvoidingView>
+
         )
     }
 }
