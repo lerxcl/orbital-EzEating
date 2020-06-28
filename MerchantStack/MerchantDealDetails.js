@@ -329,6 +329,8 @@ function MerchantDealDetails({navigation, route}) {
                                 },
                                 {
                                     text: 'Yes', onPress: () => {
+                                        firebaseDb.storage().refFromURL(deal.image).delete()
+                                            .then(() => console.log("deleted successfully") );
 
                                         userDoc.update({
                                             deals: firebaseDb.firestore.FieldValue.arrayRemove({
