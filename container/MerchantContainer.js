@@ -129,6 +129,7 @@ class MerchantContainer extends React.Component {
                     onSelectedItemsChange={this.onSelectedChange}
                     selectedItems={selected}
                     expandDropDowns={true}
+                    modalWithSafeAreaView={true}
                 />
 
                 <BlueButton
