@@ -68,6 +68,12 @@ class MerchantContainer extends React.Component {
                         name: this.state.name,
                         deals: []
                     })
+                    firebaseDb.firestore().collection('shops').doc(cred.user.uid).set({
+                        cards: this.state.selectedCards,
+                        methods: this.state.selectedMethods,
+                        shopName: this.state.name,
+                        deals: []
+                    })
                     this.setState({
                         name: '',
                         email: '',

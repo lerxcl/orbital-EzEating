@@ -216,7 +216,7 @@ class NewDeal extends React.Component {
                     <BlueButton
                         onPress={() => {
                             if (image && title && desc) {
-                                console.log(this.state.selectedCardsO)
+                                console.log(selectedCards)
                                 firebaseDb.firestore().collection('shops').doc(this.userId).get()
                                     .then(documentSnapshot => {
                                         this.shopDeals = documentSnapshot.data().deals
