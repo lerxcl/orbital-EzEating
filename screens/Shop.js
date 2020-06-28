@@ -277,7 +277,7 @@ const styles = StyleSheet.create({
     image2: {
         width: 100,
         height: 70,
-        resizeMode: 'center',
+        resizeMode: 'contain',
         alignSelf: 'center'
     },
     name: {
