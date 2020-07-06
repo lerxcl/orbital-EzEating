@@ -31,16 +31,20 @@ function Home({navigation}) {
                 }
             })
             .then(fav => {
-                if (fav === null) {}
+                if (fav === null) {
+
+                }
                 else {
                     global.allShops = []
                     let result = [];
                     firebaseDb.firestore().collection('shops').orderBy('shopName').get()
                         .then(snapshot => {
                             snapshot.docs.map(doc => {
-                                global.allShops.push(doc.data())
-                                if (fav.includes(doc.id)) {
-                                    result.push(doc.data())
+                                if (doc.data().hasDetails) {
+                                    global.allShops.push(doc.data())
+                                    if (fav.includes(doc.id)) {
+                                        result.push(doc.data())
+                                    }
                                 }
                             })
                         }).then(() => {

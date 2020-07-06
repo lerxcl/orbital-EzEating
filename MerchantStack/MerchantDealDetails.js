@@ -24,22 +24,14 @@ function MerchantDealDetails({navigation, route}) {
     const [cardVisible, setCardVisible] = useState(false)
     const [methodVisible, setMethodVisible] = useState(false)
     const [cards, setCards] = useState([])
-    const [selectedCards, setSelectCards] = useState(deal.cards.map(item => {
-        item.label = item.name
-        item.value = item.id
-        return item
-    }))
+    const [selectedCards, setSelectCards] = useState([])
     const [methods, setMethods] = useState([])
-    const [selectedMethods, setSelectMethods] = useState(deal.methods.map(item => {
-        item.label = item.name
-        item.value = item.id
-        return item
-    }))
+    const [selectedMethods, setSelectMethods] = useState([])
     const [progress, setProgress] = useState(0);
     const [uploading, setUploading] = useState(false)
 
     const userId = firebaseDb.auth().currentUser.uid
-    const userDoc = firebaseDb.firestore().collection('merchants').doc(userId)
+    const userDoc = firebaseDb.firestore().collection('shops').doc(userId)
 
     useEffect(() => {
         if (isLoading) {
@@ -57,6 +49,8 @@ function MerchantDealDetails({navigation, route}) {
             return item
         })
         setCards(allCards)
+        const result = [...allCards].filter(card => deal.cards.includes(card.id))
+        setSelectCards(result)
     }
 
     const onMethodsReceived = (allMethods) => {
@@ -66,6 +60,8 @@ function MerchantDealDetails({navigation, route}) {
             return item
         })
         setMethods(allMethods)
+        const result = [...allMethods].filter(method => deal.methods.includes(method.id))
+        setSelectMethods(result)
     }
 
     const getPermissionAsync = async () => {
@@ -250,16 +246,16 @@ function MerchantDealDetails({navigation, route}) {
 
                 <View style={{flexDirection: 'row'}}>
                     <BlueButton onPress={() => {
-                        const selectedMethodsDB = [...selectedMethods].map(method => {
-                            delete method.label;
-                            delete method.value;
-                            return method
-                        })
-                        const selectedCardsDB = [...selectedCards].map(card => {
-                            delete card.label;
-                            delete card.value;
-                            return card
-                        })
+                        // const selectedMethodsDB = [...selectedMethods].map(method => {
+                        //     delete method.label;
+                        //     delete method.value;
+                        //     return method
+                        // })
+                        // const selectedCardsDB = [...selectedCards].map(card => {
+                        //     delete card.label;
+                        //     delete card.value;
+                        //     return card
+                        // })
 
                         const selectedMethodsShop = [...selectedMethods].map(method => {
                             return method.id;
@@ -268,43 +264,47 @@ function MerchantDealDetails({navigation, route}) {
                             return card.id
                         })
 
-                        userDoc.update({
+                        // userDoc.update({
+                        //     deals: firebaseDb.firestore.FieldValue.arrayRemove({
+                        //         id: deal.id,
+                        //         // title: deal.title,
+                        //         // cards: deal.cards.map(card => {
+                        //         //     delete card.label;
+                        //         //     delete card.value;
+                        //         //     return card
+                        //         // }),
+                        //         // methods: deal.methods.map(method => {
+                        //         //     delete method.label;
+                        //         //     delete method.value;
+                        //         //     return method
+                        //         // }),
+                        //         // image: deal.image,
+                        //         // description: deal.description,
+                        //     })
+                        // })
+                        // userDoc.update({
+                        //     deals: firebaseDb.firestore.FieldValue.arrayUnion({
+                        //         // title: title,
+                        //         // cards: selectedCardsDB,
+                        //         // methods: selectedMethodsDB,
+                        //         // image: image,
+                        //         // description: desc,
+                        //         id: id,
+                        //     })
+                        // })
+                        firebaseDb.firestore().collection('shops').doc(userId).update({
                             deals: firebaseDb.firestore.FieldValue.arrayRemove({
+                                id: deal.id,
                                 title: deal.title,
-                                cards: deal.cards.map(card => {
-                                    delete card.label;
-                                    delete card.value;
-                                    return card
-                                }),
-                                methods: deal.methods.map(method => {
-                                    delete method.label;
-                                    delete method.value;
-                                    return method
-                                }),
+                                cards: deal.cards,
+                                methods: deal.methods,
                                 image: deal.image,
                                 description: deal.description,
                             })
                         })
-                        userDoc.update({
-                            deals: firebaseDb.firestore.FieldValue.arrayUnion({
-                                title: title,
-                                cards: selectedCardsDB,
-                                methods: selectedMethodsDB,
-                                image: image,
-                                description: desc,
-                            })
-                        })
-                        firebaseDb.firestore().collection('shops').doc(userId).update({
-                            deals: firebaseDb.firestore.FieldValue.arrayRemove({
-                                title: deal.title,
-                                cards: deal.cards.map(card => {return card.id}),
-                                methods: deal.methods.map(method => {return method.id}),
-                                image: deal.image,
-                                description: deal.description,
-                            })
-                        })
                         firebaseDb.firestore().collection('shops').doc(userId).update({
                             deals: firebaseDb.firestore.FieldValue.arrayUnion({
+                                id: deal.id,
                                 title: title,
                                 cards: selectedCardsShop,
                                 methods: selectedMethodsShop,
@@ -332,25 +332,26 @@ function MerchantDealDetails({navigation, route}) {
                                         firebaseDb.storage().refFromURL(deal.image).delete()
                                             .then(() => console.log("deleted successfully") );
 
-                                        userDoc.update({
-                                            deals: firebaseDb.firestore.FieldValue.arrayRemove({
-                                                title: deal.title,
-                                                cards: deal.cards.map(card => {
-                                                    delete card.label;
-                                                    delete card.value;
-                                                    return card
-                                                }),
-                                                methods: deal.methods.map(method => {
-                                                    delete method.label;
-                                                    delete method.value;
-                                                    return method
-                                                }),
-                                                image: deal.image,
-                                                description: deal.description,
-                                            })
-                                        })
+                                        // userDoc.update({
+                                        //     deals: firebaseDb.firestore.FieldValue.arrayRemove({
+                                        //         title: deal.title,
+                                        //         cards: deal.cards.map(card => {
+                                        //             delete card.label;
+                                        //             delete card.value;
+                                        //             return card
+                                        //         }),
+                                        //         methods: deal.methods.map(method => {
+                                        //             delete method.label;
+                                        //             delete method.value;
+                                        //             return method
+                                        //         }),
+                                        //         image: deal.image,
+                                        //         description: deal.description,
+                                        //     })
+                                        // })
                                         firebaseDb.firestore().collection('shops').doc(userId).update({
                                             deals: firebaseDb.firestore.FieldValue.arrayRemove({
+                                                id: deal.id,
                                                 title: deal.title,
                                                 cards: deal.cards.map(card => {return card.id}),
                                                 methods: deal.methods.map(method => {return method.id}),

@@ -25,7 +25,8 @@ class NewDeal extends React.Component {
         selectedCardsO: [],
         selectedMethodsO: [],
         progress: 0,
-        uploading: false
+        uploading: false,
+        id: null,
     }
     shopDeals = [];
     userId = firebaseDb.auth().currentUser.uid;
@@ -98,12 +99,26 @@ class NewDeal extends React.Component {
         }))
     }
 
+    generateID = () => {
+        const chars =
+            'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        let autoId = '';
+        for (let i = 0; i < 20; i++) {
+            autoId += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        console.log(autoId)
+        this.setState({id: autoId});
+    }
+
     componentDidMount() {
         this.getPermissionAsync()
         const combined = [];
         getCards(this.onCardsReceived).then(() => combined.push({name: "Cards", id: 0, children: this.state.cards}))
         getMethods(this.onMethodsReceived).then(() => combined.push({ame: "Methods", id: 1, children: this.state.methods}))
         this.setState({cardsAndMethods: combined})
+
+        // Generating firestore's UID style (20 Char)
+        this.generateID();
     }
 
     onSelectedChange = selected => {
@@ -127,7 +142,7 @@ class NewDeal extends React.Component {
 
     render() {
 
-        const {title, desc, image, cardsAndMethods, selected, selectedCards, selectedMethods, uploading, progress} = this.state
+        const {title, desc, image, cardsAndMethods, selected, selectedCards, selectedMethods, uploading, progress, id} = this.state
 
         return (
             <ScrollView>
@@ -226,21 +241,18 @@ class NewDeal extends React.Component {
                                             image: image,
                                             methods: selectedMethods,
                                             title: title,
+                                            id: id,
                                         })
                                         return this.shopDeals
                                     }).then(shopDeals => {
                                     firebaseDb.firestore().collection('shops').doc(this.userId).update({
                                         deals: shopDeals
                                     });
-                                    firebaseDb.firestore().collection('merchants').doc(this.userId).update({
-                                        deals: firebaseDb.firestore.FieldValue.arrayUnion({
-                                            cards: this.state.selectedCardsO,
-                                            description: desc,
-                                            image: image,
-                                            methods: this.state.selectedMethodsO,
-                                            title: title,
-                                        })
-                                    })
+                                    // firebaseDb.firestore().collection('merchants').doc(this.userId).update({
+                                    //     deals: firebaseDb.firestore.FieldValue.arrayUnion({
+                                    //         id: id,
+                                    //     })
+                                    // })
                                     this.setState({
                                         title: '',
                                         desc: '',

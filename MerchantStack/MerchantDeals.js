@@ -12,7 +12,7 @@ class MerchantDeals extends React.Component {
     }
 
     getData = () => {
-        firebaseDb.firestore().collection('merchants').doc(firebaseDb.auth().currentUser.uid)
+        firebaseDb.firestore().collection('shops').doc(firebaseDb.auth().currentUser.uid)
                   .get().then(snapshot => {
                       if (snapshot.exists) this.setState({deals: snapshot.data().deals})})
     }
