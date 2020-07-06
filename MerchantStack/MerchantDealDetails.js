@@ -38,7 +38,6 @@ function MerchantDealDetails({navigation, route}) {
             getPermissionAsync()
             getCards(onCardsReceived)
             getMethods(onMethodsReceived)
-            setIsLoading(false)
         }
     })
 
@@ -62,6 +61,7 @@ function MerchantDealDetails({navigation, route}) {
         setMethods(allMethods)
         const result = [...allMethods].filter(method => deal.methods.includes(method.id))
         setSelectMethods(result)
+        setIsLoading(false)
     }
 
     const getPermissionAsync = async () => {
@@ -117,6 +117,12 @@ function MerchantDealDetails({navigation, route}) {
                 })
             }
         }
+
+    if (isLoading)
+        return (
+            <View style={styles.container}>
+                <ActivityIndicator size='large'/>
+            </View>)
 
     return (
         <ScrollView>
