@@ -204,7 +204,7 @@ class MerchantProfile extends React.Component {
                     <Dialog.Button label = "Submit" onPress = {() => {
                         this.setState({hoursDialogVisible: false, openingHours: this.newHours})
                         firebaseDb.firestore().collection("shops").doc(this.userId).update({
-                            openingHours: this.newHours
+                            openingHrs: this.newHours
                         })
                     }}/> 
                 </Dialog.Container>
@@ -250,7 +250,7 @@ class MerchantProfile extends React.Component {
                     <Dialog.Button label = "Submit" onPress = {() => {
                         this.setState({descDialogVisible: false, desc: this.newDesc})
                         firebaseDb.firestore().collection("shops").doc(this.userId).update({
-                            desc: this.newDesc
+                            description: this.newDesc
                         })
                     }}/> 
                 </Dialog.Container>
