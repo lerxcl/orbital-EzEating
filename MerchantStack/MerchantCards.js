@@ -19,7 +19,7 @@ class MerchantCards extends React.Component {
         loading: true
     }
     userId = firebaseDb.auth().currentUser.uid
-    userDoc = firebaseDb.firestore().collection('merchants').doc(this.userId)
+    userDoc = firebaseDb.firestore().collection('shops').doc(this.userId)
 
     componentDidMount() {
         getNetworks(this.onCardsReceived).then(() => {
@@ -58,14 +58,9 @@ class MerchantCards extends React.Component {
             this.userDoc.update({
                 cards: firebaseDb.firestore.FieldValue.arrayRemove(item.id)
             })
-            firebaseDb.firestore().collection('shops').doc(this.userId).update({
-                cards: firebaseDb.firestore.FieldValue.arrayRemove(item.id)
-            })
+
         } else {
             this.userDoc.update({
-                cards: firebaseDb.firestore.FieldValue.arrayUnion(item.id)
-            })
-            firebaseDb.firestore().collection('shops').doc(this.userId).update({
                 cards: firebaseDb.firestore.FieldValue.arrayUnion(item.id)
             })
         }

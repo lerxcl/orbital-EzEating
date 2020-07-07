@@ -20,8 +20,7 @@ class MerchantMethods extends React.Component {
         exist: false
     }
     userId = firebaseDb.auth().currentUser.uid
-    userDoc = firebaseDb.firestore().collection('merchants').doc(this.userId)
-    shopDoc = firebaseDb.firestore().collection('shops').doc(this.userId)
+    userDoc = firebaseDb.firestore().collection('shops').doc(this.userId)
 
     componentDidMount() {
         getMethods(this.onMethodsReceived).then(() => {
@@ -60,15 +59,9 @@ class MerchantMethods extends React.Component {
             this.userDoc.update({
                 methods: firebaseDb.firestore.FieldValue.arrayRemove(item.id)
             })
-            this.shopDoc.update({
-                methods: firebaseDb.firestore.FieldValue.arrayRemove(item.id)
-            })
             
         } else {
             this.userDoc.update({
-                methods: firebaseDb.firestore.FieldValue.arrayUnion(item.id)
-            })
-            this.shopDoc.update({
                 methods: firebaseDb.firestore.FieldValue.arrayUnion(item.id)
             })
             

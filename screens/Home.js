@@ -38,9 +38,11 @@ function Home({navigation}) {
                     firebaseDb.firestore().collection('shops').orderBy('shopName').get()
                         .then(snapshot => {
                             snapshot.docs.map(doc => {
-                                global.allShops.push(doc.data())
-                                if (fav.includes(doc.id)) {
-                                    result.push(doc.data())
+                                if (doc.data().hasDetails) {
+                                    global.allShops.push(doc.data())
+                                    if (fav.includes(doc.id)) {
+                                        result.push(doc.data())
+                                    }
                                 }
                             })
                         }).then(() => {

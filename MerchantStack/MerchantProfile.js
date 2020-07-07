@@ -12,7 +12,7 @@ import {ProgressBar} from 'react-native-paper';
 class MerchantProfile extends React.Component {
 
     userId = firebaseDb.auth().currentUser.uid
-    userDoc = firebaseDb.firestore().collection('merchants').doc(this.userId)
+    userDoc = firebaseDb.firestore().collection('shops').doc(this.userId)
     newName = ''
     newHours = ''
     newContact = ''
@@ -30,9 +30,9 @@ class MerchantProfile extends React.Component {
         contact: null,
         type: null,
         desc: null,
-        deals: null,
         progress: 0,
-        uploading: false
+        uploading: false,
+        favs: 0
       };
 
     setName = (newName) => {
@@ -57,15 +57,13 @@ class MerchantProfile extends React.Component {
 
     componentDidMount() {
         this.userDoc.get().then(snapshot => this.setState({
-            name: snapshot.data().name, 
+            name: snapshot.data().shopName,
             image: snapshot.data().logo,
-            openingHours: snapshot.data().openingHours,
+            openingHours: snapshot.data().openingHrs,
             type: snapshot.data().type,
             contact: snapshot.data().contact,
-            desc: snapshot.data().desc,
-            deals: snapshot.data().deals,
-            cards: snapshot.data().cards,
-            methods: snapshot.data().methods}))
+            desc: snapshot.data().description,
+            favs: snapshot.data().favs}))
         this.getPermissionAsync()
       }
     
@@ -131,7 +129,7 @@ class MerchantProfile extends React.Component {
         }
 
     render() {
-        const {image, name, openingHours, type, contact, desc, deals, cards, methods, progress, uploading,
+        const {image, name, openingHours, type, contact, desc, favs, progress, uploading,
             nameDialogVisible, contactDialogVisible,hoursDialogVisible, descDialogVisible, typeDialogVisible} = this.state
 
         return (
@@ -182,8 +180,8 @@ class MerchantProfile extends React.Component {
                     <Dialog.Button label = "Cancel" onPress = {() => this.setState({nameDialogVisible: false})}/>
                     <Dialog.Button label = "Submit" onPress = {() => {
                         this.setState({nameDialogVisible: false, name: this.newName})
-                        firebaseDb.firestore().collection("merchants").doc(this.userId).update({
-                            name: this.newName
+                        firebaseDb.firestore().collection("shops").doc(this.userId).update({
+                            shopName: this.newName
                         })
                     }}/> 
                 </Dialog.Container>
@@ -205,7 +203,7 @@ class MerchantProfile extends React.Component {
                     <Dialog.Button label = "Cancel" onPress = {() => this.setState({hoursDialogVisible: false})}/>
                     <Dialog.Button label = "Submit" onPress = {() => {
                         this.setState({hoursDialogVisible: false, openingHours: this.newHours})
-                        firebaseDb.firestore().collection("merchants").doc(this.userId).update({
+                        firebaseDb.firestore().collection("shops").doc(this.userId).update({
                             openingHours: this.newHours
                         })
                     }}/> 
@@ -228,7 +226,7 @@ class MerchantProfile extends React.Component {
                     <Dialog.Button label = "Cancel" onPress = {() => this.setState({contactDialogVisible: false})}/>
                     <Dialog.Button label = "Submit" onPress = {() => {
                         this.setState({contactDialogVisible: false, contact: this.newContact})
-                        firebaseDb.firestore().collection("merchants").doc(this.userId).update({
+                        firebaseDb.firestore().collection("shops").doc(this.userId).update({
                             contact: this.newContact
                         })
                     }}/> 
@@ -251,7 +249,7 @@ class MerchantProfile extends React.Component {
                     <Dialog.Button label = "Cancel" onPress = {() => this.setState({descDialogVisible: false})}/>
                     <Dialog.Button label = "Submit" onPress = {() => {
                         this.setState({descDialogVisible: false, desc: this.newDesc})
-                        firebaseDb.firestore().collection("merchants").doc(this.userId).update({
+                        firebaseDb.firestore().collection("shops").doc(this.userId).update({
                             desc: this.newDesc
                         })
                     }}/> 
@@ -274,32 +272,23 @@ class MerchantProfile extends React.Component {
                     <Dialog.Button label = "Cancel" onPress = {() => this.setState({typeDialogVisible: false})}/>
                     <Dialog.Button label = "Submit" onPress = {() => {
                         this.setState({typeDialogVisible: false, type: this.newType})
-                        firebaseDb.firestore().collection("merchants").doc(this.userId).update({
+                        firebaseDb.firestore().collection("shops").doc(this.userId).update({
                             type: this.newType
                         })
                     }}/> 
                 </Dialog.Container>
 
                 <View style={styles.textContainer}>
-                    <Text>Favourites: 0</Text>
+                    <Text>Favourites: {favs}</Text>
                     <Text>Rating: No reviews yet</Text>
                 </View>
                 <Text style = {{alignSelf: 'center', marginTop: 10}}> Complete your profile to publish your store!</Text>
                 <Text style = {{alignSelf: 'center', marginBottom: 20}}> (don't forget to publish after making any changes) </Text>
                 <BlueButton style = {{width: 300, alignSelf: 'center'}} onPress={() => {
                     if (name && type && desc && openingHours && image) {
-                        firebaseDb.firestore().collection('merchants').doc(this.userId).update({logo: image})
-                        firebaseDb.firestore().collection('shops').doc(this.userId).set({
-                            shopName: name,
-                            type: type,
-                            description: desc,
-                            rating: "No reviews yet",
-                            openingHrs: openingHours,
-                            deals: deals,
-                            contact: contact,
+                        firebaseDb.firestore().collection('shops').doc(this.userId).update({
                             logo: image,
-                            cards: cards,
-                            methods: methods
+                            hasDetails: true,
                         })
                         Alert.alert("Published Successfully!")
                     } else {

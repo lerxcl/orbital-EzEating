@@ -22,10 +22,9 @@ class NewDeal extends React.Component {
         cardsAndMethods: [],
         selected: [],
         selectedItemObjects: [],
-        selectedCardsO: [],
-        selectedMethodsO: [],
         progress: 0,
-        uploading: false
+        uploading: false,
+        id: null,
     }
     shopDeals = [];
     userId = firebaseDb.auth().currentUser.uid;
@@ -98,12 +97,26 @@ class NewDeal extends React.Component {
         }))
     }
 
+    generateID = () => {
+        const chars =
+            'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        let autoId = '';
+        for (let i = 0; i < 20; i++) {
+            autoId += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        console.log(autoId)
+        this.setState({id: autoId});
+    }
+
     componentDidMount() {
         this.getPermissionAsync()
         const combined = [];
         getCards(this.onCardsReceived).then(() => combined.push({name: "Cards", id: 0, children: this.state.cards}))
         getMethods(this.onMethodsReceived).then(() => combined.push({ame: "Methods", id: 1, children: this.state.methods}))
         this.setState({cardsAndMethods: combined})
+
+        // Generating firestore's UID style (20 Char)
+        this.generateID();
     }
 
     onSelectedChange = selected => {
@@ -114,20 +127,12 @@ class NewDeal extends React.Component {
         });
     }
 
-    onSelectedObjectChange = selected => {
-        this.setState({
-            selectedItemObjects: selected,
-            selectedCardsO: selected.filter(c => this.state.cards.filter(card => card.id === c.id).length === 1),
-            selectedMethodsO: selected.filter(m => this.state.methods.filter(method => method.id === m.id).length === 1)
-        });
-    }
-
     updateTitle = (title) => this.setState({title});
     updateDesc = (desc) => this.setState({desc});
 
     render() {
 
-        const {title, desc, image, cardsAndMethods, selected, selectedCards, selectedMethods, uploading, progress} = this.state
+        const {title, desc, image, cardsAndMethods, selected, selectedCards, selectedMethods, uploading, progress, id} = this.state
 
         return (
             <ScrollView>
@@ -208,7 +213,6 @@ class NewDeal extends React.Component {
                         showDropDowns={true}
                         readOnlyHeadings={true}
                         onSelectedItemsChange={this.onSelectedChange}
-                        onSelectedItemObjectsChange={this.onSelectedObjectChange}
                         selectedItems={selected}
                         expandDropDowns={true}
                     />
@@ -226,21 +230,13 @@ class NewDeal extends React.Component {
                                             image: image,
                                             methods: selectedMethods,
                                             title: title,
+                                            id: id,
                                         })
                                         return this.shopDeals
                                     }).then(shopDeals => {
                                     firebaseDb.firestore().collection('shops').doc(this.userId).update({
                                         deals: shopDeals
                                     });
-                                    firebaseDb.firestore().collection('merchants').doc(this.userId).update({
-                                        deals: firebaseDb.firestore.FieldValue.arrayUnion({
-                                            cards: this.state.selectedCardsO,
-                                            description: desc,
-                                            image: image,
-                                            methods: this.state.selectedMethodsO,
-                                            title: title,
-                                        })
-                                    })
                                     this.setState({
                                         title: '',
                                         desc: '',
