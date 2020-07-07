@@ -31,9 +31,7 @@ function Home({navigation}) {
                 }
             })
             .then(fav => {
-                if (fav === null) {
-
-                }
+                if (fav === null) {}
                 else {
                     global.allShops = []
                     let result = [];

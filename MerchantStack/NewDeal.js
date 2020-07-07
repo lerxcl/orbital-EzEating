@@ -22,8 +22,6 @@ class NewDeal extends React.Component {
         cardsAndMethods: [],
         selected: [],
         selectedItemObjects: [],
-        selectedCardsO: [],
-        selectedMethodsO: [],
         progress: 0,
         uploading: false,
         id: null,
@@ -129,14 +127,6 @@ class NewDeal extends React.Component {
         });
     }
 
-    onSelectedObjectChange = selected => {
-        this.setState({
-            selectedItemObjects: selected,
-            selectedCardsO: selected.filter(c => this.state.cards.filter(card => card.id === c.id).length === 1),
-            selectedMethodsO: selected.filter(m => this.state.methods.filter(method => method.id === m.id).length === 1)
-        });
-    }
-
     updateTitle = (title) => this.setState({title});
     updateDesc = (desc) => this.setState({desc});
 
@@ -223,7 +213,6 @@ class NewDeal extends React.Component {
                         showDropDowns={true}
                         readOnlyHeadings={true}
                         onSelectedItemsChange={this.onSelectedChange}
-                        onSelectedItemObjectsChange={this.onSelectedObjectChange}
                         selectedItems={selected}
                         expandDropDowns={true}
                     />
@@ -248,11 +237,6 @@ class NewDeal extends React.Component {
                                     firebaseDb.firestore().collection('shops').doc(this.userId).update({
                                         deals: shopDeals
                                     });
-                                    // firebaseDb.firestore().collection('merchants').doc(this.userId).update({
-                                    //     deals: firebaseDb.firestore.FieldValue.arrayUnion({
-                                    //         id: id,
-                                    //     })
-                                    // })
                                     this.setState({
                                         title: '',
                                         desc: '',

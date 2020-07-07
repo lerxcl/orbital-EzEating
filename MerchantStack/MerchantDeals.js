@@ -19,7 +19,6 @@ class MerchantDeals extends React.Component {
 
     componentDidMount() {
         this.getData()
-        
     }
 
     render() {

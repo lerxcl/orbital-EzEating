@@ -30,7 +30,6 @@ class MerchantProfile extends React.Component {
         contact: null,
         type: null,
         desc: null,
-        deals: null,
         progress: 0,
         uploading: false,
         favs: 0
@@ -58,15 +57,12 @@ class MerchantProfile extends React.Component {
 
     componentDidMount() {
         this.userDoc.get().then(snapshot => this.setState({
-            name: snapshot.data().name, 
+            name: snapshot.data().shopName,
             image: snapshot.data().logo,
-            openingHours: snapshot.data().openingHours,
+            openingHours: snapshot.data().openingHrs,
             type: snapshot.data().type,
             contact: snapshot.data().contact,
-            desc: snapshot.data().desc,
-            deals: snapshot.data().deals,
-            cards: snapshot.data().cards,
-            methods: snapshot.data().methods,
+            desc: snapshot.data().description,
             favs: snapshot.data().favs}))
         this.getPermissionAsync()
       }
@@ -133,7 +129,7 @@ class MerchantProfile extends React.Component {
         }
 
     render() {
-        const {image, name, openingHours, type, contact, desc, deals, cards, methods, favs, progress, uploading,
+        const {image, name, openingHours, type, contact, desc, favs, progress, uploading,
             nameDialogVisible, contactDialogVisible,hoursDialogVisible, descDialogVisible, typeDialogVisible} = this.state
 
         return (

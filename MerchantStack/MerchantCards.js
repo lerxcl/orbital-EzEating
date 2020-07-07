@@ -58,16 +58,11 @@ class MerchantCards extends React.Component {
             this.userDoc.update({
                 cards: firebaseDb.firestore.FieldValue.arrayRemove(item.id)
             })
-            // firebaseDb.firestore().collection('shops').doc(this.userId).update({
-            //     cards: firebaseDb.firestore.FieldValue.arrayRemove(item.id)
-            // })
+
         } else {
             this.userDoc.update({
                 cards: firebaseDb.firestore.FieldValue.arrayUnion(item.id)
             })
-            // firebaseDb.firestore().collection('shops').doc(this.userId).update({
-            //     cards: firebaseDb.firestore.FieldValue.arrayUnion(item.id)
-            // })
         }
         item.isSelect = !item.isSelect
 

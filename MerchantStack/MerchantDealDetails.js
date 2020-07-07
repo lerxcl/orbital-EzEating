@@ -31,7 +31,6 @@ function MerchantDealDetails({navigation, route}) {
     const [uploading, setUploading] = useState(false)
 
     const userId = firebaseDb.auth().currentUser.uid
-    const userDoc = firebaseDb.firestore().collection('shops').doc(userId)
 
     useEffect(() => {
         if (isLoading) {
@@ -83,40 +82,40 @@ function MerchantDealDetails({navigation, route}) {
 
         if (!result.cancelled) {
             firebaseDb.storage().refFromURL(deal.image).delete()
-                .then(() => console.log("deleted successfully") );
+                .then(() => console.log("deleted successfully"));
 
             setUploading(true)
 
             const fileName = result.uri.substring(result.uri.lastIndexOf('/') + 1);
             console.log(fileName);
-        
+
             let storageRef = firebaseDb.storage().ref(`deals/images/${fileName}`);
             const response = await fetch(result.uri);
             const blob = await response.blob();
-        
+
             storageRef.put(blob)
-              .on(
-                firebaseDb.storage.TaskEvent.STATE_CHANGED,
-                snapshot => {
-                    setProgress(
-                        (snapshot.bytesTransferred / snapshot.totalBytes)
-                    );
-                },
-                error => {
-                  unsubscribe();
-                  console.log("image upload error: " + error.toString());
-                },
-                () => {
-                  setUploading(false)
-                  storageRef.getDownloadURL()
-                    .then((downloadUrl) => {
-                      console.log("File available at: " + downloadUrl);
-        
-                      setImage(downloadUrl)
+                .on(
+                    firebaseDb.storage.TaskEvent.STATE_CHANGED,
+                    snapshot => {
+                        setProgress(
+                            (snapshot.bytesTransferred / snapshot.totalBytes)
+                        );
+                    },
+                    error => {
+                        unsubscribe();
+                        console.log("image upload error: " + error.toString());
+                    },
+                    () => {
+                        setUploading(false)
+                        storageRef.getDownloadURL()
+                            .then((downloadUrl) => {
+                                console.log("File available at: " + downloadUrl);
+
+                                setImage(downloadUrl)
+                            })
                     })
-                })
-            }
         }
+    }
 
     if (isLoading)
         return (
@@ -128,12 +127,12 @@ function MerchantDealDetails({navigation, route}) {
         <ScrollView>
             <View style={styles.container}>
                 <Image style={styles.dealBanner} source={{uri: image}}/>
-                
+
                 {uploading &&
                 <View>
-                    <Text style = {{marginBottom: 5}}>Uploading photo:</Text>
-                    <ProgressBar width = {300} progress = {progress} color = 'darkblue'/>
-                    <Text style = {{fontSize: 10}}>{Math.round(progress * 100)}%</Text>
+                    <Text style={{marginBottom: 5}}>Uploading photo:</Text>
+                    <ProgressBar width={300} progress={progress} color='darkblue'/>
+                    <Text style={{fontSize: 10}}>{Math.round(progress * 100)}%</Text>
                 </View>}
 
                 <TouchableOpacity style={styles.edit} onPress={() => {
@@ -248,21 +247,11 @@ function MerchantDealDetails({navigation, route}) {
                             .join(", ")}`}
                 </Text>
 
-                <Text style={{paddingTop:15, marginBottom: 20, fontWeight:'bold'}}>Please save changes before leaving page!</Text>
+                <Text style={{paddingTop: 15, marginBottom: 20, fontWeight: 'bold'}}>Please save changes before leaving
+                    page!</Text>
 
                 <View style={{flexDirection: 'row'}}>
                     <BlueButton onPress={() => {
-                        // const selectedMethodsDB = [...selectedMethods].map(method => {
-                        //     delete method.label;
-                        //     delete method.value;
-                        //     return method
-                        // })
-                        // const selectedCardsDB = [...selectedCards].map(card => {
-                        //     delete card.label;
-                        //     delete card.value;
-                        //     return card
-                        // })
-
                         const selectedMethodsShop = [...selectedMethods].map(method => {
                             return method.id;
                         })
@@ -270,34 +259,6 @@ function MerchantDealDetails({navigation, route}) {
                             return card.id
                         })
 
-                        // userDoc.update({
-                        //     deals: firebaseDb.firestore.FieldValue.arrayRemove({
-                        //         id: deal.id,
-                        //         // title: deal.title,
-                        //         // cards: deal.cards.map(card => {
-                        //         //     delete card.label;
-                        //         //     delete card.value;
-                        //         //     return card
-                        //         // }),
-                        //         // methods: deal.methods.map(method => {
-                        //         //     delete method.label;
-                        //         //     delete method.value;
-                        //         //     return method
-                        //         // }),
-                        //         // image: deal.image,
-                        //         // description: deal.description,
-                        //     })
-                        // })
-                        // userDoc.update({
-                        //     deals: firebaseDb.firestore.FieldValue.arrayUnion({
-                        //         // title: title,
-                        //         // cards: selectedCardsDB,
-                        //         // methods: selectedMethodsDB,
-                        //         // image: image,
-                        //         // description: desc,
-                        //         id: id,
-                        //     })
-                        // })
                         firebaseDb.firestore().collection('shops').doc(userId).update({
                             deals: firebaseDb.firestore.FieldValue.arrayRemove({
                                 id: deal.id,
@@ -336,25 +297,8 @@ function MerchantDealDetails({navigation, route}) {
                                 {
                                     text: 'Yes', onPress: () => {
                                         firebaseDb.storage().refFromURL(deal.image).delete()
-                                            .then(() => console.log("deleted successfully") );
+                                            .then(() => console.log("deleted successfully"));
 
-                                        // userDoc.update({
-                                        //     deals: firebaseDb.firestore.FieldValue.arrayRemove({
-                                        //         title: deal.title,
-                                        //         cards: deal.cards.map(card => {
-                                        //             delete card.label;
-                                        //             delete card.value;
-                                        //             return card
-                                        //         }),
-                                        //         methods: deal.methods.map(method => {
-                                        //             delete method.label;
-                                        //             delete method.value;
-                                        //             return method
-                                        //         }),
-                                        //         image: deal.image,
-                                        //         description: deal.description,
-                                        //     })
-                                        // })
                                         firebaseDb.firestore().collection('shops').doc(userId).update({
                                             deals: firebaseDb.firestore.FieldValue.arrayRemove({
                                                 id: deal.id,
