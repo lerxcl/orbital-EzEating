@@ -359,8 +359,8 @@ function MerchantDealDetails({navigation, route}) {
                                             deals: firebaseDb.firestore.FieldValue.arrayRemove({
                                                 id: deal.id,
                                                 title: deal.title,
-                                                cards: deal.cards.map(card => {return card.id}),
-                                                methods: deal.methods.map(method => {return method.id}),
+                                                cards: deal.cards,
+                                                methods: deal.methods,
                                                 image: deal.image,
                                                 description: deal.description,
                                             })

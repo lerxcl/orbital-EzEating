@@ -74,6 +74,8 @@ class MerchantContainer extends React.Component {
                         shopName: this.state.name,
                         deals: [],
                         hasDetails: false,
+                        favs: 0,
+                        isMerchant: true
                     })
                     this.setState({
                         name: '',

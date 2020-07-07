@@ -30,6 +30,7 @@ function Shop({navigation, route}) {
     const userDoc = firebaseDb.firestore().collection('users').doc(userId)
     const [isLoading, setisLoading] = useState(false)
     const [update, setUpdate] = useState(false);
+    const [merchant, setMerchant] = useState(false);
     const numColumns = 3
 
     const getCards = async () => {
@@ -81,7 +82,9 @@ function Shop({navigation, route}) {
             firebaseDb.firestore().collection('shops').get().then(snapshot =>
                 snapshot.forEach(doc => {
                     if (isEquivalent(shop, doc.data())) {
+                        console.log(doc.data().isMerchant)
                         setshopId(doc.id)
+                        setMerchant(doc.data().isMerchant)
                     }
                 }))
 
@@ -217,6 +220,11 @@ function Shop({navigation, route}) {
                             userDoc.update({
                             fav: firebaseDb.firestore.FieldValue.arrayUnion(shopId)
                             })
+                            if (merchant) {
+                                firebaseDb.firestore().collection('shops').doc(shopId).update({
+                                    favs: firebaseDb.firestore.FieldValue.increment(1)
+                                })
+                            }
                             setUpdate(true);
                             Toast.show({text:"Added", type:"success", textStyle:{textAlign:"center"}});
                         }}>
@@ -227,6 +235,11 @@ function Shop({navigation, route}) {
                             userDoc.update({
                             fav: firebaseDb.firestore.FieldValue.arrayRemove(shopId)
                             })
+                            if (merchant) {
+                                firebaseDb.firestore().collection('shops').doc(shopId).update({
+                                    favs: firebaseDb.firestore.FieldValue.increment(-1)
+                                })
+                            }
                             setUpdate(true);
                             Toast.show({text:"Removed", type:"danger", textStyle:{textAlign:"center"}});
                         }}>
