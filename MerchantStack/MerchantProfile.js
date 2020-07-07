@@ -32,7 +32,8 @@ class MerchantProfile extends React.Component {
         desc: null,
         deals: null,
         progress: 0,
-        uploading: false
+        uploading: false,
+        favs: 0
       };
 
     setName = (newName) => {
@@ -65,7 +66,8 @@ class MerchantProfile extends React.Component {
             desc: snapshot.data().desc,
             deals: snapshot.data().deals,
             cards: snapshot.data().cards,
-            methods: snapshot.data().methods}))
+            methods: snapshot.data().methods,
+            favs: snapshot.data().favs}))
         this.getPermissionAsync()
       }
     
@@ -131,7 +133,7 @@ class MerchantProfile extends React.Component {
         }
 
     render() {
-        const {image, name, openingHours, type, contact, desc, deals, cards, methods, progress, uploading,
+        const {image, name, openingHours, type, contact, desc, deals, cards, methods, favs, progress, uploading,
             nameDialogVisible, contactDialogVisible,hoursDialogVisible, descDialogVisible, typeDialogVisible} = this.state
 
         return (
@@ -183,7 +185,7 @@ class MerchantProfile extends React.Component {
                     <Dialog.Button label = "Submit" onPress = {() => {
                         this.setState({nameDialogVisible: false, name: this.newName})
                         firebaseDb.firestore().collection("shops").doc(this.userId).update({
-                            name: this.newName
+                            shopName: this.newName
                         })
                     }}/> 
                 </Dialog.Container>
@@ -281,24 +283,15 @@ class MerchantProfile extends React.Component {
                 </Dialog.Container>
 
                 <View style={styles.textContainer}>
-                    <Text>Favourites: 0</Text>
+                    <Text>Favourites: {favs}</Text>
                     <Text>Rating: No reviews yet</Text>
                 </View>
                 <Text style = {{alignSelf: 'center', marginTop: 10}}> Complete your profile to publish your store!</Text>
                 <Text style = {{alignSelf: 'center', marginBottom: 20}}> (don't forget to publish after making any changes) </Text>
                 <BlueButton style = {{width: 300, alignSelf: 'center'}} onPress={() => {
                     if (name && type && desc && openingHours && image) {
-                        firebaseDb.firestore().collection('shops').doc(this.userId).set({
-                            shopName: name,
-                            type: type,
-                            description: desc,
-                            rating: "No reviews yet",
-                            openingHrs: openingHours,
-                            deals: deals,
-                            contact: contact,
+                        firebaseDb.firestore().collection('shops').doc(this.userId).update({
                             logo: image,
-                            cards: cards,
-                            methods: methods,
                             hasDetails: true,
                         })
                         Alert.alert("Published Successfully!")
