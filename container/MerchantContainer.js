@@ -69,7 +69,8 @@ class MerchantContainer extends React.Component {
                         deals: [],
                         hasDetails: false,
                         favs: 0,
-                        isMerchant: true
+                        isMerchant: true,
+                        rating: "No reviews yet"
                     })
                     this.setState({
                         name: '',
