@@ -1,12 +1,15 @@
 import React, {useEffect} from 'react';
-import {ActivityIndicator, FlatList, StyleSheet, Text, View, Image, ScrollView} from "react-native";
+import {ActivityIndicator, FlatList, Button, StyleSheet, Text, View, Image, ScrollView} from "react-native";
 import firebaseDb from '../firebase/firebaseDb';
+import {Toast} from "native-base";
 
-function DealDetails({route}) {
+function DealDetails({route, navigation}) {
     const {deal} = route.params;
     const [cardinfo, setCardInfo] = React.useState([])
     const [loading, setLoading] = React.useState(true);
     const numColumns = 3
+    const userId = firebaseDb.auth().currentUser.uid
+    const userDoc = firebaseDb.firestore().collection('users').doc(userId)
 
     const getCards = async () => {
         let cards = [];
@@ -44,16 +47,49 @@ function DealDetails({route}) {
     }
 
     useEffect(() => {
-        if (loading && deal.cards.length !== 0 && deal.methods.length === 0) {
-            getCards().then(result => setCardInfo(result))
-        } else if (loading && deal.cards.length === 0 && deal.methods.length !== 0) {
-            getMethods().then(result => setCardInfo(result))
-        } else if (loading && deal.cards.length !== 0 && deal.methods.length !== 0) {
-            getCards().then(result1 => {
-                getMethods().then(result2 => setCardInfo(result1.concat(result2)))
-            })
-        } else {
-            setLoading(false)
+        if (loading) {
+            firebaseDb.firestore().collection('users').doc(userId).get()
+                .then(snapshot => {
+                    const saved = snapshot.data().savedDeals.includes(deal.id)
+
+                    navigation.setOptions({
+                        headerRight: saved
+                            ? () => (
+                                <Button onPress={() => {
+                                    userDoc.update({
+                                        savedDeals: firebaseDb.firestore.FieldValue.arrayRemove(deal.id)
+                                    })
+                                    setLoading(true)
+                                    Toast.show({text: "Removed", type: "danger", textStyle: {textAlign: "center"}});
+                                }}
+                                        title="Remove"
+                                        color="#ff3617"/>
+                            )
+                            : () => (
+                                <Button onPress={() => {
+                                    userDoc.update({
+                                        savedDeals: firebaseDb.firestore.FieldValue.arrayUnion(deal.id)
+                                    })
+                                    setLoading(true)
+                                    Toast.show({text: "Added", type: "success", textStyle: {textAlign: "center"}});
+                                }}
+                                        title="Save"
+                                        color="#06ab00"/>
+                            ),
+                    });
+                })
+
+            if (deal.cards.length !== 0 && deal.methods.length === 0) {
+                getCards().then(result => setCardInfo(result))
+            } else if (deal.cards.length === 0 && deal.methods.length !== 0) {
+                getMethods().then(result => setCardInfo(result))
+            } else if (deal.cards.length !== 0 && deal.methods.length !== 0) {
+                getCards().then(result1 => {
+                    getMethods().then(result2 => setCardInfo(result1.concat(result2)))
+                })
+            } else {
+                setLoading(false)
+            }
         }
 
         return () => setLoading(false)
@@ -61,7 +97,7 @@ function DealDetails({route}) {
 
     return (
         <View>
-            {loading && 
+            {loading &&
             <View style={styles.container}>
                 <ActivityIndicator size='large'/>
             </View>}
@@ -81,27 +117,27 @@ function DealDetails({route}) {
             }
 
             {cardinfo.length !== 0 &&
-                <FlatList
-                    ListHeaderComponent = {
-                        <View style = {{alignItems: 'center'}}>
-                            <Image style={styles.logo} source={{uri: deal.logo}}/>
-                            <Text style={styles.dealHeader1}>{deal.name}</Text>
-                            <Text style={styles.dealHeader2}>{deal.title}</Text>
-                            <Image style={styles.dealBanner} source={{uri: deal.image}}/>
-                            <Text style={styles.info}>{deal.description}</Text>
-                            <Text style = {{marginTop: 20, marginBottom: 10}}>Deal is only applicable with:</Text>
-                        </View>
-                    }
-                    contentContainerStyle = {{alignItems: 'center'}}
-                    numColumns={numColumns}
-                    data={cardinfo}
-                    renderItem={({item}) => (
-                            <View>
-                                <Image style={styles.image} source={{uri: item.image}}/>
-                            </View>
-                        )}
-                    keyExtractor={item => item.id}
-                />}
+            <FlatList
+                ListHeaderComponent={
+                    <View style={{alignItems: 'center'}}>
+                        <Image style={styles.logo} source={{uri: deal.logo}}/>
+                        <Text style={styles.dealHeader1}>{deal.name}</Text>
+                        <Text style={styles.dealHeader2}>{deal.title}</Text>
+                        <Image style={styles.dealBanner} source={{uri: deal.image}}/>
+                        <Text style={styles.info}>{deal.description}</Text>
+                        <Text style={{marginTop: 20, marginBottom: 10}}>Deal is only applicable with:</Text>
+                    </View>
+                }
+                contentContainerStyle={{alignItems: 'center'}}
+                numColumns={numColumns}
+                data={cardinfo}
+                renderItem={({item}) => (
+                    <View>
+                        <Image style={styles.image} source={{uri: item.image}}/>
+                    </View>
+                )}
+                keyExtractor={item => item.id}
+            />}
         </View>
 
     )
@@ -142,7 +178,7 @@ const styles = StyleSheet.create({
         marginBottom: 10
     },
     info: {
-        marginTop: 20, 
+        marginTop: 20,
         fontSize: 15,
         paddingHorizontal: 40,
     },
