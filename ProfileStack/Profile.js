@@ -40,11 +40,6 @@ class Profile extends React.Component {
         });
 
         if (!result.cancelled) {
-            // this.setState({ image: result.uri })
-            // this.state.currentUser.updateProfile({
-            //   photoURL: result.uri})
-            // }
-
             if (this.state.image !== null) {
                 firebaseDb.storage().refFromURL(this.state.image).delete()
                     .then(() => console.log("deleted successfully"));
@@ -123,12 +118,14 @@ class Profile extends React.Component {
                                     },
                                     {
                                         text: 'Remove', onPress: () => {
-                                            this.setState({image: null})
-                                            firebaseDb.storage().refFromURL(this.state.image).delete()
-                                                .then(() => console.log("deleted successfully"));
-                                            firebaseDb.auth().currentUser.update({
-                                                profilePic: this.state.image,
-                                            })
+                                            if (image !== null) {
+                                                firebaseDb.storage().refFromURL(this.state.image).delete()
+                                                    .then(() => console.log("deleted successfully"));
+                                                this.setState({image: null})
+                                                firebaseDb.auth().currentUser.updateProfile({
+                                                    photoURL: null,
+                                                })
+                                            }
                                         }
                                     },
                                     {text: 'Change', onPress: this.pickImage}
@@ -161,7 +158,7 @@ class Profile extends React.Component {
                         </TouchableOpacity>
                     </View>
                     <View style={styles.savings}>
-                        <Text>Total Savings: </Text>
+                        <Text>Total Savings: $ PLACEHOLDER VALUE </Text>
                         <TouchableOpacity style={styles.arrow}
                                           onPress={() => this.props.navigation.navigate('History')}>
                             <MaterialCommunityIcons name="chevron-right" size={25}/>
