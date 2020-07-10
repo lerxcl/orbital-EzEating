@@ -1,21 +1,6 @@
 import React, {useEffect} from 'react';
 import {ActivityIndicator, View, StyleSheet} from "react-native";
 import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
-import firebaseDb from '../firebase/firebaseDb';
-
-function isEquivalent(a, b) {
-    var aProps = Object.getOwnPropertyNames(a);
-    var bProps = Object.getOwnPropertyNames(b);
-    bProps.push("letter")
-    b["letter"] = a["letter"]
-
-    for (var i = 0; i < aProps.length; i++) {
-        var propName = aProps[i];
-        if (JSON.stringify(a[propName]) !== JSON.stringify(b[propName])) return false;
-    }
-
-    return true;
-}
 
 function Outlets({route}) {
     const {shop} = route.params;
@@ -49,9 +34,9 @@ useEffect(() => {
         {markers.map(marker => (
             <Marker
             coordinate={{latitude: marker.lat, longitude: marker.long}}
-            title={marker.address}
-            description= {marker.traffic}
-            id = {marker.address}
+            title={marker.name}
+            description= {marker.address}
+            id = {marker.id}
             />
         ))}
         </MapView>
