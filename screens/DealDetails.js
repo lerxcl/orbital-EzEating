@@ -107,8 +107,9 @@ function DealDetails({route, navigation}) {
             <ScrollView>
                 <View style={styles.container}>
                     <Image style={styles.logo} source={{uri: deal.logo}}/>
-                    <Text style={styles.dealHeader}>{deal.name}</Text>
-                    <Text style={styles.dealHeader}>{deal.title}</Text>
+                    <Text style={styles.dealHeader1}>{deal.name}</Text>
+                    <Text style={styles.dealHeader2}>{deal.title}</Text>
+                    <Text style={styles.dealHeader2}>Potential Savings: ${deal.monetaryValue}</Text>
                     <Image style={styles.dealBanner} source={{uri: deal.image}}/>
                     <Text style={styles.info}>{deal.description}</Text>
                     <Text style={{marginTop: 20, fontSize: 16}}>-Deal is not associated with any card/method!-</Text>
@@ -123,6 +124,7 @@ function DealDetails({route, navigation}) {
                         <Image style={styles.logo} source={{uri: deal.logo}}/>
                         <Text style={styles.dealHeader1}>{deal.name}</Text>
                         <Text style={styles.dealHeader2}>{deal.title}</Text>
+                        <Text style={styles.dealHeader2}>Potential Savings: ${deal.monetaryValue}</Text>
                         <Image style={styles.dealBanner} source={{uri: deal.image}}/>
                         <Text style={styles.info}>{deal.description}</Text>
                         <Text style={{marginTop: 20, marginBottom: 10}}>Deal is only applicable with:</Text>
