@@ -1,21 +1,6 @@
 import React, {useEffect} from 'react';
 import {ActivityIndicator, View, StyleSheet} from "react-native";
 import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
-import firebaseDb from '../firebase/firebaseDb';
-
-function isEquivalent(a, b) {
-    var aProps = Object.getOwnPropertyNames(a);
-    var bProps = Object.getOwnPropertyNames(b);
-    bProps.push("letter")
-    b["letter"] = a["letter"]
-
-    for (var i = 0; i < aProps.length; i++) {
-        var propName = aProps[i];
-        if (JSON.stringify(a[propName]) !== JSON.stringify(b[propName])) return false;
-    }
-
-    return true;
-}
 
 function Outlets({route}) {
     const {shop} = route.params;
@@ -23,10 +8,24 @@ function Outlets({route}) {
     const [loading, setLoading] = React.useState(true);
 
 useEffect(() => {
+    async function func() {
+            //Assign the promise unresolved first then get the data using the json method. 
+            const ApiCall = await fetch('https://api.dominos.com.sg/api/Stores');
+            const outlets = await ApiCall.json();
+            setMarkers(outlets.map(outlet => {
+                if (outlet["Status"] === "OK") {
+                    outlet["Traffic"] = "Normal"
+                } else {
+                    outlet["Traffic"] = outlet["StatusSummary"]
+                }
+                return outlet
+            }))
+          }
+          // Execute the created function directly
     if (loading) {
-        setMarkers(shop.outlets)
+        func();
     }
-    setLoading(false)
+    return () => setLoading(false)
 })
 
     if (loading)
@@ -48,10 +47,10 @@ useEffect(() => {
         >
         {markers.map(marker => (
             <Marker
-            coordinate={{latitude: marker.lat, longitude: marker.long}}
-            title={marker.address}
-            description= {marker.traffic}
-            id = {marker.address}
+            coordinate={{latitude: parseFloat(marker["Latitude"]), longitude: parseFloat(marker["Longitude"])}}
+            title = {marker["Address"]}
+            description = {marker["Traffic"]}
+            id = {marker["Id"]}
             />
         ))}
         </MapView>
