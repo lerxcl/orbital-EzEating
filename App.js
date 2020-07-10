@@ -22,11 +22,14 @@ import Splash from "./screens/Splash";
 import AllShops from "./screens/AllShops";
 import Shop from "./screens/Shop";
 import DealDetails from "./screens/DealDetails";
+import Outlets from "./screens/Outlets";
+
 import Profile from "./ProfileStack/Profile";
 import Cards from "./ProfileStack/Cards";
 import Details from "./ProfileStack/Details";
 import Methods from "./ProfileStack/Methods";
 import UserHistory from "./ProfileStack/UserHistory";
+
 import MerchantDeals from "./MerchantStack/MerchantDeals";
 import MerchantProfile from "./MerchantStack/MerchantProfile";
 import MerchantDealDetails from "./MerchantStack/MerchantDealDetails";
@@ -78,6 +81,10 @@ function HomeStackScreen() {
             <HomeStack.Screen
                 name='Deal Details'
                 component={DealDetails}
+            />
+            <HomeStack.Screen
+                name='Outlets'
+                component={Outlets}
             />
         </HomeStack.Navigator>
     )
