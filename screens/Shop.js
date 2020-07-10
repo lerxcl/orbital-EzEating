@@ -113,6 +113,7 @@ function Shop({navigation, route}) {
                 <Text style={styles.shopName}>{shop.shopName}</Text>
                 <View style={styles.itemContainer}>
                     <Text style={styles.info}>Type of Food: {shop.type} </Text>
+                    <Text style={styles.info}>Average Price: Around ${shop.avgPrice} </Text>
                     <Text style={styles.info}>Opening Hours: {shop.openingHrs} </Text>
                     <Text style={styles.info}>Contact Number: {shop.contact} </Text>
                     <View style={{flexDirection: 'row'}}>
@@ -166,6 +167,7 @@ function Shop({navigation, route}) {
                     <Text style={styles.shopName}>{shop.shopName}</Text>
                     <View style={styles.itemContainer}>
                         <Text style={styles.info}>Type of Food: {shop.type} </Text>
+                        <Text style={styles.info}>Average Price: Around ${shop.avgPrice} </Text>
                         <Text style={styles.info}>Opening Hours: {shop.openingHrs} </Text>
                         <Text style={styles.info}>Contact Number: {shop.contact} </Text>
                         <View style={{flexDirection: 'row'}}>
