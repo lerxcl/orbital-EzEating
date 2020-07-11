@@ -116,6 +116,10 @@ const ProfileStackScreen = () => (
             name='History'
             component={UserHistory}
         />
+        <ProfileStack.Screen
+            name='Deal Details'
+            component={DealDetails}
+        />
     </ProfileStack.Navigator>
 )
 
