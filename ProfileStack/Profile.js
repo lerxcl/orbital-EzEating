@@ -111,7 +111,7 @@ class Profile extends React.Component {
 
         render()
         {
-            const {currentUser, image, name, uploading, progress} = this.state
+            const {savedDeals, image, name, uploading, progress} = this.state
 
             return (
                 <SafeAreaView style={styles.container}>
@@ -183,7 +183,9 @@ class Profile extends React.Component {
                     <View style={styles.savings}>
                         <Text>Total Savings: ${this.state.totalSaving} </Text>
                         <TouchableOpacity style={styles.arrow}
-                                          onPress={() => this.props.navigation.navigate('History')}>
+                                          onPress={() => this.props.navigation.navigate('History', {
+                                              deals: savedDeals
+                                          })}>
                             <MaterialCommunityIcons name="chevron-right" size={25}/>
                         </TouchableOpacity>
                     </View>
