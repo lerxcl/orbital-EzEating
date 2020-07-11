@@ -9,16 +9,39 @@ import BlueButton from "../component/BlueButton";
 import {ProgressBar} from "react-native-paper";
 
 class Profile extends React.Component {
-
     state = {
         name: firebaseDb.auth().currentUser.displayName,
         image: firebaseDb.auth().currentUser.photoURL,
         currentUser: firebaseDb.auth().currentUser,
         uploading: false,
         progress: 0,
+        totalSaving: 0,
+        savedDeals: [],
     };
 
+    userId = firebaseDb.auth().currentUser.uid
+    userDoc = firebaseDb.firestore().collection('users').doc(this.userId)
+
+    getDeals = async() => {
+        let snapshot = await this.userDoc.get()
+        const saved = snapshot.data().savedDeals
+        const savedDeals = [...global.allShops].filter(shop => shop.deals.length !== 0)
+            .flatMap(shop => {
+                shop.deals.map(deal => {
+                    deal.name = shop.shopName
+                    deal.logo = shop.logo
+                })
+                return shop.deals
+            })
+            .filter(deal => saved.includes(deal.id))
+        this.setState({savedDeals: savedDeals})
+
+        const result = [...savedDeals].map(deal => deal.monetaryValue).reduce((a,b) => a + b, 0)
+        this.setState({totalSaving: result})
+    }
+
     componentDidMount() {
+        this.getDeals()
         this.getPermissionAsync()
     }
 
@@ -158,7 +181,7 @@ class Profile extends React.Component {
                         </TouchableOpacity>
                     </View>
                     <View style={styles.savings}>
-                        <Text>Total Savings: $ PLACEHOLDER VALUE </Text>
+                        <Text>Total Savings: ${this.state.totalSaving} </Text>
                         <TouchableOpacity style={styles.arrow}
                                           onPress={() => this.props.navigation.navigate('History')}>
                             <MaterialCommunityIcons name="chevron-right" size={25}/>
@@ -166,6 +189,7 @@ class Profile extends React.Component {
                     </View>
                     <BlueButton onPress={() => {
                         this.setState({name: firebaseDb.auth().currentUser.displayName})
+                        this.getDeals()
                     }}>
                         Refresh
                     </BlueButton>
