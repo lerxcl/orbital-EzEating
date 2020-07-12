@@ -25,6 +25,7 @@ class NewDeal extends React.Component {
         progress: 0,
         uploading: false,
         id: null,
+        monetaryValue: "",
     }
     shopDeals = [];
     userId = firebaseDb.auth().currentUser.uid;
@@ -129,10 +130,11 @@ class NewDeal extends React.Component {
 
     updateTitle = (title) => this.setState({title});
     updateDesc = (desc) => this.setState({desc});
+    updateMonetaryValue = (monetaryValue) => this.setState({monetaryValue});
 
     render() {
 
-        const {title, desc, image, cardsAndMethods, selected, selectedCards, selectedMethods, uploading, progress, id} = this.state
+        const {title, desc, image, cardsAndMethods, selected, selectedCards, selectedMethods, uploading, progress, id, monetaryValue} = this.state
 
         return (
             <ScrollView>
@@ -201,6 +203,15 @@ class NewDeal extends React.Component {
                             onChangeText={this.updateDesc}/>
                     </View>
 
+                    <View style={styles.textContainerLong}>
+                        <TextInput
+                            multiline={false}
+                            placeholder='Enter Potential Savings'
+                            keyboardType="number-pad"
+                            value={monetaryValue}
+                            onChangeText={this.updateMonetaryValue}/>
+                    </View>
+
                     <Text style={{width: 300, marginBottom: 5, marginTop: 10, marginLeft: 50}}>This deal is only
                         applicable
                         with...</Text>
@@ -231,6 +242,7 @@ class NewDeal extends React.Component {
                                             methods: selectedMethods,
                                             title: title,
                                             id: id,
+                                            monetaryValue: Number(monetaryValue),
                                         })
                                         return this.shopDeals
                                     }).then(shopDeals => {
@@ -242,7 +254,8 @@ class NewDeal extends React.Component {
                                         desc: '',
                                         image: null,
                                         selectedMethods: [],
-                                        selected: []
+                                        selected: [],
+                                        monetaryValue: "",
                                     })
                                     Alert.alert("Deal Submitted Successfully!")
                                 })

@@ -37,6 +37,7 @@ class Profile extends React.Component {
         this.setState({savedDeals: savedDeals})
 
         const result = [...savedDeals].map(deal => deal.monetaryValue).reduce((a,b) => a + b, 0)
+            .toFixed(2)
         this.setState({totalSaving: result})
     }
 
