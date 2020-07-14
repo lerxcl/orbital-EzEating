@@ -21,7 +21,7 @@ function isEquivalent(a, b) {
 
 
 function Shop({navigation, route}) {
-    const {shop} = route.params;
+    const {shop, refresh} = route.params;
     const deals = shop.deals;
     const [fav, setFav] = useState([])
     const [shopId, setshopId] = useState(0)
@@ -139,6 +139,7 @@ function Shop({navigation, route}) {
                         fav: firebaseDb.firestore.FieldValue.arrayUnion(shopId)
                     })
                     setUpdate(true);
+                    refresh(false);
                     Toast.show({text:"Added", type:"success", textStyle:{textAlign:"center"}});
                 }
                 }>
@@ -150,6 +151,7 @@ function Shop({navigation, route}) {
                         fav: firebaseDb.firestore.FieldValue.arrayRemove(shopId)
                     })
                     setUpdate(true);
+                    refresh(false);
                     Toast.show({text:"Removed", type:"danger", textStyle:{textAlign:"center"}});
                 }}>
                     Remove from Favourites
@@ -228,6 +230,7 @@ function Shop({navigation, route}) {
                                 })
                             }
                             setUpdate(true);
+                            refresh(false);
                             Toast.show({text:"Added", type:"success", textStyle:{textAlign:"center"}});
                         }}>
                         Add to Favourites!
@@ -243,6 +246,7 @@ function Shop({navigation, route}) {
                                 })
                             }
                             setUpdate(true);
+                            refresh(false);
                             Toast.show({text:"Removed", type:"danger", textStyle:{textAlign:"center"}});
                         }}>
                         Remove from Favourites

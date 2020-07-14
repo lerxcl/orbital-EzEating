@@ -92,7 +92,8 @@ class AllShops extends React.Component {
                     renderItem={({item}) => (
                         <TouchableOpacity style={styles.itemContainer} onPress={() => this.props.navigation
                             .navigate('Shop Details', {
-                                shop: item
+                                shop: item,
+                                refresh: this.props.route.params.refresh,
                             })}>
                             <View style={{alignItems: 'flex-end', flex: 0.2}}>
                                 <Image style={styles.logo}
