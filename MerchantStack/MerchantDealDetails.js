@@ -12,7 +12,7 @@ import {getCards, getMethods} from '../component/API';
 import {ProgressBar} from 'react-native-paper';
 
 function MerchantDealDetails({navigation, route}) {
-    const {deal} = route.params;
+    const {deal, refresh} = route.params;
     const [isLoading, setIsLoading] = useState(true)
     const [image, setImage] = useState(deal.image)
     const [title, setTitle] = useState(deal.title)
@@ -304,6 +304,7 @@ function MerchantDealDetails({navigation, route}) {
                                 monetaryValue: Number(monetaryValue),
                             })
                         })
+                        refresh();
                         navigation.navigate('Deals')
                         Alert.alert("Deal details saved!")
                     }}>
@@ -335,6 +336,7 @@ function MerchantDealDetails({navigation, route}) {
                                                 monetaryValue: deal.monetaryValue,
                                             })
                                         })
+                                        refresh();
                                         navigation.navigate('Deals')
                                         Alert.alert('Deal deleted!')
                                     }

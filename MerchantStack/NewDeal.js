@@ -258,6 +258,7 @@ class NewDeal extends React.Component {
                                         monetaryValue: "",
                                     })
                                     Alert.alert("Deal Submitted Successfully!")
+                                    this.props.route.params.refresh();
                                 })
                             } else {
                                 Alert.alert("Sorry, more information is needed")
