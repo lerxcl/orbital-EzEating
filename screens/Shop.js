@@ -1,5 +1,14 @@
 import React, {useEffect, useState} from 'react';
-import {TouchableOpacity, FlatList, StyleSheet, Text, View, Image, ActivityIndicator, ScrollView} from "react-native";
+import {
+    TouchableOpacity,
+    FlatList,
+    StyleSheet,
+    Text,
+    View,
+    Image,
+    ActivityIndicator,
+    ScrollView
+} from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import BlueButton from "../component/BlueButton";
 import firebaseDb from '../firebase/firebaseDb';
