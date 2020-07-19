@@ -34,6 +34,8 @@ import MerchantCards from "./MerchantStack/MerchantCards";
 import MerchantMethods from "./MerchantStack/MerchantMethods";
 import NewDeal from "./MerchantStack/NewDeal"
 import Settings from "./MerchantStack/Settings";
+import {YellowBox} from "react-native";
+import _ from 'lodash';
 
 const Stack = createStackNavigator();
 const Tabs = createMaterialBottomTabNavigator();
@@ -47,6 +49,15 @@ const MerchantSettings = createStackNavigator();
 const MerchantCardsStack = createStackNavigator();
 const MerchantMethodsStack = createStackNavigator();
 
+YellowBox.ignoreWarnings([
+    'Non-serializable values were found in the navigation state',
+]);
+const _console = _.clone(console);
+console.warn = message => {
+    if (message.indexOf('Non-serializable values were found in the navigation state') <= -1) {
+        _console.warn(message);
+    }
+};
 
 function HomeStackScreen() {
     return (
@@ -115,6 +126,10 @@ const ProfileStackScreen = () => (
         <ProfileStack.Screen
             name='History'
             component={UserHistory}
+        />
+        <ProfileStack.Screen
+            name='Deal Details'
+            component={DealDetails}
         />
     </ProfileStack.Navigator>
 )

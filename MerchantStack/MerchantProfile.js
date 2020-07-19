@@ -18,7 +18,9 @@ class MerchantProfile extends React.Component {
     newContact = ''
     newDesc = ''
     newType = ''
+    newAvgPrice = ''
     state = {
+        avgPriceDialogVisible: false,
         nameDialogVisible: false,
         hoursDialogVisible: false,
         contactDialogVisible: false,
@@ -32,8 +34,13 @@ class MerchantProfile extends React.Component {
         desc: null,
         progress: 0,
         uploading: false,
-        favs: 0
+        favs: 0,
+        avgPrice: null,
       };
+
+    setAvgPrice = (newAvgPrice) => {
+        this.newAvgPrice = newAvgPrice
+    }
 
     setName = (newName) => {
         this.newName = newName
@@ -63,7 +70,8 @@ class MerchantProfile extends React.Component {
             type: snapshot.data().type,
             contact: snapshot.data().contact,
             desc: snapshot.data().description,
-            favs: snapshot.data().favs}))
+            favs: snapshot.data().favs,
+        avgPrice: snapshot.data().avgPrice,}))
         this.getPermissionAsync()
       }
     
@@ -130,7 +138,8 @@ class MerchantProfile extends React.Component {
 
     render() {
         const {image, name, openingHours, type, contact, desc, favs, progress, uploading,
-            nameDialogVisible, contactDialogVisible,hoursDialogVisible, descDialogVisible, typeDialogVisible} = this.state
+            nameDialogVisible, contactDialogVisible,hoursDialogVisible, descDialogVisible, typeDialogVisible,
+        avgPriceDialogVisible, avgPrice} = this.state
 
         return (
             <ScrollView contentContainerstyle = {styles.container}>
@@ -207,6 +216,29 @@ class MerchantProfile extends React.Component {
                             openingHrs: this.newHours
                         })
                     }}/> 
+                </Dialog.Container>
+
+                <View style={styles.textContainer}>
+                    <Text>Average Price: ${avgPrice} </Text>
+                    <TouchableOpacity style = {styles.arrow}
+                                      onPress={() => this.setState({avgPriceDialogVisible: true})}>
+                        <MaterialCommunityIcons name = "pencil-outline" size = {25}/>
+                    </TouchableOpacity>
+                </View>
+
+                <Dialog.Container visible={avgPriceDialogVisible}>
+                    <Dialog.Title>Change average Price</Dialog.Title>
+                    <Dialog.Description>
+                        Enter average price.
+                    </Dialog.Description>
+                    <Dialog.Input placeholder = "Price" onChangeText = {this.setAvgPrice}/>
+                    <Dialog.Button label = "Cancel" onPress = {() => this.setState({avgPriceDialogVisible: false})}/>
+                    <Dialog.Button label = "Submit" onPress = {() => {
+                        this.setState({avgPriceDialogVisible: false, avgPrice: this.newAvgPrice})
+                        firebaseDb.firestore().collection("shops").doc(this.userId).update({
+                            avgPrice: this.newAvgPrice
+                        })
+                    }}/>
                 </Dialog.Container>
 
                 <View style={styles.textContainer}>

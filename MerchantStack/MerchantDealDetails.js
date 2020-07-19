@@ -12,15 +12,18 @@ import {getCards, getMethods} from '../component/API';
 import {ProgressBar} from 'react-native-paper';
 
 function MerchantDealDetails({navigation, route}) {
-    const {deal} = route.params;
+    const {deal, refresh} = route.params;
     const [isLoading, setIsLoading] = useState(true)
     const [image, setImage] = useState(deal.image)
     const [title, setTitle] = useState(deal.title)
     const [desc, setDesc] = useState(deal.description)
+    const [monetaryValue, setMonetaryValue] = useState(deal.monetaryValue)
     const [newTitle, setNewTitle] = useState('')
     const [newDesc, setNewDesc] = useState('')
+    const [newMonetaryValue, setNewMonetaryValue] = useState('')
     const [titleDialog, setTitleDialog] = useState(false)
     const [descDialog, setDescDialog] = useState(false)
+    const [monetaryValueDialog, setMonetaryValueDialog] = useState(false)
     const [cardVisible, setCardVisible] = useState(false)
     const [methodVisible, setMethodVisible] = useState(false)
     const [cards, setCards] = useState([])
@@ -188,6 +191,26 @@ function MerchantDealDetails({navigation, route}) {
                     }}/>
                 </Dialog.Container>
 
+                <View style={styles.box}>
+                    <Text style={styles.info}>{monetaryValue}</Text>
+                    <TouchableOpacity style={styles.arrowInfo}
+                                      onPress={() => setMonetaryValueDialog(true)}>
+                        <MaterialCommunityIcons name="pencil-outline" size={25}/>
+                    </TouchableOpacity>
+                </View>
+
+                <Dialog.Container visible={monetaryValueDialog}>
+                    <Dialog.Title>Edit Savings </Dialog.Title>
+                    <Dialog.Input multiline={false} numberOfLines={1} defaultValue={String(monetaryValue)}
+                                  keyboardType="number-pad"
+                                  onChangeText={(monetaryValue) => setNewMonetaryValue(monetaryValue)}/>
+                    <Dialog.Button label="Cancel" onPress={() => setMonetaryValueDialog(false)}/>
+                    <Dialog.Button label="Submit" onPress={() => {
+                        setMonetaryValueDialog(false)
+                        setMonetaryValue(newMonetaryValue)
+                    }}/>
+                </Dialog.Container>
+
                 <MultiPickerMaterialDialog
                     title={'Choose cards relevant to deal'}
                     items={cards}
@@ -267,6 +290,7 @@ function MerchantDealDetails({navigation, route}) {
                                 methods: deal.methods,
                                 image: deal.image,
                                 description: deal.description,
+                                monetaryValue: deal.monetaryValue,
                             })
                         })
                         firebaseDb.firestore().collection('shops').doc(userId).update({
@@ -277,8 +301,10 @@ function MerchantDealDetails({navigation, route}) {
                                 methods: selectedMethodsShop,
                                 image: image,
                                 description: desc,
+                                monetaryValue: Number(monetaryValue),
                             })
                         })
+                        refresh();
                         navigation.navigate('Deals')
                         Alert.alert("Deal details saved!")
                     }}>
@@ -307,8 +333,10 @@ function MerchantDealDetails({navigation, route}) {
                                                 methods: deal.methods,
                                                 image: deal.image,
                                                 description: deal.description,
+                                                monetaryValue: deal.monetaryValue,
                                             })
                                         })
+                                        refresh();
                                         navigation.navigate('Deals')
                                         Alert.alert('Deal deleted!')
                                     }

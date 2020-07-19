@@ -1,5 +1,14 @@
 import React, {useEffect, useState} from 'react';
-import {TouchableOpacity, FlatList, StyleSheet, Text, View, Image, ActivityIndicator, ScrollView} from "react-native";
+import {
+    TouchableOpacity,
+    FlatList,
+    StyleSheet,
+    Text,
+    View,
+    Image,
+    ActivityIndicator,
+    ScrollView
+} from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import BlueButton from "../component/BlueButton";
 import firebaseDb from '../firebase/firebaseDb';
@@ -21,7 +30,7 @@ function isEquivalent(a, b) {
 
 
 function Shop({navigation, route}) {
-    const {shop} = route.params;
+    const {shop, refresh} = route.params;
     const deals = shop.deals;
     const [fav, setFav] = useState([])
     const [shopId, setshopId] = useState(0)
@@ -113,6 +122,7 @@ function Shop({navigation, route}) {
                 <Text style={styles.shopName}>{shop.shopName}</Text>
                 <View style={styles.itemContainer}>
                     <Text style={styles.info}>Type of Food: {shop.type} </Text>
+                    <Text style={styles.info}>Average Price: Around ${shop.avgPrice} </Text>
                     <Text style={styles.info}>Opening Hours: {shop.openingHrs} </Text>
                     <Text style={styles.info}>Contact Number: {shop.contact} </Text>
                     <View style={{flexDirection: 'row'}}>
@@ -138,6 +148,7 @@ function Shop({navigation, route}) {
                         fav: firebaseDb.firestore.FieldValue.arrayUnion(shopId)
                     })
                     setUpdate(true);
+                    refresh(false);
                     Toast.show({text:"Added", type:"success", textStyle:{textAlign:"center"}});
                 }
                 }>
@@ -149,6 +160,7 @@ function Shop({navigation, route}) {
                         fav: firebaseDb.firestore.FieldValue.arrayRemove(shopId)
                     })
                     setUpdate(true);
+                    refresh(false);
                     Toast.show({text:"Removed", type:"danger", textStyle:{textAlign:"center"}});
                 }}>
                     Remove from Favourites
@@ -166,6 +178,7 @@ function Shop({navigation, route}) {
                     <Text style={styles.shopName}>{shop.shopName}</Text>
                     <View style={styles.itemContainer}>
                         <Text style={styles.info}>Type of Food: {shop.type} </Text>
+                        <Text style={styles.info}>Average Price: Around ${shop.avgPrice} </Text>
                         <Text style={styles.info}>Opening Hours: {shop.openingHrs} </Text>
                         <Text style={styles.info}>Contact Number: {shop.contact} </Text>
                         <View style={{flexDirection: 'row'}}>
@@ -226,6 +239,7 @@ function Shop({navigation, route}) {
                                 })
                             }
                             setUpdate(true);
+                            refresh(false);
                             Toast.show({text:"Added", type:"success", textStyle:{textAlign:"center"}});
                         }}>
                         Add to Favourites!
@@ -241,6 +255,7 @@ function Shop({navigation, route}) {
                                 })
                             }
                             setUpdate(true);
+                            refresh(false);
                             Toast.show({text:"Removed", type:"danger", textStyle:{textAlign:"center"}});
                         }}>
                         Remove from Favourites

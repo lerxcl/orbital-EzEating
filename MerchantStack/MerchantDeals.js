@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image, TouchableOpacity, FlatList, StyleSheet, Text, View } from 'react-native';
+import {Image, TouchableOpacity, FlatList, StyleSheet, Text, View, ActivityIndicator} from 'react-native';
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons"; 
 import firebaseDb from '../firebase/firebaseDb';
 import BlueButton from '../component/BlueButton';
@@ -9,6 +9,7 @@ class MerchantDeals extends React.Component {
     state = {
         deals: [],
         DialogVisible: false,
+        isLoading: true,
     }
 
     getData = () => {
@@ -17,17 +18,31 @@ class MerchantDeals extends React.Component {
                       if (snapshot.exists) this.setState({deals: snapshot.data().deals})})
     }
 
-    componentDidMount() {
+    setUpdate = () => {
         this.getData()
+    }
+
+    componentDidMount() {
+        if (this.state.isLoading) {
+            this.getData()
+            this.setState({isLoading: false})
+        }
     }
 
     render() {
         const {deals} = this.state
+        if (this.state.isLoading) {
+            return (
+                <View style={styles.container}>
+                    <ActivityIndicator size='large'/>
+                </View>)
+        }
         return (
             <View style={styles.container}>
 
             <BlueButton onPress={() => {
-                this.getData();
+                this.setUpdate();
+                //this.getData();
                 Toast.show({text:"Refreshing...", textStyle:{textAlign:"center"}})
             }}
             >
@@ -44,7 +59,8 @@ class MerchantDeals extends React.Component {
                     renderItem={({item}) => (
                     <TouchableOpacity style={styles.itemContainer} onPress={() => this.props.navigation
                         .navigate('Deal Details', {
-                            deal: item
+                            deal: item,
+                            refresh: this.setUpdate,
                         })}>
                         <View style={{alignItems: 'flex-end', flex: 0.2}}>
                             <Image style={styles.image}
@@ -58,7 +74,9 @@ class MerchantDeals extends React.Component {
             }
 
                 <TouchableOpacity style = {styles.add} onPress = {() => 
-                    this.props.navigation.navigate("New Deal")}>
+                    this.props.navigation.navigate("New Deal", {
+                        refresh: this.setUpdate,
+                    })}>
                         <MaterialCommunityIcons name = "plus" size = {30} color = "white"/>
                 </TouchableOpacity>
             </View>

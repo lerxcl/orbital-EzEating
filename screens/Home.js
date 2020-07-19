@@ -74,7 +74,7 @@ function Home({navigation}) {
     return (
         <View style={styles.container}>
             <TouchableOpacity style={styles.textContainer}
-                              onPress={() => navigation.navigate('All Shops')}>
+                              onPress={() => navigation.navigate('All Shops', {refresh: setisLoading,})}>
                 <Text style={styles.allShops}>All shops</Text>
             </TouchableOpacity>
             <Text style={styles.favourites}> Favourites </Text>
@@ -97,7 +97,8 @@ function Home({navigation}) {
                 renderItem={({item}) => (
                     <TouchableOpacity style={styles.itemContainer} onPress={() => navigation
                         .navigate('Shop Details', {
-                            shop: item
+                            shop: item,
+                            refresh: setisLoading,
                         })}>
                         <View style={{alignItems: 'flex-end', flex: 0.2}}>
                             <Image style={styles.logo}
