@@ -36,7 +36,7 @@ useEffect(() => {
             coordinate={{latitude: marker.lat, longitude: marker.long}}
             title={marker.name}
             description= {marker.address}
-            id = {marker.id}
+            key = {marker.id}
             />
         ))}
         </MapView>
