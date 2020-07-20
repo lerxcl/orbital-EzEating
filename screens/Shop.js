@@ -7,13 +7,14 @@ import {
     View,
     Image,
     ActivityIndicator,
-    ScrollView
+    ScrollView,
+    Alert
 } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import BlueButton from "../component/BlueButton";
 import firebaseDb from '../firebase/firebaseDb';
 import {Toast} from 'native-base';
-import Profile from "../ProfileStack/Profile";
+import ReviewModal from "../component/ReviewModal";
 
 function isEquivalent(a, b) {
     var aProps = Object.getOwnPropertyNames(a);
@@ -33,6 +34,13 @@ function isEquivalent(a, b) {
 function Shop({navigation, route}) {
     const {shop, refresh} = route.params;
     const deals = shop.deals;
+    const [reviewer, setReviewer] = React.useState(0);
+    const [review, setReview] = React.useState('');
+    const [reviewed, setReviewed] = React.useState(false);
+    const [overshoot, setOvershoot] = React.useState(false);
+    const [rating, setRating] = useState(false);
+    const [original, setOriginal] = useState(0);
+    const [stars, setStars] = useState(0);
     const [fav, setFav] = useState([])
     const [shopId, setshopId] = useState(0)
     const userId = firebaseDb.auth().currentUser.uid
@@ -41,7 +49,7 @@ function Shop({navigation, route}) {
     const [isLoading, setisLoading] = useState(false)
     const [update, setUpdate] = useState(false);
     const [merchant, setMerchant] = useState(false);
-    const numColumns = 3
+    const numColumns = 3;
 
     const getCards = async () => {
         let cards = [];
@@ -95,6 +103,14 @@ function Shop({navigation, route}) {
                         console.log(doc.data().isMerchant)
                         setshopId(doc.id)
                         setMerchant(doc.data().isMerchant)
+                        if (doc.data().numReviews === undefined) {
+                            firebaseDb.firestore().collection('shops').doc(doc.id).update({
+                                numReviews: 0
+                            })
+                        } else {
+                            setOriginal(doc.data().rating)
+                            setReviewer(doc.data().numReviews)
+                        }
                     }
                 }))
 
@@ -114,63 +130,7 @@ function Shop({navigation, route}) {
             </View>)
 
     return (
-        <View style = {styles.container}>
-        {deals.length === 0 &&
-        <ScrollView>
-            <View style={styles.container}>
-                <Image style={styles.logo}
-                       source={{uri: shop.logo}}/>
-                <Text style={styles.shopName}>{shop.shopName}</Text>
-                <View style={styles.itemContainer}>
-                    <Text style={styles.info}>Type of Food: {shop.type} </Text>
-                    <Text style={styles.info}>Average Price: Around ${shop.avgPrice} </Text>
-                    <Text style={styles.info}>Opening Hours: {shop.openingHrs} </Text>
-                    <Text style={styles.info}>Contact Number: {shop.contact} </Text>
-                    <View style={{flexDirection: 'row'}}>
-                        <Text style={styles.info}>Rating: {shop.rating} </Text>
-                        <View style={{padding: 5}}>
-                            <MaterialCommunityIcons name="star" size={20}/>
-                        </View>
-                    </View>
-                    <Text style={styles.info}>Description: {shop.description} </Text>
-                </View>
-
-                <Text style={styles.header}>On-going Deals</Text>
-                
-                    
-                    <View>
-                        <View style={styles.itemContainer}>
-                            <Text style={styles.info}>No deals for now...</Text>
-                        </View>
-                    </View>
-
-                    {!fav.includes(shopId) && <BlueButton onPress={() => {
-                    userDoc.update({
-                        fav: firebaseDb.firestore.FieldValue.arrayUnion(shopId)
-                    })
-                    setUpdate(true);
-                    refresh(false);
-                    Toast.show({text:"Added", type:"success", textStyle:{textAlign:"center"}});
-                }
-                }>
-                    Add to Favourites!
-                </BlueButton>}
-
-                {fav.includes(shopId) && <BlueButton onPress={() => {
-                    userDoc.update({
-                        fav: firebaseDb.firestore.FieldValue.arrayRemove(shopId)
-                    })
-                    setUpdate(true);
-                    refresh(false);
-                    Toast.show({text:"Removed", type:"danger", textStyle:{textAlign:"center"}});
-                }}>
-                    Remove from Favourites
-                </BlueButton>}
-                </View>
-                </ScrollView>}
-
-            {deals.length > 0 && 
-            <View style={styles.container}>
+        <View style={styles.container}>
                 <FlatList
                 ListHeaderComponent = {
                 <View style = {styles.container}>
@@ -197,6 +157,11 @@ function Shop({navigation, route}) {
                     deal.logo = shop.logo
                     return deal
                 })}
+                ListEmptyComponent = {
+                    <View style = {styles.itemContainer}>
+                    <Text> No deals for now...</Text>
+                    </View>
+                }
                 renderItem={({item}) => (
                     <TouchableOpacity style={styles.itemContainer} onPress={() => navigation
                         .navigate('Deal Details', {
@@ -235,6 +200,75 @@ function Shop({navigation, route}) {
                         .navigate('Outlets', {shop: shop})}>
                             <Text>Outlets</Text>
                         </TouchableOpacity>
+
+                        <TouchableOpacity style={styles.itemContainer} onPress={() => setRating(true)}>
+                            <Text>Rate the store!</Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity style={styles.itemContainer} onPress={() => 
+                            navigation.navigate('User Reviews', {shop: shop})}>
+                            <Text>Reviews</Text>
+                        </TouchableOpacity>
+
+                        <ReviewModal
+                            spinnerIsVisible = {rating}
+                            starRating = {stars}
+                            onStarRatingPress = {rating => {
+                                setStars(rating)
+                            }}
+                            onChangeText = {(text) => {
+                                setReview(text)
+                                if (text.length > 50) {
+                                    setOvershoot(true)
+                                } else {
+                                    setOvershoot(false)
+                                }
+                            }}
+                            onSubmit = {() => {
+                                if (overshoot) {
+                                    Alert.alert('Review has too many words')
+                                } else {
+                                    if (stars) {
+                                        if (!reviewed) {
+                                            firebaseDb.firestore().collection('shops').doc(shopId).update({
+                                                numReviews: firebaseDb.firestore.FieldValue.increment(1)
+                                            })
+                                            setReviewed(true)
+                                        }
+                                        if (review) {
+                                        firebaseDb.firestore().collection('shops').doc(shopId).update({
+                                            rating: (original*reviewer*1.0 + stars) / (reviewer + 1),
+                                            review: firebaseDb.firestore.FieldValue.arrayUnion(review)
+                                        })
+                                        } else {
+                                            firebaseDb.firestore().collection('shops').doc(shopId).update({
+                                                rating: (original*reviewer*1.0 + stars) / (reviewer + 1),
+                                            })
+                                        }
+                                        Alert.alert('Review has been submitted!')
+                                        setRating(false)
+                                    } else {
+                                        Alert.alert(
+                                            'Unable to submit review without rating',
+                                            'Do you want to continue the review?',
+                                            [
+                                                {
+                                                    text: 'Yes', onPress: () => {
+                                                    }
+                                                },
+                                                {
+                                                    text: 'No', onPress: () => {
+                                                        setRating(false)
+                                                    }
+                                                }
+                                            ]
+                                        )
+                                    }
+                                }
+                            }}
+                        />
+
+
                         {!fav.includes(shopId) && 
                         <BlueButton style = {{marginBottom: 20, marginTop: 20}} onPress={() => {
                             userDoc.update({
@@ -267,13 +301,10 @@ function Shop({navigation, route}) {
                         }}>
                         Remove from Favourites
                         </BlueButton>}
-                    </View>}
-                />
-            </View>}
 
-        </View>
-    )
-}
+                    </View>}/>
+                    </View>)}
+                
 
 export default Shop;
 
