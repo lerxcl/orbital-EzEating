@@ -1,11 +1,23 @@
-import React from 'react';
-import {ActivityIndicator, StyleSheet, Text, View, Image, TouchableOpacity, Button} from 'react-native';
+import React, {useEffect} from 'react';
+import {StyleSheet, Text, View, Image, Button} from 'react-native';
 import {CheckBox} from 'react-native-elements';
 
-function ExploreFilter({route}) {
+function ExploreFilter({route, navigation}) {
     const {allDeals, personalised, toggleAll, togglePersonalised, refresh} = route.params;
     const [allDealsCheck, setAllCheck] = React.useState(allDeals)
     const [personalisedCheck, setPersonalisedCheck] = React.useState(personalised)
+
+    useEffect(() => {
+        navigation.setOptions({
+            headerLeft: () => (
+                <Button onPress={() => {
+                    refresh();
+                    navigation.navigate("Explore")
+                }}
+                title= "Back"
+                />)
+        })
+    })
 
     return (
         <View>
@@ -17,7 +29,6 @@ function ExploreFilter({route}) {
                     setPersonalisedCheck(!personalisedCheck)
                     toggleAll()
                     togglePersonalised()
-                    //refresh()
                 }}
             />
 
@@ -29,7 +40,6 @@ function ExploreFilter({route}) {
                     setPersonalisedCheck(!personalisedCheck)
                     togglePersonalised()
                     toggleAll()
-                    //refresh()
                 }}
             />
         </View>
