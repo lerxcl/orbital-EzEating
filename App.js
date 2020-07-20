@@ -92,6 +92,10 @@ function HomeStackScreen() {
                 name='Deal Details'
                 component={DealDetails}
             />
+            <HomeStack.Screen
+                name='Outlets'
+                component={Outlets}
+            />
         </HomeStack.Navigator>
     )
 }
