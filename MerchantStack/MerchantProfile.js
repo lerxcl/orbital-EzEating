@@ -8,6 +8,7 @@ import * as Permissions from 'expo-permissions';
 import BlueButton from "../component/BlueButton";
 import Dialog from "react-native-dialog";
 import {ProgressBar} from 'react-native-paper';
+import StarRating from "react-native-star-rating"
 
 class MerchantProfile extends React.Component {
 
@@ -36,6 +37,9 @@ class MerchantProfile extends React.Component {
         uploading: false,
         favs: 0,
         avgPrice: null,
+        rating: 0,
+        reviewers: 0,
+        reviews: []
       };
 
     setAvgPrice = (newAvgPrice) => {
@@ -63,7 +67,8 @@ class MerchantProfile extends React.Component {
     }
 
     componentDidMount() {
-        this.userDoc.get().then(snapshot => this.setState({
+        this.userDoc.get().then(snapshot => {
+            this.setState({
             name: snapshot.data().shopName,
             image: snapshot.data().logo,
             openingHours: snapshot.data().openingHrs,
@@ -71,7 +76,16 @@ class MerchantProfile extends React.Component {
             contact: snapshot.data().contact,
             desc: snapshot.data().description,
             favs: snapshot.data().favs,
-        avgPrice: snapshot.data().avgPrice,}))
+            avgPrice: snapshot.data().avgPrice,
+            rating: snapshot.data().rating,
+            })
+            if (!(snapshot.data().numReviews === undefined)) {
+                this.setState({
+                    reviewers: snapshot.data().numReviews,
+                    reviews: snapshot.data().review
+                })
+            }
+        })
         this.getPermissionAsync()
       }
     
@@ -137,7 +151,7 @@ class MerchantProfile extends React.Component {
         }
 
     render() {
-        const {image, name, openingHours, type, contact, desc, favs, progress, uploading,
+        const {image, name, openingHours, type, contact, desc, favs, progress, uploading, rating, reviewers, reviews,
             nameDialogVisible, contactDialogVisible,hoursDialogVisible, descDialogVisible, typeDialogVisible,
         avgPriceDialogVisible, avgPrice} = this.state
 
@@ -311,9 +325,28 @@ class MerchantProfile extends React.Component {
                 </Dialog.Container>
 
                 <View style={styles.textContainer}>
-                    <Text>Favourites: {favs}</Text>
-                    <Text>Rating: No reviews yet</Text>
+                    <Text>Number of likes: {favs}</Text>
+                    <View style = {{flexDirection: 'row', alignItems: 'center'}}>
+                        <Text>Rating: </Text>
+                        <StarRating
+                        disabled={true}
+                        maxStars={5}
+                        rating={rating}
+                        starSize = {20}
+                        />
+                        <Text>{"  (" + reviewers + ")"}</Text>
+                    </View>
                 </View>
+
+                <View style={styles.textContainer}>
+                    <Text>My Reviews</Text>
+                    <TouchableOpacity style = {styles.arrow} 
+                        onPress={() => this.props.navigation.navigate('Reviews')}>
+                        <MaterialCommunityIcons name = "chevron-right" size = {25}/>
+                    </TouchableOpacity>
+                </View>
+
+
                 <Text style = {{alignSelf: 'center', marginTop: 10}}> Complete your profile to publish your store!</Text>
                 <Text style = {{alignSelf: 'center', marginBottom: 20}}> (don't forget to publish after making any changes) </Text>
                 <BlueButton style = {{width: 300, alignSelf: 'center'}} onPress={() => {
