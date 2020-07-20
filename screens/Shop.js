@@ -13,6 +13,7 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import BlueButton from "../component/BlueButton";
 import firebaseDb from '../firebase/firebaseDb';
 import {Toast} from 'native-base';
+import Profile from "../ProfileStack/Profile";
 
 function isEquivalent(a, b) {
     var aProps = Object.getOwnPropertyNames(a);
@@ -199,7 +200,8 @@ function Shop({navigation, route}) {
                 renderItem={({item}) => (
                     <TouchableOpacity style={styles.itemContainer} onPress={() => navigation
                         .navigate('Deal Details', {
-                            deal: item
+                            deal: item,
+                            refresh: () => console.log("Unable to auto update here :("),
                         })}>
                         <View style={{alignItems: 'flex-end', flex: 0.2}}>
                             <Image style={styles.image}

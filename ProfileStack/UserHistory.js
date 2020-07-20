@@ -2,7 +2,7 @@ import React from 'react';
 import {FlatList, Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 
 function UserHistory({navigation, route}) {
-    const {deals} = route.params;
+    const {deals, refresh} = route.params;
 
     return (
         <View style={styles.container}>
@@ -11,7 +11,8 @@ function UserHistory({navigation, route}) {
             renderItem={({item}) => (
                 <TouchableOpacity style={styles.itemContainer} onPress={() => navigation
                     .navigate('Deal Details', {
-                        deal: item
+                        deal: item,
+                        refresh: refresh,
                     })}>
                     <View style={{alignItems: 'flex-end', flex: 0.2}}>
                         <Image style={styles.image}

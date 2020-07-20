@@ -39,6 +39,7 @@ class Profile extends React.Component {
         const result = [...savedDeals].map(deal => deal.monetaryValue).reduce((a,b) => a + b, 0)
             .toFixed(2)
         this.setState({totalSaving: result})
+        global.totalSavings = result;
     }
 
     componentDidMount() {
@@ -185,7 +186,8 @@ class Profile extends React.Component {
                         <Text>Total Savings: ${this.state.totalSaving} </Text>
                         <TouchableOpacity style={styles.arrow}
                                           onPress={() => this.props.navigation.navigate('History', {
-                                              deals: savedDeals
+                                              deals: savedDeals,
+                                              refresh: this.getDeals,
                                           })}>
                             <MaterialCommunityIcons name="chevron-right" size={25}/>
                         </TouchableOpacity>
@@ -200,10 +202,7 @@ class Profile extends React.Component {
             )
         }
     }
-
-    export
-    default
-    Profile;
+    export default Profile;
 
     const
     styles = StyleSheet.create({

@@ -4,7 +4,7 @@ import firebaseDb from '../firebase/firebaseDb';
 import {Toast} from "native-base";
 
 function DealDetails({route, navigation}) {
-    const {deal} = route.params;
+    const {deal, refresh} = route.params;
     const [cardinfo, setCardInfo] = React.useState([])
     const [loading, setLoading] = React.useState(true);
     const numColumns = 3
@@ -60,6 +60,7 @@ function DealDetails({route, navigation}) {
                                         savedDeals: firebaseDb.firestore.FieldValue.arrayRemove(deal.id)
                                     })
                                     setLoading(true)
+                                    refresh();
                                     Toast.show({text: "Removed", type: "danger", textStyle: {textAlign: "center"}});
                                 }}
                                         title="Remove"
@@ -71,6 +72,7 @@ function DealDetails({route, navigation}) {
                                         savedDeals: firebaseDb.firestore.FieldValue.arrayUnion(deal.id)
                                     })
                                     setLoading(true)
+                                    refresh();
                                     Toast.show({text: "Added", type: "success", textStyle: {textAlign: "center"}});
                                 }}
                                         title="Save"
