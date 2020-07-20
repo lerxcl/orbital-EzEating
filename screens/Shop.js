@@ -230,6 +230,11 @@ function Shop({navigation, route}) {
                         )}
                         keyExtractor={item => item.id}
                         />}
+
+                        <TouchableOpacity style={styles.itemContainer} onPress={() => navigation
+                        .navigate('Outlets', {shop: shop})}>
+                            <Text>Outlets</Text>
+                        </TouchableOpacity>
                         {!fav.includes(shopId) && 
                         <BlueButton style = {{marginBottom: 20, marginTop: 20}} onPress={() => {
                             userDoc.update({
