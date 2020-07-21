@@ -15,6 +15,7 @@ import BlueButton from "../component/BlueButton";
 import firebaseDb from '../firebase/firebaseDb';
 import {Toast} from 'native-base';
 import ReviewModal from "../component/ReviewModal";
+import { Rating } from 'react-native-elements';
 
 function isEquivalent(a, b) {
     var aProps = Object.getOwnPropertyNames(a);
@@ -34,8 +35,8 @@ function isEquivalent(a, b) {
 function Shop({navigation, route}) {
     const {shop, refresh} = route.params;
     const deals = shop.deals;
+    const review = {name: firebaseDb.auth().currentUser.displayName};
     const [reviewer, setReviewer] = React.useState(0);
-    const [review, setReview] = React.useState('');
     const [reviewed, setReviewed] = React.useState(false);
     const [overshoot, setOvershoot] = React.useState(false);
     const [rating, setRating] = useState(false);
@@ -217,7 +218,8 @@ function Shop({navigation, route}) {
                                 setStars(rating)
                             }}
                             onChangeText = {(text) => {
-                                setReview(text)
+                                review["text"] = text
+                                console.log(review)
                                 if (text.length > 50) {
                                     setOvershoot(true)
                                 } else {
@@ -228,28 +230,23 @@ function Shop({navigation, route}) {
                                 if (overshoot) {
                                     Alert.alert('Review has too many words')
                                 } else {
-                                    if (stars) {
+                                    if (stars && review["text"] !== undefined) {
                                         if (!reviewed) {
                                             firebaseDb.firestore().collection('shops').doc(shopId).update({
                                                 numReviews: firebaseDb.firestore.FieldValue.increment(1)
                                             })
                                             setReviewed(true)
                                         }
-                                        if (review) {
+                                        review["rating"] = stars
                                         firebaseDb.firestore().collection('shops').doc(shopId).update({
-                                            rating: (original*reviewer*1.0 + stars) / (reviewer + 1),
+                                            rating: Math.round((((original*reviewer*1.0 + stars) / (reviewer + 1)) + Number.EPSILON) * 100) / 100,
                                             review: firebaseDb.firestore.FieldValue.arrayUnion(review)
                                         })
-                                        } else {
-                                            firebaseDb.firestore().collection('shops').doc(shopId).update({
-                                                rating: (original*reviewer*1.0 + stars) / (reviewer + 1),
-                                            })
-                                        }
                                         Alert.alert('Review has been submitted!')
                                         setRating(false)
                                     } else {
                                         Alert.alert(
-                                            'Unable to submit review without rating',
+                                            'Incomplete review/rating',
                                             'Do you want to continue the review?',
                                             [
                                                 {
