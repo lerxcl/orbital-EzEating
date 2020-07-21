@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import {View, Button} from 'react-native';
+import {View, Button, Text} from 'react-native';
 import {CheckBox} from 'react-native-elements';
 
 function ExploreFilter({route, navigation}) {
@@ -153,6 +153,7 @@ function ExploreFilter({route, navigation}) {
             />
 
 
+            <Text style={{padding:50, textAlign:"center"}}>You can select custom Cards and Apps, or choose other modes.</Text>
         </View>
     )
 }
