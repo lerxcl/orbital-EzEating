@@ -1,18 +1,23 @@
 import React, {useEffect} from 'react';
-import {StyleSheet, Text, View, Image, Button} from 'react-native';
+import {View, Button} from 'react-native';
 import {CheckBox} from 'react-native-elements';
 
 function ExploreFilter({route, navigation}) {
-    const {allDeals, personalised, openDeals, toggleAll, togglePersonalised, toggleOpen, refresh} = route.params;
+    const {allDeals, personalised, openDeals, toggleAll, togglePersonalised, toggleOpen, refresh,
+        cardsAndMethods, customisedCards, customisedApps, toggleCustomisedCards, toggleCustomisedApps,
+        updateCustomisedCards, updateCustomisedApps} = route.params;
     const [allDealsCheck, setAllCheck] = React.useState(allDeals)
     const [personalisedCheck, setPersonalisedCheck] = React.useState(personalised)
     const [openDealsCheck, setOpenDealsCheck] = React.useState(openDeals)
+    const [customisedCardCheck, setCustomisedCardCheck] = React.useState(customisedCards)
+    const [customisedAppsCheck, setCustomisedAppsCheck] = React.useState(customisedApps)
 
     useEffect(() => {
         navigation.setOptions({
             headerLeft: () => (
                 <Button onPress={() => {
-                    if (!allDealsCheck && !personalisedCheck && !openDealsCheck) {
+                    if (!allDealsCheck && !personalisedCheck && !openDealsCheck
+                    && !customisedCardCheck && !customisedAppsCheck) {
                         alert("You have not selected any options! Please select one.")
                     } else {
                         refresh();
@@ -57,6 +62,14 @@ function ExploreFilter({route, navigation}) {
                         setOpenDealsCheck(!openDealsCheck)
                         toggleOpen()
                     }
+                    if (customisedCardCheck) {
+                        setCustomisedCardCheck(!customisedCardCheck)
+                        toggleCustomisedCards()
+                    }
+                    if (customisedAppsCheck) {
+                        setCustomisedAppsCheck(!customisedAppsCheck)
+                        toggleCustomisedApps()
+                    }
                 }}
             />
 
@@ -74,8 +87,72 @@ function ExploreFilter({route, navigation}) {
                         setPersonalisedCheck(!personalisedCheck)
                         togglePersonalised()
                     }
+                    if (customisedCardCheck) {
+                        setCustomisedCardCheck(!customisedCardCheck)
+                        toggleCustomisedCards()
+                    }
+                    if (customisedAppsCheck) {
+                        setCustomisedAppsCheck(!customisedAppsCheck)
+                        toggleCustomisedApps()
+                    }
                 }}
             />
+
+            <CheckBox
+                title='Custom Cards'
+                checked={customisedCardCheck}
+                onPress={() => {
+                    if (!customisedCardCheck) {
+                        setCustomisedCardCheck(!customisedCardCheck)
+                        toggleCustomisedCards()
+                    }
+                    if (personalisedCheck) {
+                        setPersonalisedCheck(!personalisedCheck)
+                        togglePersonalised()
+                    }
+                    if (openDealsCheck) {
+                        setOpenDealsCheck(!openDealsCheck)
+                        toggleOpen()
+                    }
+                    if (allDealsCheck) {
+                        setAllCheck(!allDealsCheck)
+                        toggleAll()
+                    }
+                    navigation.navigate("Custom Cards", {
+                        cards: cardsAndMethods[0],
+                        update: updateCustomisedCards,
+                    })
+                }}
+            />
+
+            <CheckBox
+                title='Custom Apps'
+                checked={customisedAppsCheck}
+                onPress={() => {
+                    if (!customisedAppsCheck) {
+                        setCustomisedAppsCheck(!customisedAppsCheck)
+                        toggleCustomisedApps()
+                    }
+                    if (personalisedCheck) {
+                        setPersonalisedCheck(!personalisedCheck)
+                        togglePersonalised()
+                    }
+                    if (openDealsCheck) {
+                        setOpenDealsCheck(!openDealsCheck)
+                        toggleOpen()
+                    }
+                    if (allDealsCheck) {
+                        setAllCheck(!allDealsCheck)
+                        toggleAll()
+                    }
+                    navigation.navigate("Custom Apps", {
+                        apps: cardsAndMethods[1],
+                        update: updateCustomisedApps,
+                    })
+                }}
+            />
+
+
         </View>
     )
 }

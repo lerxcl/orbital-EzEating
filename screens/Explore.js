@@ -30,6 +30,9 @@ class Explore extends React.Component {
         allDeals: false,
         personalised: true,
         openDeals: false,
+        customisedCards: false,
+        customisedApps: false,
+        newCustomisedCardsApps: [[], []],
     }
     userId = firebaseDb.auth().currentUser.uid
     userDoc = firebaseDb.firestore().collection('users').doc(this.userId)
@@ -58,6 +61,32 @@ class Explore extends React.Component {
         } else {
             this.setState({openDeals: true})
         }
+    }
+
+    toggleCustomisedCards = () => {
+        if (this.state.customisedCards) {
+            this.setState({customisedCards: false})
+        } else {
+            this.setState({customisedCards: true})
+        }
+    }
+
+    toggleCustomisedApps = () => {
+        if (this.state.customisedApps) {
+            this.setState({customisedApps: false})
+        } else {
+            this.setState({customisedApps: true})
+        }
+    }
+
+    updateCustomisedCards = (result) => {
+        result[1] = this.state.newCustomisedCardsApps[1]
+        this.setState({newCustomisedCardsApps: result})
+    }
+
+    updateCustomisedApps = (result) => {
+        result[0] = this.state.newCustomisedCardsApps[0]
+        this.setState({newCustomisedCardsApps: result})
     }
 
     refresh = () => {
@@ -143,7 +172,10 @@ class Explore extends React.Component {
                     if (deal.cards.length === 0 && deal.methods.length === 0) {
                         this.count++
                         return true
-                    } else {return false}})
+                    } else {
+                        return false
+                    }
+                })
             const randomDeals = randSelect(shopsWithDeals, this.count);
 
             this.setState({
@@ -152,11 +184,39 @@ class Explore extends React.Component {
                 loading: false,
             });
             Toast.show({text: "Done refreshing", type: "success", textStyle: {textAlign: "center"}})
+        } else if (this.state.customisedCards || this.state.customisedApps) {
+            console.log("Customised Cards/Apps");
+            console.log(this.state.newCustomisedCardsApps)
+            let shopsWithDeals = [...global.allShops].filter(shop => shop.deals.length !== 0)
+                .flatMap(shop => {
+                    shop.deals.map(deal => {
+                        deal.name = shop.shopName
+                        deal.logo = shop.logo
+                    })
+                    return shop.deals
+                })
+                .filter(deal => {
+                    for (let i = 0; i < deal.cards.length; i++) {
+                        if (this.state.newCustomisedCardsApps[0].includes(deal.cards[i])) {
+                            return true
+                        }
+                    }
+                    for (let j = 0; j < deal.methods.length; j++) {
+                        if (this.state.newCustomisedCardsApps[1].includes(deal.methods[j])) {
+                            return true
+                        }
+                    }
+                    return false
+                })
+
+            this.setState({
+                all: shopsWithDeals,
+                picked: shopsWithDeals,
+                loading: false,
+            })
+
+            Toast.show({text: "Done refreshing", type: "success", textStyle: {textAlign: "center"}})
         }
-
-        // TODO
-        //  else, choose specific cards/methods from filter page.
-
     }
 
     componentDidMount() {
@@ -171,6 +231,13 @@ class Explore extends React.Component {
                         refresh: this.refresh,
                         toggleOpen: this.toggleOpen,
                         openDeals: this.state.openDeals,
+                        cardsAndMethods: this.userCards,
+                        customisedCards: this.state.customisedCards,
+                        customisedApps: this.state.customisedApps,
+                        toggleCustomisedCards: this.toggleCustomisedCards,
+                        toggleCustomisedApps: this.toggleCustomisedApps,
+                        updateCustomisedCards: this.updateCustomisedCards,
+                        updateCustomisedApps: this.updateCustomisedApps,
                     })
                 }}
                         title="Filter"
@@ -235,6 +302,12 @@ class Explore extends React.Component {
                 <View style={styles.container}>
                     <ActivityIndicator size='large'/>
                 </View>)
+        } else if (this.state.picked.length === 0) {
+            return (
+                <View style={styles.container}>
+                    <Text>No deals available based on custom filter. Please try other options.</Text>
+                </View>
+            )
         }
         return (
             <View style={styles.container}>

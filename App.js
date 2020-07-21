@@ -24,6 +24,8 @@ import Shop from "./screens/Shop";
 import DealDetails from "./screens/DealDetails";
 import Outlets from "./screens/Outlets";
 import ExploreFilter from "./screens/ExploreFilter";
+import CustomCards from "./screens/CustomCards";
+import CustomApps from "./screens/CustomApps";
 import Profile from "./ProfileStack/Profile";
 import Cards from "./ProfileStack/Cards";
 import Details from "./ProfileStack/Details";
@@ -164,6 +166,14 @@ const ExploreStackScreen = () => (
         <ExploreStack.Screen
             name='Explore Filter'
             component={ExploreFilter}
+        />
+        <ExploreStack.Screen
+            name='Custom Cards'
+            component={CustomCards}
+        />
+        <ExploreStack.Screen
+            name='Custom Apps'
+            component={CustomApps}
         />
     </ExploreStack.Navigator>
 )
