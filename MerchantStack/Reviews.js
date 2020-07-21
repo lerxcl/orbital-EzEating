@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, Text, FlatList} from 'react-native';
 import firebaseDb from '../firebase/firebaseDb';
+import StarRating from "react-native-star-rating";
 
 class Reviews extends React.Component {
     userId = firebaseDb.auth().currentUser.uid
@@ -12,7 +13,7 @@ class Reviews extends React.Component {
     
     componentDidMount() {
         this.userDoc.get().then(snapshot => {
-            if (!(snapshot.data().numReviews === undefined)) {
+            if (snapshot.data().numReviews !== undefined) {
                 this.setState({
                     reviews: snapshot.data().review
                 })
@@ -25,15 +26,24 @@ class Reviews extends React.Component {
 
         return (
             <View style = {styles.container}>
-                {reviews && 
+                {reviews.length > 0 && 
                 <FlatList
                 data={reviews}
                 renderItem={({item}) => (
-                    <Text style = {styles.itemContainer}>{item}</Text>
+                    <View style = {styles.itemContainer}>
+                    <StarRating
+                        disabled={true}
+                        maxStars={5}
+                        rating={item.rating}
+                        starSize = {20}
+                        />
+                        <Text style = {{marginTop: 5}}>{item.text}</Text>
+                        <Text style = {{fontWeight: 'bold'}}>By: {item.name}</Text>
+                    </View>
                 )}
-                keyExtractor={item => item}/>}
+                keyExtractor={item => item.text}/>}
 
-                {!reviews &&
+                {reviews.length === 0 &&
                 <Text>No reviews yet!</Text>}
             </View>
         )
@@ -55,9 +65,7 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         paddingHorizontal: 16,
         width: 350,
-        marginTop: 20,
-        marginVertical: 10,
         paddingVertical: 10,
-        alignItems: 'center'
+        alignItems: 'flex-start'
     },
 })
