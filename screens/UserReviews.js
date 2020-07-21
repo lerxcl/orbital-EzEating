@@ -1,5 +1,6 @@
 import React, {useEffect} from 'react';
 import { View, StyleSheet, Text, ActivityIndicator, FlatList } from 'react-native';
+import StarRating from "react-native-star-rating";
 
 function UserReviews({route}) {
     const {shop} = route.params;
@@ -25,9 +26,18 @@ function UserReviews({route}) {
                 <FlatList
                 data={reviews}
                 renderItem={({item}) => (
-                    <Text style = {styles.itemContainer}>{item}</Text>
+                    <View style = {styles.itemContainer}>
+                    <StarRating
+                        disabled={true}
+                        maxStars={5}
+                        rating={item.rating}
+                        starSize = {20}
+                        />
+                        <Text style = {{marginTop: 5}}>{item.text}</Text>
+                        <Text style = {{fontWeight: 'bold'}}>By: {item.name}</Text>
+                    </View>
                 )}
-                keyExtractor={item => item}/>}
+                keyExtractor={item => item.text}/>}
 
                 {!reviews &&
                 <Text>Be the first to write a review!</Text>}
@@ -50,9 +60,7 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         paddingHorizontal: 16,
         width: 350,
-        marginTop: 20,
-        marginVertical: 10,
         paddingVertical: 10,
-        alignItems: 'center'
+        alignItems: 'flex-start'
     },
 })
