@@ -29,6 +29,7 @@ class Explore extends React.Component {
         carouselRef: null,
         allDeals: false,
         personalised: true,
+        openDeals: false,
     }
     userId = firebaseDb.auth().currentUser.uid
     userDoc = firebaseDb.firestore().collection('users').doc(this.userId)
@@ -48,6 +49,14 @@ class Explore extends React.Component {
             this.setState({personalised: false})
         } else {
             this.setState({personalised: true})
+        }
+    }
+
+    toggleOpen = () => {
+        if (this.state.openDeals) {
+            this.setState({openDeals: false})
+        } else {
+            this.setState({openDeals: true})
         }
     }
 
@@ -120,7 +129,31 @@ class Explore extends React.Component {
                 loading: false,
             });
             Toast.show({text: "Done refreshing", type: "success", textStyle: {textAlign: "center"}})
+        } else if (this.state.openDeals) {
+            this.count = 0;
+            console.log("Open deals")
+            let shopsWithDeals = [...global.allShops].filter(shop => shop.deals.length !== 0)
+                .flatMap(shop => {
+                    shop.deals.map(deal => {
+                        deal.name = shop.shopName
+                        deal.logo = shop.logo
+                    })
+                    return shop.deals
+                }).filter(deal => {
+                    if (deal.cards.length === 0 && deal.methods.length === 0) {
+                        this.count++
+                        return true
+                    } else {return false}})
+            const randomDeals = randSelect(shopsWithDeals, this.count);
+
+            this.setState({
+                all: shopsWithDeals,
+                picked: randomDeals,
+                loading: false,
+            });
+            Toast.show({text: "Done refreshing", type: "success", textStyle: {textAlign: "center"}})
         }
+
         // TODO
         //  else, choose specific cards/methods from filter page.
 
@@ -136,6 +169,8 @@ class Explore extends React.Component {
                         toggleAll: this.toggleAll,
                         togglePersonalised: this.togglePersonalised,
                         refresh: this.refresh,
+                        toggleOpen: this.toggleOpen,
+                        openDeals: this.state.openDeals,
                     })
                 }}
                         title="Filter"

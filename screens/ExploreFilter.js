@@ -3,16 +3,21 @@ import {StyleSheet, Text, View, Image, Button} from 'react-native';
 import {CheckBox} from 'react-native-elements';
 
 function ExploreFilter({route, navigation}) {
-    const {allDeals, personalised, toggleAll, togglePersonalised, refresh} = route.params;
+    const {allDeals, personalised, openDeals, toggleAll, togglePersonalised, toggleOpen, refresh} = route.params;
     const [allDealsCheck, setAllCheck] = React.useState(allDeals)
     const [personalisedCheck, setPersonalisedCheck] = React.useState(personalised)
+    const [openDealsCheck, setOpenDealsCheck] = React.useState(openDeals)
 
     useEffect(() => {
         navigation.setOptions({
             headerLeft: () => (
                 <Button onPress={() => {
-                    refresh();
-                    navigation.navigate("Explore")
+                    if (!allDealsCheck && !personalisedCheck && !openDealsCheck) {
+                        alert("You have not selected any options! Please select one.")
+                    } else {
+                        refresh();
+                        navigation.navigate("Explore")
+                    }
                 }}
                 title= "Back"
                 />)
@@ -26,9 +31,15 @@ function ExploreFilter({route, navigation}) {
                 checked={allDealsCheck}
                 onPress={() => {
                     setAllCheck(!allDealsCheck)
-                    setPersonalisedCheck(!personalisedCheck)
                     toggleAll()
-                    togglePersonalised()
+                    if (personalisedCheck) {
+                        setPersonalisedCheck(!personalisedCheck)
+                        togglePersonalised()
+                    }
+                    if (openDealsCheck) {
+                        setOpenDealsCheck(!openDealsCheck)
+                        toggleOpen()
+                    }
                 }}
             />
 
@@ -36,10 +47,33 @@ function ExploreFilter({route, navigation}) {
                 title='Personalised (Default)'
                 checked={personalisedCheck}
                 onPress={() => {
-                    setAllCheck(!allDealsCheck)
                     setPersonalisedCheck(!personalisedCheck)
                     togglePersonalised()
-                    toggleAll()
+                    if (allDealsCheck) {
+                        setAllCheck(!allDealsCheck)
+                        toggleAll()
+                    }
+                    if (openDealsCheck) {
+                        setOpenDealsCheck(!openDealsCheck)
+                        toggleOpen()
+                    }
+                }}
+            />
+
+            <CheckBox
+                title='Open Deals (No restrictions)'
+                checked={openDealsCheck}
+                onPress={() => {
+                    setOpenDealsCheck(!openDealsCheck)
+                    toggleOpen()
+                    if (allDealsCheck) {
+                        setAllCheck(!allDealsCheck)
+                        toggleAll()
+                    }
+                    if (personalisedCheck) {
+                        setPersonalisedCheck(!personalisedCheck)
+                        togglePersonalised()
+                    }
                 }}
             />
         </View>
