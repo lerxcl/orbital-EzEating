@@ -74,7 +74,8 @@ function Home({navigation}) {
     return (
         <View style={styles.container}>
             <TouchableOpacity style={styles.textContainer}
-                              onPress={() => navigation.navigate('All Shops', {refresh: setisLoading,})}>
+                              onPress={() => navigation.navigate('All Shops',
+                                  {refresh: setisLoading,})}>
                 <Text style={styles.allShops}>All shops</Text>
             </TouchableOpacity>
             <Text style={styles.favourites}> Favourites </Text>

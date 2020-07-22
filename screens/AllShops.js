@@ -2,37 +2,75 @@ import React from 'react';
 import {TouchableOpacity, SectionList, ActivityIndicator, StyleSheet, Text, View, Image} from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { SearchBar } from 'react-native-elements';
+import firebaseDb from "../firebase/firebaseDb";
 
 class AllShops extends React.Component {
     componentDidMount() {
-        let results = [...global.allShops];
-        results = results.map(x =>
-            ({...x, letter: x.shopName[0].toUpperCase()})
-        );
-        const resultsByLetter = [];
-        results.map(shop => {
-            let duplicateLetter = false;
-            for (let i = 0; i < resultsByLetter.length; i++) {
-                if (resultsByLetter[i].title === shop.letter) {
-                    resultsByLetter[i].data.push(shop);
-                    duplicateLetter = true;
-                    break;
+        if (this.state.isLoading) {
+            let results = [...global.allShops];
+            results = results.map(x =>
+                ({...x, letter: x.shopName[0].toUpperCase()})
+            );
+            const resultsByLetter = [];
+            results.map(shop => {
+                let duplicateLetter = false;
+                for (let i = 0; i < resultsByLetter.length; i++) {
+                    if (resultsByLetter[i].title === shop.letter) {
+                        resultsByLetter[i].data.push(shop);
+                        duplicateLetter = true;
+                        break;
+                    }
                 }
-            }
-            if (!duplicateLetter) {
-                resultsByLetter.push({
-                    title: shop.letter,
-                    data: [shop],
-                });
-            }
-        })
-        this.setState({isLoading: false, shops: resultsByLetter})
+                if (!duplicateLetter) {
+                    resultsByLetter.push({
+                        title: shop.letter,
+                        data: [shop],
+                    });
+                }
+            })
+            this.setState({isLoading: false, shops: resultsByLetter})
+        }
     }
 
     state = {
         isLoading: true,
         shops: null,
         search: '',
+    }
+
+    refreshAllShops = () => {
+        this.setState({isLoading:true})
+        let results = [];
+        firebaseDb.firestore().collection('shops').orderBy('shopName').get()
+            .then(snapshot => {
+                snapshot.docs.map(doc => {
+                    if (doc.data().hasDetails) {
+                        results.push(doc.data())
+                    }
+                })
+            }).then(() => {
+            results = results.map(x =>
+                ({...x, letter: x.shopName[0].toUpperCase()})
+            );
+            const resultsByLetter = [];
+            results.map(shop => {
+                let duplicateLetter = false;
+                for (let i = 0; i < resultsByLetter.length; i++) {
+                    if (resultsByLetter[i].title === shop.letter) {
+                        resultsByLetter[i].data.push(shop);
+                        duplicateLetter = true;
+                        break;
+                    }
+                }
+                if (!duplicateLetter) {
+                    resultsByLetter.push({
+                        title: shop.letter,
+                        data: [shop],
+                    });
+                }
+            })
+            this.setState({isLoading: false, shops: resultsByLetter})
+        })
     }
 
     updateSearch = (search) => {
@@ -82,8 +120,6 @@ class AllShops extends React.Component {
                 onChangeText={this.updateSearch}
                 value={this.state.search}
                 searchIcon={{size:24}}
-                //containerStyle={{backgroundColor:'#698896'}}
-                //inputContainerStyle={{backgroundColor:'#698896'}}
             />
             <View style={styles.container}>
                 <SectionList
@@ -94,6 +130,8 @@ class AllShops extends React.Component {
                             .navigate('Shop Details', {
                                 shop: item,
                                 refresh: this.props.route.params.refresh,
+                                loaded: this.props.route.params.loaded,
+                                refreshAllShops: this.refreshAllShops,
                             })}>
                             <View style={{alignItems: 'flex-end', flex: 0.2}}>
                                 <Image style={styles.logo}

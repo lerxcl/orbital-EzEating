@@ -34,7 +34,7 @@ function isEquivalent(a, b) {
 
 
 function Shop({navigation, route}) {
-    const {shop, refresh} = route.params;
+    const {shop, refresh, refreshAllShops} = route.params;
     const deals = shop.deals;
     const review = {name: firebaseDb.auth().currentUser.displayName};
     const [reviewer, setReviewer] = React.useState(0);
@@ -253,6 +253,10 @@ function Shop({navigation, route}) {
                                             setRating(false)
                                             Alert.alert('Review has been submitted!')
                                             refresh(false);
+                                            if (refreshAllShops !== undefined) {
+                                                console.log("refresh all shops")
+                                                refreshAllShops();
+                                            }
                                             setRatingValue(Math.round((((original*reviewer*1.0 + stars) / (reviewer + 1)) + Number.EPSILON) * 100) / 100)
                                             reviews.push(review)
                                             setOriginal(ratingValue)
