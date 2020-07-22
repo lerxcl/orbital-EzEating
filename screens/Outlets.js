@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import {ActivityIndicator, View, StyleSheet} from "react-native";
+import {ActivityIndicator, View, StyleSheet, Text, Alert} from "react-native";
 import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
 
 function Outlets({route}) {
@@ -9,7 +9,8 @@ function Outlets({route}) {
 
 useEffect(() => {
     if (loading) {
-        setMarkers(shop.outlets)
+        if (shop.outlets !== undefined)
+            setMarkers(shop.outlets)
     }
     setLoading(false)
 })
@@ -20,6 +21,7 @@ useEffect(() => {
             <ActivityIndicator size='large'/>
         </View>)
 
+    else if (markers.length !== 0)
     return (
         <MapView
             style={{ flex: 1 }}
@@ -35,11 +37,17 @@ useEffect(() => {
             <Marker
             coordinate={{latitude: marker.lat, longitude: marker.long}}
             title={marker.name}
-            description= {marker.address}
+            onCalloutPress={() => Alert.alert(marker.name, marker.address)}
             key = {marker.id}
             />
         ))}
         </MapView>
+    )
+
+    else return (
+        <View style = {styles.container}>
+            <Text>No stated outlets!</Text>
+        </View>
     )
 }
 
