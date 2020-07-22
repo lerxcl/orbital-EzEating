@@ -106,7 +106,10 @@ function Home({navigation}) {
                         </View>
                         <Text style={styles.name}>{item.shopName}</Text>
                         <MaterialCommunityIcons name="star" size={15}/>
-                        <Text>{item.rating}</Text>
+                        <View>
+                        {item.rating === 0 && <Text>No reviews yet</Text>}
+                        {item.rating !== 0 && <Text>{item.rating}</Text>}
+                        </View>
                     </TouchableOpacity>
                 )}
                 keyExtractor={item => item.shopName}
