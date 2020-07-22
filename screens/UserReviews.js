@@ -4,12 +4,12 @@ import StarRating from "react-native-star-rating";
 
 function UserReviews({route}) {
     const {shop} = route.params;
-    const[reviews, setReviews] = React.useState([]);
+    const [reviews, setReviews] = React.useState([]);
     const [loading, setLoading] = React.useState(true);
 
     useEffect(() => {
         if (loading) {
-            setReviews(shop.review)
+            setReviews(shop)
         }
         setLoading(false)
     })

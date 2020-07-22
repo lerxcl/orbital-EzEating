@@ -16,6 +16,7 @@ import firebaseDb from '../firebase/firebaseDb';
 import {Toast} from 'native-base';
 import ReviewModal from "../component/ReviewModal";
 import { Rating } from 'react-native-elements';
+import {sub} from "react-native-reanimated";
 
 function isEquivalent(a, b) {
     var aProps = Object.getOwnPropertyNames(a);
@@ -51,6 +52,8 @@ function Shop({navigation, route}) {
     const [update, setUpdate] = useState(false);
     const [merchant, setMerchant] = useState(false);
     const numColumns = 3;
+    const [ratingValue, setRatingValue] = useState(shop.rating)
+    const [reviews, setReviews] = useState(shop.review)
 
     const getCards = async () => {
         let cards = [];
@@ -146,8 +149,8 @@ function Shop({navigation, route}) {
                         <Text style={styles.info}>Contact Number: {shop.contact} </Text>
                         <View style={{flexDirection: 'row'}}>
                             <View>
-                                {shop.rating === 0 && <Text style={styles.info}>Rating: No reviews yet </Text>}
-                                {shop.rating !== 0 && <Text style={styles.info}>Rating: {shop.rating} </Text>}
+                                {ratingValue === 0 && <Text style={styles.info}>Rating: No reviews yet </Text>}
+                                {ratingValue !== 0 && <Text style={styles.info}>Rating: {ratingValue} </Text>}
                             </View>
                             <View style={{padding: 5}}>
                                 <MaterialCommunityIcons name="star" size={20}/>
@@ -211,7 +214,7 @@ function Shop({navigation, route}) {
                         </TouchableOpacity>
 
                         <TouchableOpacity style={styles.itemContainer} onPress={() => 
-                            navigation.navigate('User Reviews', {shop: shop})}>
+                            navigation.navigate('User Reviews', {shop: reviews})}>
                             <Text>Reviews</Text>
                         </TouchableOpacity>
 
@@ -246,9 +249,15 @@ function Shop({navigation, route}) {
                                         firebaseDb.firestore().collection('shops').doc(shopId).update({
                                             rating: Math.round((((original*reviewer*1.0 + stars) / (reviewer + 1)) + Number.EPSILON) * 100) / 100,
                                             review: firebaseDb.firestore.FieldValue.arrayUnion(review)
+                                        }).then(() => {
+                                            setRating(false)
+                                            Alert.alert('Review has been submitted!')
+                                            refresh(false);
+                                            setRatingValue(Math.round((((original*reviewer*1.0 + stars) / (reviewer + 1)) + Number.EPSILON) * 100) / 100)
+                                            reviews.push(review)
+                                            setOriginal(ratingValue)
+                                            setReviewer(shop.numReviews + 1)
                                         })
-                                        Alert.alert('Review has been submitted!')
-                                        setRating(false)
                                     } else {
                                         Alert.alert(
                                             'Incomplete review/rating',

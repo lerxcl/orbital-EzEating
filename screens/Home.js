@@ -113,8 +113,6 @@ function Home({navigation}) {
                     </TouchableOpacity>
                 )}
                 keyExtractor={item => item.shopName}
-                // refreshing = {isLoading}
-                // onRefresh = {getData()}
             />
             }
         </View>
