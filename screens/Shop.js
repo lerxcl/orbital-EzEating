@@ -106,7 +106,8 @@ function Shop({navigation, route}) {
                         setMerchant(doc.data().isMerchant)
                         if (doc.data().numReviews === undefined) {
                             firebaseDb.firestore().collection('shops').doc(doc.id).update({
-                                numReviews: 0
+                                numReviews: 0,
+                                rating: 0
                             })
                         } else {
                             setOriginal(doc.data().rating)
@@ -144,7 +145,10 @@ function Shop({navigation, route}) {
                         <Text style={styles.info}>Opening Hours: {shop.openingHrs} </Text>
                         <Text style={styles.info}>Contact Number: {shop.contact} </Text>
                         <View style={{flexDirection: 'row'}}>
-                            <Text style={styles.info}>Rating: {shop.rating} </Text>
+                            <View>
+                                {shop.rating === 0 && <Text style={styles.info}>Rating: No reviews yet </Text>}
+                                {shop.rating !== 0 && <Text style={styles.info}>Rating: {shop.rating} </Text>}
+                            </View>
                             <View style={{padding: 5}}>
                                 <MaterialCommunityIcons name="star" size={20}/>
                             </View>
@@ -216,6 +220,7 @@ function Shop({navigation, route}) {
                             starRating = {stars}
                             onStarRatingPress = {rating => {
                                 setStars(rating)
+                                console.log(stars)
                             }}
                             onChangeText = {(text) => {
                                 review["text"] = text
@@ -230,7 +235,7 @@ function Shop({navigation, route}) {
                                 if (overshoot) {
                                     Alert.alert('Review has too many words')
                                 } else {
-                                    if (stars && review["text"] !== undefined) {
+                                    if (stars && review["text"] !== undefined && review["text"] !== "") {
                                         if (!reviewed) {
                                             firebaseDb.firestore().collection('shops').doc(shopId).update({
                                                 numReviews: firebaseDb.firestore.FieldValue.increment(1)
