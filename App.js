@@ -23,6 +23,7 @@ import AllShops from "./screens/AllShops";
 import Shop from "./screens/Shop";
 import DealDetails from "./screens/DealDetails";
 import Outlets from "./screens/Outlets";
+import UserReviews from "./screens/UserReviews"
 
 import Profile from "./ProfileStack/Profile";
 import Cards from "./ProfileStack/Cards";
@@ -37,6 +38,7 @@ import MerchantCards from "./MerchantStack/MerchantCards";
 import MerchantMethods from "./MerchantStack/MerchantMethods";
 import NewDeal from "./MerchantStack/NewDeal"
 import Settings from "./MerchantStack/Settings";
+import Reviews from "./MerchantStack/Reviews";
 import {YellowBox} from "react-native";
 import _ from 'lodash';
 
@@ -96,6 +98,10 @@ function HomeStackScreen() {
             <HomeStack.Screen
                 name='Outlets'
                 component={Outlets}
+            />
+            <HomeStack.Screen
+                name='User Reviews'
+                component={UserReviews}
             />
         </HomeStack.Navigator>
     )
@@ -219,6 +225,10 @@ const MerchantProfileStackScreen = () => (
                     headerTitle: () => <DrawerHeader isLogout = {false} navigation = {navigation} title = 'My Store'/>
                 }
             }}
+        />
+        <MerchantProfileStack.Screen
+            name='Reviews'
+            component={Reviews}
         />
     </MerchantProfileStack.Navigator>
 )

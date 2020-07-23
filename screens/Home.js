@@ -74,7 +74,8 @@ function Home({navigation}) {
     return (
         <View style={styles.container}>
             <TouchableOpacity style={styles.textContainer}
-                              onPress={() => navigation.navigate('All Shops', {refresh: setisLoading,})}>
+                              onPress={() => navigation.navigate('All Shops',
+                                  {refresh: setisLoading,})}>
                 <Text style={styles.allShops}>All shops</Text>
             </TouchableOpacity>
             <Text style={styles.favourites}> Favourites </Text>
@@ -106,12 +107,13 @@ function Home({navigation}) {
                         </View>
                         <Text style={styles.name}>{item.shopName}</Text>
                         <MaterialCommunityIcons name="star" size={15}/>
-                        <Text>{item.rating}</Text>
+                        <View>
+                        {item.rating === 0 && <Text>No reviews yet</Text>}
+                        {item.rating !== 0 && <Text>{item.rating}</Text>}
+                        </View>
                     </TouchableOpacity>
                 )}
                 keyExtractor={item => item.shopName}
-                // refreshing = {isLoading}
-                // onRefresh = {getData()}
             />
             }
         </View>
