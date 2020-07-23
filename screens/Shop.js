@@ -7,7 +7,6 @@ import {
     View,
     Image,
     ActivityIndicator,
-    ScrollView,
     Alert
 } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
@@ -15,8 +14,6 @@ import BlueButton from "../component/BlueButton";
 import firebaseDb from '../firebase/firebaseDb';
 import {Toast} from 'native-base';
 import ReviewModal from "../component/ReviewModal";
-import { Rating } from 'react-native-elements';
-import {sub} from "react-native-reanimated";
 
 function isEquivalent(a, b) {
     var aProps = Object.getOwnPropertyNames(a);

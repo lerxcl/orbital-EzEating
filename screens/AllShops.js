@@ -130,7 +130,6 @@ class AllShops extends React.Component {
                             .navigate('Shop Details', {
                                 shop: item,
                                 refresh: this.props.route.params.refresh,
-                                loaded: this.props.route.params.loaded,
                                 refreshAllShops: this.refreshAllShops,
                             })}>
                             <View style={{alignItems: 'flex-end', flex: 0.2}}>
