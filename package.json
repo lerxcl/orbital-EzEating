@@ -8,6 +8,7 @@
     "eject": "expo eject"
   },
   "dependencies": {
+    "@freakycoder/react-native-text-area": "0.0.12",
     "@react-native-community/masked-view": "0.1.6",
     "@react-navigation/drawer": "^5.8.2",
     "@react-navigation/material-bottom-tabs": "^5.2.9",
@@ -16,6 +17,7 @@
     "expo": "~37.0.3",
     "expo-cli": "^3.21.5",
     "expo-image-picker": "^8.1.0",
+    "expo-linear-gradient": "^8.2.1",
     "firebase": "7.9.0",
     "global": "^4.4.0",
     "native-base": "^2.13.12",
@@ -27,14 +29,17 @@
     "react-native-gesture-handler": "^1.6.1",
     "react-native-maps": "0.26.1",
     "react-native-material-dialog": "^0.7.7",
+    "react-native-modal": "^11.5.6",
     "react-native-multiple-select": "^0.5.5",
     "react-native-paper": "^3.10.1",
     "react-native-reanimated": "~1.7.0",
+    "react-native-review-modal": "0.0.1",
     "react-native-safe-area-context": "0.7.3",
     "react-native-screens": "~2.2.0",
     "react-native-sectioned-multi-select": "^0.7.7",
     "react-native-simple-toast": "^1.1.2",
     "react-native-snap-carousel": "^3.9.1",
+    "react-native-star-rating": "^1.1.0",
     "react-native-vector-icons": "^6.6.0",
     "react-native-web": "~0.11.7"
   },
