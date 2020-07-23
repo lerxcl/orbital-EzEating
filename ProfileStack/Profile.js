@@ -161,6 +161,16 @@ class Profile extends React.Component {
                         </TouchableOpacity>
                     </View>
                     <Text style={styles.title}> {name} </Text>
+                    <View style={styles.savings}>
+                        <Text style={{fontSize: 20, fontWeight: "bold"}}>Total Savings: ${this.state.totalSaving} </Text>
+                        <TouchableOpacity style={styles.arrow}
+                                          onPress={() => this.props.navigation.navigate('History', {
+                                              deals: savedDeals,
+                                              refresh: this.getDeals,
+                                          })}>
+                            <MaterialCommunityIcons name="chevron-right" size={25}/>
+                        </TouchableOpacity>
+                    </View>
                     <View style={styles.textContainer}>
                         <Text>My Cards</Text>
                         <TouchableOpacity style={styles.arrow}
@@ -179,16 +189,6 @@ class Profile extends React.Component {
                         <Text>My Details</Text>
                         <TouchableOpacity style={styles.arrow}
                                           onPress={() => this.props.navigation.navigate('Profile Details')}>
-                            <MaterialCommunityIcons name="chevron-right" size={25}/>
-                        </TouchableOpacity>
-                    </View>
-                    <View style={styles.savings}>
-                        <Text>Total Savings: ${this.state.totalSaving} </Text>
-                        <TouchableOpacity style={styles.arrow}
-                                          onPress={() => this.props.navigation.navigate('History', {
-                                              deals: savedDeals,
-                                              refresh: this.getDeals,
-                                          })}>
                             <MaterialCommunityIcons name="chevron-right" size={25}/>
                         </TouchableOpacity>
                     </View>
@@ -264,7 +264,7 @@ class Profile extends React.Component {
             borderRadius: 25,
             paddingHorizontal: 16,
             width: 300,
-            height: 100,
+            height: 70,
             fontSize: 20,
             marginVertical: 10,
             paddingVertical: 15,
