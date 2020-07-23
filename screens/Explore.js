@@ -1,5 +1,5 @@
 import React from 'react';
-import {ActivityIndicator, StyleSheet, Text, View, Image, TouchableOpacity} from 'react-native';
+import {ActivityIndicator, StyleSheet, Text, View, Image, TouchableOpacity, Button} from 'react-native';
 import Carousel, {Pagination} from 'react-native-snap-carousel';
 import BlueButton from "../component/BlueButton";
 import firebaseDb from '../firebase/firebaseDb';
@@ -27,63 +27,223 @@ class Explore extends React.Component {
         loading: true,
         activeIndex: 0,
         carouselRef: null,
+        allDeals: false,
+        personalised: true,
+        openDeals: false,
+        customisedCards: false,
+        customisedApps: false,
+        newCustomisedCardsApps: [[], []],
     }
     userId = firebaseDb.auth().currentUser.uid
     userDoc = firebaseDb.firestore().collection('users').doc(this.userId)
     userCards = []
     count = 0;
 
-    getDeals = () => {
-        this.count = 0;
-        this.userCards = []
-        this.userDoc.get()
-            .then(snapshot => {
-
-                this.userCards.push(snapshot.data().cards)
-                this.userCards.push(snapshot.data().methods)
-
-                let shopsWithDeals = [...global.allShops].filter(shop => shop.deals.length !== 0)
-                                        .flatMap(shop => {
-                                            shop.deals.map(deal => {
-                                                deal.name = shop.shopName
-                                                deal.logo = shop.logo
-                                            })
-                                            return shop.deals
-                                        })
-                                        .filter(deal => {
-                                            //console.log(deal.name + " " + deal.methods)
-                                            if (deal.cards.length === 0 && deal.methods.length === 0) {
-                                                this.count++
-                                                return true
-                                            } else {
-                                                for (let i = 0; i < deal.cards.length; i++) {
-                                                    if (this.userCards[0].includes(deal.cards[i])) {
-                                                        return true
-                                                    }
-                                                }
-                                                for (let j = 0; j < deal.methods.length; j++) {
-                                                    if (this.userCards[1].includes(deal.methods[j])) {
-                                                        return true
-                                                    }
-                                                }
-                                                return false
-                                            }
-                                        })
-                
-                //console.log(this.count)
-
-                const randomDeals = randSelect(shopsWithDeals, this.count);
-
-                this.setState({
-                    all: shopsWithDeals,
-                    picked: randomDeals,
-                    loading: false,
-                });
-                Toast.show({text:"Done refreshing", type:"success", textStyle:{textAlign:"center"}})
-            })
+    toggleAll = () => {
+        if (this.state.allDeals) {
+            this.setState({allDeals: false})
+        } else {
+            this.setState({allDeals: true})
         }
+    }
+
+    togglePersonalised = () => {
+        if (this.state.personalised) {
+            this.setState({personalised: false})
+        } else {
+            this.setState({personalised: true})
+        }
+    }
+
+    toggleOpen = () => {
+        if (this.state.openDeals) {
+            this.setState({openDeals: false})
+        } else {
+            this.setState({openDeals: true})
+        }
+    }
+
+    toggleCustomisedCards = () => {
+        if (this.state.customisedCards) {
+            this.setState({customisedCards: false})
+        } else {
+            this.setState({customisedCards: true})
+        }
+    }
+
+    toggleCustomisedApps = () => {
+        if (this.state.customisedApps) {
+            this.setState({customisedApps: false})
+        } else {
+            this.setState({customisedApps: true})
+        }
+    }
+
+    updateCustomisedCards = (result) => {
+        result[1] = this.state.newCustomisedCardsApps[1]
+        this.setState({newCustomisedCardsApps: result})
+    }
+
+    updateCustomisedApps = (result) => {
+        result[0] = this.state.newCustomisedCardsApps[0]
+        this.setState({newCustomisedCardsApps: result})
+    }
+
+    refresh = () => {
+        this.getDeals();
+    }
+
+    getDeals = () => {
+        if (this.state.personalised) {
+            console.log("Default: personalised")
+            this.count = 0;
+            this.userCards = []
+            this.userDoc.get()
+                .then(snapshot => {
+
+                    this.userCards.push(snapshot.data().cards)
+                    this.userCards.push(snapshot.data().methods)
+
+                    let shopsWithDeals = [...global.allShops].filter(shop => shop.deals.length !== 0)
+                        .flatMap(shop => {
+                            shop.deals.map(deal => {
+                                deal.name = shop.shopName
+                                deal.logo = shop.logo
+                            })
+                            return shop.deals
+                        })
+                        .filter(deal => {
+                            if (deal.cards.length === 0 && deal.methods.length === 0) {
+                                this.count++
+                                return true
+                            } else {
+                                for (let i = 0; i < deal.cards.length; i++) {
+                                    if (this.userCards[0].includes(deal.cards[i])) {
+                                        return true
+                                    }
+                                }
+                                for (let j = 0; j < deal.methods.length; j++) {
+                                    if (this.userCards[1].includes(deal.methods[j])) {
+                                        return true
+                                    }
+                                }
+                                return false
+                            }
+                        })
+                    const randomDeals = randSelect(shopsWithDeals, this.count);
+
+                    this.setState({
+                        all: shopsWithDeals,
+                        picked: randomDeals,
+                        loading: false,
+                    });
+                    Toast.show({text: "Done refreshing", type: "success", textStyle: {textAlign: "center"}})
+                })
+        } else if (this.state.allDeals) {
+            this.count = 10;
+            console.log("Unfiltered, All deals")
+            let shopsWithDeals = [...global.allShops].filter(shop => shop.deals.length !== 0)
+                .flatMap(shop => {
+                    shop.deals.map(deal => {
+                        deal.name = shop.shopName
+                        deal.logo = shop.logo
+                    })
+                    return shop.deals
+                })
+            const randomDeals = randSelect(shopsWithDeals, this.count);
+
+            this.setState({
+                all: shopsWithDeals,
+                picked: randomDeals,
+                loading: false,
+            });
+            Toast.show({text: "Done refreshing", type: "success", textStyle: {textAlign: "center"}})
+        } else if (this.state.openDeals) {
+            this.count = 0;
+            console.log("Open deals")
+            let shopsWithDeals = [...global.allShops].filter(shop => shop.deals.length !== 0)
+                .flatMap(shop => {
+                    shop.deals.map(deal => {
+                        deal.name = shop.shopName
+                        deal.logo = shop.logo
+                    })
+                    return shop.deals
+                }).filter(deal => {
+                    if (deal.cards.length === 0 && deal.methods.length === 0) {
+                        this.count++
+                        return true
+                    } else {
+                        return false
+                    }
+                })
+            const randomDeals = randSelect(shopsWithDeals, this.count);
+
+            this.setState({
+                all: shopsWithDeals,
+                picked: randomDeals,
+                loading: false,
+            });
+            Toast.show({text: "Done refreshing", type: "success", textStyle: {textAlign: "center"}})
+        } else if (this.state.customisedCards || this.state.customisedApps) {
+            console.log("Customised Cards/Apps");
+            console.log(this.state.newCustomisedCardsApps)
+            let shopsWithDeals = [...global.allShops].filter(shop => shop.deals.length !== 0)
+                .flatMap(shop => {
+                    shop.deals.map(deal => {
+                        deal.name = shop.shopName
+                        deal.logo = shop.logo
+                    })
+                    return shop.deals
+                })
+                .filter(deal => {
+                    for (let i = 0; i < deal.cards.length; i++) {
+                        if (this.state.newCustomisedCardsApps[0].includes(deal.cards[i])) {
+                            return true
+                        }
+                    }
+                    for (let j = 0; j < deal.methods.length; j++) {
+                        if (this.state.newCustomisedCardsApps[1].includes(deal.methods[j])) {
+                            return true
+                        }
+                    }
+                    return false
+                })
+
+            this.setState({
+                all: shopsWithDeals,
+                picked: shopsWithDeals,
+                loading: false,
+            })
+
+            Toast.show({text: "Done refreshing", type: "success", textStyle: {textAlign: "center"}})
+        }
+    }
 
     componentDidMount() {
+        this.props.navigation.setOptions({
+            headerRight: () => (
+                <Button onPress={() => {
+                    this.props.navigation.navigate("Explore Filter", {
+                        allDeals: this.state.allDeals,
+                        personalised: this.state.personalised,
+                        toggleAll: this.toggleAll,
+                        togglePersonalised: this.togglePersonalised,
+                        refresh: this.refresh,
+                        toggleOpen: this.toggleOpen,
+                        openDeals: this.state.openDeals,
+                        cardsAndMethods: this.userCards,
+                        customisedCards: this.state.customisedCards,
+                        customisedApps: this.state.customisedApps,
+                        toggleCustomisedCards: this.toggleCustomisedCards,
+                        toggleCustomisedApps: this.toggleCustomisedApps,
+                        updateCustomisedCards: this.updateCustomisedCards,
+                        updateCustomisedApps: this.updateCustomisedApps,
+                    })
+                }}
+                        title="Filter"
+                />
+            )
+        })
         this.getDeals()
     }
 
@@ -114,10 +274,10 @@ class Explore extends React.Component {
                 borderRadius: 20,
                 ...Platform.select({
                     ios: {
-                        height:500,
+                        height: 500,
                     },
                     android: {
-                        height:400,
+                        height: 400,
                     },
                 }),
                 padding: 25,
@@ -142,22 +302,30 @@ class Explore extends React.Component {
                 <View style={styles.container}>
                     <ActivityIndicator size='large'/>
                 </View>)
+        } else if (this.state.picked.length === 0) {
+            return (
+                <View style={styles.container}>
+                    <Text>No deals available based on custom filter. Please try other options.</Text>
+                </View>
+            )
         }
         return (
             <View style={styles.container}>
                 {this.userCards[0].length !== 0 || this.userCards[1].length !== 0 ? (
                     <View>
-                        <Text style={{fontSize: 20,textAlign: 'center'}}>Discover personalised deals</Text>
-                        <Text style={{marginBottom: 20,textAlign: 'center'}}>(based on your cards/payment methods)</Text>
+                        <Text style={{fontSize: 20, textAlign: 'center'}}>Discover personalised deals</Text>
+                        <Text style={{marginBottom: 20, textAlign: 'center'}}>(based on your cards/payment
+                            methods)</Text>
                     </View>
                 ) : (
                     <View>
-                        <Text style={{marginTop: 10, fontSize: 20,textAlign: 'center'}}>Discover deals</Text>
-                        <Text style={{marginBottom: 20,textAlign: 'center'}}>(start adding your cards/payment methods!)</Text>
+                        <Text style={{marginTop: 10, fontSize: 20, textAlign: 'center'}}>Discover deals</Text>
+                        <Text style={{marginBottom: 20, textAlign: 'center'}}>(start adding your cards/payment
+                            methods!)</Text>
                     </View>
                 )}
                 <BlueButton onPress={() => {
-                    Toast.show({text:"Refreshing...", textStyle:{textAlign:"center"}})
+                    Toast.show({text: "Refreshing...", textStyle: {textAlign: "center"}})
                     this.getDeals()
                 }}
                 >

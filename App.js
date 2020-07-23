@@ -23,6 +23,9 @@ import AllShops from "./screens/AllShops";
 import Shop from "./screens/Shop";
 import DealDetails from "./screens/DealDetails";
 import Outlets from "./screens/Outlets";
+import ExploreFilter from "./screens/ExploreFilter";
+import CustomCards from "./screens/CustomCards";
+import CustomApps from "./screens/CustomApps";
 import UserReviews from "./screens/UserReviews"
 
 import Profile from "./ProfileStack/Profile";
@@ -30,7 +33,6 @@ import Cards from "./ProfileStack/Cards";
 import Details from "./ProfileStack/Details";
 import Methods from "./ProfileStack/Methods";
 import UserHistory from "./ProfileStack/UserHistory";
-
 import MerchantDeals from "./MerchantStack/MerchantDeals";
 import MerchantProfile from "./MerchantStack/MerchantProfile";
 import MerchantDealDetails from "./MerchantStack/MerchantDealDetails";
@@ -167,6 +169,18 @@ const ExploreStackScreen = () => (
         <ExploreStack.Screen
             name='Deal Details'
             component={DealDetails}
+        />
+        <ExploreStack.Screen
+            name='Explore Filter'
+            component={ExploreFilter}
+        />
+        <ExploreStack.Screen
+            name='Custom Cards'
+            component={CustomCards}
+        />
+        <ExploreStack.Screen
+            name='Custom Apps'
+            component={CustomApps}
         />
     </ExploreStack.Navigator>
 )
