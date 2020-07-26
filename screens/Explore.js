@@ -285,7 +285,8 @@ class Explore extends React.Component {
                 marginRight: 10,
             }} onPress={() => this.props.navigation
                 .navigate('Deal Details', {
-                    deal: item
+                    deal: item,
+                    refresh: () => console.log("from explore page")
                 })}>
                 <View style={styles.container}>
                     <Text style={styles.dealHeader}>{item.name}</Text>
