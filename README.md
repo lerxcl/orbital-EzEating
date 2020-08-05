@@ -39,7 +39,7 @@ A possible extension is to have e-payment apps directly link to our app, so that
   - Explore Tab
     - Filter
     
- - Merchant
+- Merchant
   - My Deals
   - Profile
   - Accepted Cards/Apps
