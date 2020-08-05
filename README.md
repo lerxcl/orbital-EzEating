@@ -39,6 +39,7 @@ A possible extension is to have e-payment apps directly link to our app, so that
     - Shop
       - Shop details
       <img src="https://github.com/lerxcl/orbital-EzEating/blob/master/screenshots/GIF/Shop details.gif" width="250" height="500">
+      
       - Rating/Review system
       <img src="https://github.com/lerxcl/orbital-EzEating/blob/master/screenshots/Milestone 3/Android/Screenshot_1595508583.png" width="250" height="500">
       <img src="https://github.com/lerxcl/orbital-EzEating/blob/master/screenshots/Milestone 3/Android/Screenshot_1595508599.png" width="250" height="500">
