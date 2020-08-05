@@ -22,24 +22,49 @@ A possible extension is to have e-payment apps directly link to our app, so that
 
 # Features
 - Login + Signup (both Customer and Merchant)
+<img src="https://github.com/lerxcl/orbital-EzEating/blob/master/screenshots/GIF/Signup.gif" width="250" height="500">
 
 - Customer
   - Home Tab
     - Favourites
+    <img src="https://github.com/lerxcl/orbital-EzEating/blob/master/screenshots/Milestone 2/Customer/Home page Android.png" width="250" height="500">
+    
     - Search for shops
+    <img src="https://github.com/lerxcl/orbital-EzEating/blob/master/screenshots/GIF/Search.gif" width="250" height="500">
+    
     - Shop
       - Shop details
       - Rating/Review system
+      <img src="https://github.com/lerxcl/orbital-EzEating/blob/master/screenshots/Milestone 3/Android/Screenshot_1595508583.png" width="250" height="500">
+      <img src="https://github.com/lerxcl/orbital-EzEating/blob/master/screenshots/Milestone 3/Android/Screenshot_1595508599.png" width="250" height="500">
+      
       - Deals
-      - Outlets
+      <img src="https://github.com/lerxcl/orbital-EzEating/blob/master/screenshots/Milestone 3/Android/Screenshot_1595510404.png" width="250" height="500">
+      
+      - Outlets/Traffic
+      <img src="https://github.com/lerxcl/orbital-EzEating/blob/master/screenshots/Milestone 3/Android/Screenshot_20200725-110040.png" width="250" height="500">
+      
   - Profile Tab
     - Total Savings
+    <img src="https://github.com/lerxcl/orbital-EzEating/blob/master/screenshots/Milestone 3/Android/Screenshot_1595507068.png" width="250" height="500">
+  
     - Saved Deals
+    <img src="https://github.com/lerxcl/orbital-EzEating/blob/master/screenshots/Milestone 3/Android/Screenshot_1595510396.png" width="250" height="500">
+    
     - Customer details like Cards/Apps
+    <img src="https://github.com/lerxcl/orbital-EzEating/blob/master/screenshots/Milestone 2/Customer/My Cards Android.png" width="250" height="500">
+    <img src="https://github.com/lerxcl/orbital-EzEating/blob/master/screenshots/Milestone 2/Customer/My Apps Android.png" width="250" height="500">
+    
   - Explore Tab
-    - Filter
+  <img src="https://github.com/lerxcl/orbital-EzEating/blob/master/screenshots/GIF/Explore tab.gif" width="250" height="500">
+  
+    -Filter function
     
 - Merchant
   - My Deals
+  <img src="https://github.com/lerxcl/orbital-EzEating/blob/master/screenshots/Milestone 2/Merchant/My Deals Android.png" width="250" height="500">
+  
   - Profile
+  <img src="https://github.com/lerxcl/orbital-EzEating/blob/master/screenshots/GIF/Merchant Profile.gif" width="250" height="500">
+  
   - Accepted Cards/Apps
