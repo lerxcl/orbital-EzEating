@@ -4,8 +4,7 @@
     "slug": "EzEating",
     "platforms": [
       "ios",
-      "android",
-      "web"
+      "android"
     ],
     "version": "1.0.0",
     "orientation": "portrait",
@@ -22,7 +21,10 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "bundleIdentifier": "com.orbital.EzEating"
+    },
+    "android": {
+      "package": "com.orbital.EzEating"
     }
   }
 }
