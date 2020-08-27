@@ -85,3 +85,6 @@ A possible extension is to have e-payment apps directly link to our app, so that
 - Milestone 3 README: https://docs.google.com/document/d/1wglJ8IjlOCVFLG7wio1gSw6uk3M-L0IqMXBEKpty6kU/edit?usp=sharing 
 - Milestone 3 Video showcase: https://drive.google.com/file/d/1zbBBgbX3LmtcwFke3sER6LLm3Y6KcJsg/view?usp=sharing
 - Milestone 3 Poster: https://docs.google.com/presentation/d/1fQChi5l6uHypVmMfDvjP-I3zILSi64TUjyrzvVqYbtY/edit?usp=sharing
+
+- Finale Poster: https://i.ibb.co/vLqfvky/2276.jpg
+- Finale Video: https://youtu.be/eL1WyMmHFvg
