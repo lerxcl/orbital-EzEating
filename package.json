@@ -18,7 +18,7 @@
     "expo-cli": "^3.22.3",
     "expo-image-picker": "^8.1.0",
     "expo-linear-gradient": "~8.1.0",
-    "firebase": "7.9.0",
+    "firebase": "10.9.0",
     "global": "^4.4.0",
     "native-base": "^2.13.12",
     "react": "~16.9.0",
